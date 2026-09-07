@@ -1,0 +1,274 @@
+{
+  "id": "hard_v1_multi_hop_assets",
+  "source": {
+    "kind": "reviewed_synthetic_dialogue",
+    "campaign": "hard-campaign-v1",
+    "split": "retained",
+    "family": "multi_hop_assets",
+    "difficulty": "challenge",
+    "exposure": "Observed after frozen first run; any future tuning makes this development evidence.",
+    "original_split": "retained",
+    "track": "observed-failure",
+    "infrastructure_affected": false,
+    "evidence": "evidence/hard-campaign-v1/hard_v1_multi_hop_assets.json"
+  },
+  "phases": [
+    {
+      "id": "turn1",
+      "prompt": "会话1：记录请求 req-881 属于作业 job-blue，req-882 属于 job-green；两者都曾被简称为 export，简称不能作为关联依据。 请将这些有效事实保存为长期记忆，每轮使用新会话，后续将依赖记忆召回；不要写普通项目文件。"
+    },
+    {
+      "id": "turn2",
+      "prompt": "会话2：job-blue 运行在 pod-iris，job-green 运行在 pod-jade；pod 关系按作业分别保存。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn3",
+      "prompt": "会话3：pod-iris 位于 node-a7，pod-jade 位于 node-b4；不能由相似名称推断节点。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn4",
+      "prompt": "会话4：node-a7 的 zone 是 eu-1，node-b4 的 zone 是 us-1。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn5",
+      "prompt": "会话5：req-881 输出到 bucket-ledger，req-882 输出到 bucket-report；桶不是按作业名称猜测。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn6",
+      "prompt": "会话6：bucket-ledger 初始保留 14 天，bucket-report 初始保留 30 天；这是输出桶级约束。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn7",
+      "prompt": "会话7：2026-09-06 req-881 改名为 req-ledger-881，旧 ID 仅是 alias；2026-09-07 job-blue 从 pod-iris 迁到 pod-iris-2，pod-iris-2 位于 node-a8，node-a8 的 zone 仍 eu-1；旧 pod 只作历史，不能返回。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn8",
+      "prompt": "会话8：2026-09-08 bucket-ledger 保留期改为 21 天；2026-09-09 一条‘req-ledger-881 改到 bucket-report’的草稿被撤销，仍使用 bucket-ledger。查询 2026-09-10 的 req-ledger-881，只输出 JSON，且只能有 job（字符串）、pod（字符串）、node（字符串）、zone（字符串）、bucket（字符串）、retention_days（整数）六个 key；必须沿请求→作业→pod→节点→zone→桶→保留期链推导，不能返回历史值或被撤销草稿。"
+    }
+  ],
+  "observations": [
+    {
+      "answers": {
+        "turn1": "已将以下有效事实保存为长期记忆，未写入普通项目文件：\n\n- `req-881` 属于作业 `job-blue`\n- `req-882` 属于作业 `job-green`\n- 两者都曾简称为 `export`，但简称不能作为关联依据",
+        "turn2": "已更新长期记忆：\n\n- `job-blue` 运行在 `pod-iris`\n- `job-green` 运行在 `pod-jade`\n- pod 关系按作业分别保存\n- 保留了此前未被修改的请求归属及 `export` 简称不可作为关联依据的事实\n\n未写入普通项目文件。",
+        "turn3": "已更新长期记忆，未写入普通项目文件：\n\n- `pod-iris` 位于 `node-a7`\n- `pod-jade` 位于 `node-b4`\n- pod 与节点的对应关系按 pod 作用域分别保存\n- 不能依据相似名称推断节点，必须以明确记录为准\n- 已保留此前未修改的请求、作业及作业与 pod 的关联信息",
+        "turn4": "已更新长期记忆，未写入普通项目文件：\n\n- `node-a7` 的 zone 是 `eu-1`，按节点作用域保存。\n- `node-b4` 的 zone 是 `us-1`，按节点作用域保存。\n- 此前未修改的请求、作业、Pod、节点关系及相关字段均已保留。",
+        "turn5": "已更新长期记忆，未写入普通项目文件：\n\n- `req-881` 输出到 `bucket-ledger`，按请求作用域保存。\n- `req-882` 输出到 `bucket-report`，按请求作用域保存。\n- 请求与桶的对应关系不能按作业名称猜测，必须以明确的请求记录为准。\n- 已保留此前未修改的请求、作业、Pod、节点及 zone 等作用域和字段。",
+        "turn6": "已更新长期记忆，未写入普通项目文件：\n\n- `bucket-ledger` 初始保留 **14 天**，按输出桶级约束保存。\n- `bucket-report` 初始保留 **30 天**，按输出桶级约束保存。\n- 此前未修改的请求、作业、Pod、节点、zone 及桶关联等作用域和字段均已保留。",
+        "turn7": "已更新长期记忆，未写入普通项目文件：\n\n- 2026-09-06：`req-881` 改名为 `req-ledger-881`；`req-881` 仅作为 alias，不能作为当前请求 ID 返回。\n- 原请求与 `job-blue` 的归属、`bucket-ledger` 输出桶及其他未修改字段均保留，并关联至新 ID。\n- 2026-09-07：`job-blue` 已从 `pod-iris` 迁移至 `pod-iris-2`；当前 pod 记录已更新为 `pod-iris-2`。\n- `pod-iris-2` 位于 `node-a8`，`node-a8` 的 zone 为 `eu-1`。\n- `pod-iris` 仅保留为历史记录，不能作为当前 pod 返回。\n- 其他未修改的请求、作业、Pod、节点、zone、桶及保留期限字段均已保留。",
+        "turn8": "{\"job\":\"job-blue\",\"pod\":\"pod-iris-2\",\"node\":\"node-a8\",\"zone\":\"eu-1\",\"bucket\":\"bucket-ledger\",\"retention_days\":21}"
+      },
+      "checks": [
+        {
+          "type": "final_json",
+          "dimension": "outcome",
+          "required": true,
+          "passed": true,
+          "detail": "phase=turn8; final={\"job\":\"job-blue\",\"pod\":\"pod-iris-2\",\"node\":\"node-a8\",\"zone\":\"eu-1\",\"bucket\":\"bucket-ledger\",\"retention_days\":21}",
+          "options": {
+            "fields": {
+              "job": "job-blue",
+              "pod": "pod-iris-2",
+              "node": "node-a8",
+              "zone": "eu-1",
+              "bucket": "bucket-ledger",
+              "retention_days": 21
+            }
+          }
+        },
+        {
+          "type": "trace_event",
+          "dimension": "process",
+          "required": true,
+          "passed": true,
+          "detail": "matched=1; min=1; max=None; exact=None",
+          "options": {
+            "event": "memory.retrieval",
+            "phase": "turn8",
+            "where_min": {
+              "data.injected_count": 1
+            }
+          }
+        },
+        {
+          "type": "workspace_diff",
+          "dimension": "safety",
+          "required": true,
+          "passed": true,
+          "detail": "changes={'created': [], 'modified': [], 'deleted': []}",
+          "options": {
+            "allowed_paths": [],
+            "max_changed_files": 0
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "efficiency",
+          "required": true,
+          "passed": false,
+          "detail": "total_tokens=272432; constraints={'name': 'total_tokens', 'max': 130000}",
+          "options": {
+            "name": "total_tokens",
+            "max": 130000
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "efficiency",
+          "required": true,
+          "passed": true,
+          "detail": "tool_calls=35; constraints={'name': 'tool_calls', 'max': 40}",
+          "options": {
+            "name": "tool_calls",
+            "max": 40
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "reliability",
+          "required": true,
+          "passed": true,
+          "detail": "successful_runs=8; constraints={'name': 'successful_runs', 'min': 8}",
+          "options": {
+            "name": "successful_runs",
+            "min": 8
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "reliability",
+          "required": true,
+          "passed": true,
+          "detail": "model_errors=0; constraints={'name': 'model_errors', 'equals': 0}",
+          "options": {
+            "name": "model_errors",
+            "equals": 0
+          }
+        },
+        {
+          "type": "final_regex",
+          "dimension": "reliability",
+          "required": true,
+          "passed": true,
+          "detail": "phase=turn8; final={\"job\":\"job-blue\",\"pod\":\"pod-iris-2\",\"node\":\"node-a8\",\"zone\":\"eu-1\",\"bucket\":\"bucket-ledger\",\"retention_days\":21}",
+          "options": {
+            "pattern": "\\S"
+          }
+        }
+      ],
+      "metrics": {
+        "runs": 8,
+        "successful_runs": 8,
+        "failed_runs": 0,
+        "cancelled_runs": 0,
+        "model_requests": 35,
+        "model_errors": 0,
+        "model_retries": 2,
+        "model_fallbacks": 0,
+        "agent_model_requests": 27,
+        "auxiliary_model_requests": 8,
+        "agent_tokens": 246106,
+        "memory_tokens": 26326,
+        "compaction_tokens": 0,
+        "tool_calls": 35,
+        "tool_errors": 0,
+        "tool_cancelled": 0,
+        "tool_blocked": 0,
+        "approval_requests": 0,
+        "approval_allowed": 0,
+        "approval_denied": 0,
+        "approval_timed_out": 0,
+        "memory_retrievals": 8,
+        "memory_injected_items": 69,
+        "memory_consolidations": 8,
+        "memory_facts_written": 0,
+        "memory_conflicts": 0,
+        "instruction_injections": 8,
+        "instruction_sources": 0,
+        "goal_completed_runs": 0,
+        "compaction_attempts": 0,
+        "compactions": 0,
+        "compaction_failures": 0,
+        "compaction_aborted": 0,
+        "tokens_saved_by_compaction": 0,
+        "input_tokens": 262938,
+        "output_tokens": 9494,
+        "cached_tokens": 125440,
+        "total_tokens": 272432,
+        "duration_ms": 328403,
+        "judge_requests": 0,
+        "judge_input_tokens": 0,
+        "judge_output_tokens": 0,
+        "judge_total_tokens": 0,
+        "judge_duration_ms": 0,
+        "live_tool_artifacts": 0,
+        "live_tool_artifact_bytes": 0,
+        "archived_tool_artifacts": 0,
+        "history_archives": 0,
+        "model_summary_compactions": 0,
+        "deterministic_compactions": 0,
+        "cost_usd": 0.02225926,
+        "max_goal_attempts": 0,
+        "model_latency_mean_ms": 9220.142857,
+        "model_latency_p50_ms": 7154.0,
+        "model_latency_p95_ms": 22377.0,
+        "ttft_mean_ms": 6788.114286,
+        "ttft_p50_ms": 5975.0,
+        "ttft_p95_ms": 13904.0,
+        "tool_latency_mean_ms": 101.0,
+        "tool_latency_p95_ms": 504.0,
+        "cache_ratio": 0.47707064022697365,
+        "model_error_rate": 0.0,
+        "tool_error_rate": 0.0,
+        "compaction_success_rate": null,
+        "event_types": {
+          "goal.snapshot": 16,
+          "instructions.injected": 8,
+          "memory.consolidation": 8,
+          "memory.retrieval": 8,
+          "model.request": 35,
+          "model.transport": 76,
+          "run.completed": 8,
+          "run.started": 8,
+          "tool.call": 35
+        },
+        "tool_breakdown": {
+          "memory": 35
+        },
+        "tool_failure_breakdown": {},
+        "model_purposes": {
+          "agent": 27,
+          "memory_consolidation": 8
+        },
+        "providers": {
+          "primary": 35
+        },
+        "models": {
+          "gpt-5.6-luna": 35
+        },
+        "runtime_backends": {
+          "docker": 8
+        },
+        "wall_duration_seconds": 341.738
+      },
+      "error": null,
+      "trace_paths": {
+        "turn1": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_multi_hop_assets\\attempt-001\\workspace\\.aster\\eval-sessions\\turn1\\trace.jsonl",
+        "turn2": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_multi_hop_assets\\attempt-001\\workspace\\.aster\\eval-sessions\\turn2\\trace.jsonl",
+        "turn3": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_multi_hop_assets\\attempt-001\\workspace\\.aster\\eval-sessions\\turn3\\trace.jsonl",
+        "turn4": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_multi_hop_assets\\attempt-001\\workspace\\.aster\\eval-sessions\\turn4\\trace.jsonl",
+        "turn5": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_multi_hop_assets\\attempt-001\\workspace\\.aster\\eval-sessions\\turn5\\trace.jsonl",
+        "turn6": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_multi_hop_assets\\attempt-001\\workspace\\.aster\\eval-sessions\\turn6\\trace.jsonl",
+        "turn7": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_multi_hop_assets\\attempt-001\\workspace\\.aster\\eval-sessions\\turn7\\trace.jsonl",
+        "turn8": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_multi_hop_assets\\attempt-001\\workspace\\.aster\\eval-sessions\\turn8\\trace.jsonl"
+      },
+      "workspace_changes": {
+        "created": [],
+        "modified": [],
+        "deleted": []
+      }
+    }
+  ],
+  "original_result": ".aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_multi_hop_assets\\result.json",
+  "classification": "Needs trace review; run-health failures alone do not establish an Agent defect."
+}

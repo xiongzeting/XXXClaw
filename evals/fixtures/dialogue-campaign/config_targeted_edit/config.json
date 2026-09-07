@@ -1,0 +1,1 @@
+{"production": {"timeout": 20, "retries": 3, "enabled": true}, "staging": {"timeout": 10, "retries": 2}, "owner": "Uma"}

@@ -1,0 +1,4 @@
+req=req-9 seq=3 error=RETRY_EXHAUSTED
+req=req-90 seq=0 error=DISK_FULL
+req=req-9 seq=1 error=AUTH_EXPIRED
+req=req-9 seq=2 error=TOKEN_REFRESH_FAILED

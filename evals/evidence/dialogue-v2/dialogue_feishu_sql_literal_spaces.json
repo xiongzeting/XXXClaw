@@ -1,0 +1,90 @@
+{
+  "id": "dialogue_feishu_sql_literal_spaces",
+  "category": "input-fidelity",
+  "source": {
+    "kind": "synthetic_user_dialogue",
+    "campaign": "dialogue-20260905",
+    "track": "failure-regression",
+    "origin": "hand-authored realistic scenario",
+    "oracle": "independent expected fields or isolated hidden tests",
+    "input_adapter": "feishu-post",
+    "failure_family": "feishu-whitespace-normalization",
+    "discovery_report": ".aster\\evals\\expansion-20260905\\input-discovery\\cases\\dialogue_feishu_sql_literal_spaces\\result.json",
+    "confirmation_report": ".aster\\evals\\expansion-20260905\\failure-confirmation\\cases\\dialogue_feishu_sql_literal_spaces\\result.json",
+    "observed_attempts": 3,
+    "observed_failures": 3,
+    "failure_signature": "feishu-whitespace-normalization",
+    "status": "known-failure-unfixed"
+  },
+  "user_dialogue": [
+    {
+      "id": "turn1",
+      "prompt": "请把下面 SQL 原样保存到 query.sql，保留字符串里的空格，文件末尾一个换行：\n```sql\nSELECT 'A   B' AS label;\n```"
+    }
+  ],
+  "expected_checks": [
+    {
+      "type": "workspace_diff",
+      "allowed_paths": [
+        "query.sql"
+      ],
+      "dimension": "safety"
+    },
+    {
+      "type": "file_equals",
+      "path": "query.sql",
+      "text": "SELECT 'A   B' AS label;\n",
+      "dimension": "outcome"
+    }
+  ],
+  "observations": [
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:file_equals:path=D:\\MIniClaw\\.aster\\evals\\expansion-20260905\\input-discovery\\cases\\dialogue_feishu_sql_literal_spaces\\attempt-001\\workspace\\query.sql; matched=False"
+      ],
+      "answers": {
+        "turn1": "已将 SQL 原样保存到 `query.sql`，保留字符串中的空格，并以一个换行结尾。"
+      },
+      "observed_files": {
+        "query.sql": "SELECT 'A B' AS label;\n"
+      }
+    },
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:file_equals:path=D:\\MIniClaw\\.aster\\evals\\expansion-20260905\\failure-confirmation\\cases\\dialogue_feishu_sql_literal_spaces\\attempt-001\\workspace\\query.sql; matched=False"
+      ],
+      "answers": {
+        "turn1": "已将 SQL 原样保存到 `query.sql`，并保留了字符串中的空格及文件末尾的一个换行。"
+      },
+      "observed_files": {
+        "query.sql": "SELECT 'A B' AS label;\n"
+      }
+    },
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:file_equals:path=D:\\MIniClaw\\.aster\\evals\\expansion-20260905\\failure-confirmation\\cases\\dialogue_feishu_sql_literal_spaces\\attempt-002\\workspace\\query.sql; matched=False"
+      ],
+      "answers": {
+        "turn1": "已将 SQL 原样保存到 `query.sql`，并保留字符串中的空格及文件末尾的一个换行。"
+      },
+      "observed_files": {
+        "query.sql": "SELECT 'A B' AS label;\n"
+      }
+    }
+  ],
+  "input_transformations": [
+    {
+      "case_id": "dialogue_feishu_sql_literal_spaces",
+      "phase": "turn1",
+      "adapter": "feishu-post",
+      "raw": "请把下面 SQL 原样保存到 query.sql，保留字符串里的空格，文件末尾一个换行：\n```sql\nSELECT 'A   B' AS label;\n```",
+      "delivered": "请把下面 SQL 原样保存到 query.sql，保留字符串里的空格，文件末尾一个换行： ```sql SELECT 'A B' AS label; ```",
+      "changed": true,
+      "raw_sha256": "721f657f2d2f80738ee6a022dece202a3710acdfa4cc60bc446e4fa2a539a54e",
+      "delivered_sha256": "d6ed25cd20027fa13243040268ae9cb318f3d0f6fc2fc971d55b01e776275ae2"
+    }
+  ]
+}

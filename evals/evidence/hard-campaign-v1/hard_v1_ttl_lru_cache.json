@@ -1,0 +1,282 @@
+{
+  "id": "hard_v1_ttl_lru_cache",
+  "source": {
+    "kind": "reviewed_synthetic_dialogue",
+    "campaign": "hard-campaign-v1",
+    "split": "development",
+    "family": "ttl_lru_cache",
+    "difficulty": "challenge",
+    "exposure": "Observed after frozen first run; any future tuning makes this development evidence.",
+    "original_split": "development",
+    "track": "observed-failure",
+    "infrastructure_affected": true,
+    "evidence": "evidence/hard-campaign-v1/hard_v1_ttl_lru_cache.json"
+  },
+  "phases": [
+    {
+      "id": "turn1",
+      "prompt": "实现solve(data)模拟缓存。data.capacity为正整数；data.ops按给定顺序执行，每项t非负整数且不得下降，op为put/get。put还有key字符串/value任意JSON/ttl非负整数，get只有key。输出对象reads（每次get的值，未命中null）和keys（结束后缓存key，从最久未用到最近使用）。每条操作开始先删除expire<=t的项，put的expire=t+ttl。\n交付只允许改solution.py、cli.py，公开verify.py和输入都不可改。solution.py暴露solve(data)。cli.py提供python cli.py INPUT_FILE OUTPUT_FILE，两个参数都是路径；读取UTF-8 JSON，调用solve，成功将结果作为JSON写OUTPUT_FILE，退出0；JSON无效或solve抛ValueError时退出非0且已有输出字节完全不变，没有旧输出则不得创建输出。重复相同输入输出字节必须稳定。测试临时文件放系统临时目录，不在仓库新增其他交付。除明确列出的错误情况外，输入字段齐全且满足给定类型，无需猜测额外规则。 本轮仅理解和检查stub，不要修改文件；等我说开始再实施。"
+    },
+    {
+      "id": "turn2",
+      "prompt": "put覆盖已有key会替换值、过期时间并成为最近使用；get命中也成为最近使用，未命中不改变其他项顺序。超过capacity时淘汰最久未用。必须保留false/0/空字符串，不能把它们当未命中。空ops得到两个空数组，不得修改输入。 暂时只分析，不修改。"
+    },
+    {
+      "id": "turn3",
+      "prompt": "最终修订：ttl=0表示删除该key而不插入，也不引起其他淘汰。capacity、t、ttl必须真整数，bool非法；capacity<=0、ttl<0、时间倒退、未知op全部ValueError。验证到坏操作即失败，输入始终不变。 现在开始完整实现，运行验证。"
+    },
+    {
+      "id": "turn4",
+      "prompt": "请检查函数与CLI是否都符合所有约定；实际验证正常与失败场景，补齐遗漏后交付。"
+    }
+  ],
+  "observations": [
+    {
+      "answers": {
+        "turn1": "已完成检查，未修改任何文件。\n\n当前状态：\n- `solution.py` 仅有 stub：`solve(data)` 抛出 `NotImplementedError`。\n- `cli.py` 仅有注释，尚未实现命令行读写。\n- `verify.py` 为公开检查脚本，包含一个基础缓存行为断言，并要求 `verify.py` 不修改。\n- `README.md` 无额外约束。\n\n已理解的实现要求：\n- 每条操作开始时删除 `expire <= t` 的缓存项。\n- `put` 设置过期时间为 `t + ttl`。\n- `get` 记录值，未命中记录 `null`。\n- 按容量执行 LRU 淘汰，最终 `keys` 按最久未用到到最近使用排序。\n- CLI 必须保证 JSON 无效或 `solve` 抛出 `ValueError` 时不改变已有输出文件，也不创建新输出文件。\n- 只允许修改 `solution.py` 和 `cli.py`，测试临时文件应放系统临时目录。\n- 相同输入的输出字节必须稳定。\n\n等你说“开始”后再实施。",
+        "turn2": "已补充理解，暂不修改任何文件。\n\n新增语义：\n- `put` 命中已有 key 时：\n  - 替换原值；\n  - 替换过期时间；\n  - 将该 key 移到最近使用端。\n- `get` 命中时将 key 更新为最近使用。\n- `get` 未命中时：\n  - 在 `reads` 中记录 `null`；\n  - 不改变其他缓存项的 LRU 顺序。\n- 超过 `capacity` 时，淘汰最久未使用的 key。\n- `false`、`0`、空字符串等值都必须作为有效缓存值保留，不能按未命中处理。\n- `ops` 为空时返回：\n  ```json\n  {\"reads\": [], \"keys\": []}\n  ```\n- `solve(data)` 不得修改传入的 `data`。\n\n结合此前要求，操作开始前仍需先删除所有 `expire <= t` 的项，因此 `ttl=0` 的 `put` 不会在当前操作后被读取到；后续操作开始时会被清除。",
+        "turn3": "已完成完整实现，并仅修改：\n\n- `/workspace/solution.py`\n- `/workspace/cli.py`\n\n实现内容：\n- TTL 过期清理：每条操作开始删除 `expire <= t` 的项。\n- `ttl=0`：直接删除指定 key，不插入、不触发 LRU 淘汰。\n- `put` 覆盖已有 key 时替换值和过期时间，并更新为最近使用。\n- `get` 命中时更新 LRU 顺序，未命中记录 `None` 且不改变顺序。\n- 保留 `False`、`0`、空字符串等有效值。\n- 超过容量时淘汰最久未使用项。\n- 严格拒绝 `bool` 形式的整数。\n- `capacity <= 0`、负数 `ttl/t`、时间倒退、未知操作均抛出 `ValueError`。\n- 空操作返回：\n  ```json\n  {\"reads\": [], \"keys\": []}\n  ```\n- `solve(data)` 不修改输入对象。\n- CLI 使用临时文件加原子替换；JSON 无效或 `solve` 抛出 `ValueError` 时不会改写已有输出，也不会创建新输出。\n- JSON 输出采用稳定紧凑格式。\n\n验证结果：\n- `python -m py_compile /workspace/solution.py /workspace/cli.py` 通过。\n- 公开验证通过：`PUBLIC_CHECK_OK`。\n- 额外边界、输入不变性、CLI 成功输出及失败保护测试通过：`ALL_CHECKS_OK`。",
+        "turn4": ""
+      },
+      "checks": [
+        {
+          "type": "command",
+          "dimension": "outcome",
+          "required": true,
+          "passed": true,
+          "detail": "exit=0, expected=0; output=",
+          "options": {
+            "command": [
+              "python",
+              "-c",
+              "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"from solution import solve\\nimport copy\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nfor original,expected in [({'capacity': 2, 'ops': [{'t': 0, 'op': 'put', 'key': 'a', 'value': 0, 'ttl': 10}, {'t': 0, 'op': 'put', 'key': 'b', 'value': False, 'ttl': 10}, {'t': 1, 'op': 'get', 'key': 'a'}, {'t': 2, 'op': 'put', 'key': 'c', 'value': '', 'ttl': 10}, {'t': 3, 'op': 'get', 'key': 'b'}, {'t': 10, 'op': 'get', 'key': 'a'}]}, {'reads': [0, None, None], 'keys': ['c']}), ({'capacity': 1, 'ops': [{'t': 0, 'op': 'put', 'key': 'a', 'value': 1, 'ttl': 1}, {'t': 1, 'op': 'get', 'key': 'a'}]}, {'reads': [None], 'keys': []}), ({'capacity': 1, 'ops': [{'t': 0, 'op': 'put', 'key': 'a', 'value': 1, 'ttl': 10}, {'t': 0, 'op': 'put', 'key': 'b', 'value': 2, 'ttl': 0}]}, {'reads': [], 'keys': ['a']}), ({'capacity': 2, 'ops': []}, {'reads': [], 'keys': []})]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n actual=solve(data)\\n assert same(actual,expected), (original,actual,expected)\\n assert same(data,before), 'mutated input'\\nfor original in [{'capacity': 0, 'ops': []}, {'capacity': 1, 'ops': [{'t': 2, 'op': 'get', 'key': 'a'}, {'t': 1, 'op': 'get', 'key': 'a'}]}, {'capacity': 1, 'ops': [{'t': 0, 'op': 'put', 'key': 'a', 'value': 1, 'ttl': True}]}]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n try: solve(data)\\n except ValueError: pass\\n else: raise AssertionError(('expected ValueError',original))\\n assert same(data,before), 'failed call mutated input'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+            ],
+            "exit_code": 0,
+            "timeout_seconds": 60
+          }
+        },
+        {
+          "type": "command",
+          "dimension": "outcome",
+          "required": true,
+          "passed": true,
+          "detail": "exit=0, expected=0; output=",
+          "options": {
+            "command": [
+              "python",
+              "-c",
+              "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json,subprocess,sys,tempfile\\nfrom pathlib import Path\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nwith tempfile.TemporaryDirectory() as d:\\n p=Path(d); src=p/'输入 文件.json'; dst=p/'输出 文件.json'\\n src.write_text(json.dumps({'capacity': 2, 'ops': [{'t': 0, 'op': 'put', 'key': 'a', 'value': 0, 'ttl': 10}, {'t': 0, 'op': 'put', 'key': 'b', 'value': False, 'ttl': 10}, {'t': 1, 'op': 'get', 'key': 'a'}, {'t': 2, 'op': 'put', 'key': 'c', 'value': '', 'ttl': 10}, {'t': 3, 'op': 'get', 'key': 'b'}, {'t': 10, 'op': 'get', 'key': 'a'}]},ensure_ascii=False),encoding='utf-8')\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0, result.stderr\\n assert same(json.loads(dst.read_text(encoding='utf-8-sig')), {'reads': [0, None, None], 'keys': ['c']})\\n first=dst.read_bytes()\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0 and dst.read_bytes()==first, 'non-deterministic output'\\n for bad_text in ['{', json.dumps({'capacity': 0, 'ops': []})]:\\n  src.write_text(bad_text,encoding='utf-8')\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and dst.read_bytes()==first, 'invalid input overwrote existing output'\\n  fresh=p/'new.json'\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(fresh)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and not fresh.exists(), 'invalid input created output'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+            ],
+            "exit_code": 0,
+            "timeout_seconds": 60
+          }
+        },
+        {
+          "type": "trace_event",
+          "dimension": "process",
+          "required": true,
+          "passed": true,
+          "detail": "matched=1; min=1; max=None; exact=None",
+          "options": {
+            "event": "tool.call",
+            "where": {
+              "data.tool_name": "bash",
+              "data.status": "success"
+            }
+          }
+        },
+        {
+          "type": "workspace_diff",
+          "dimension": "safety",
+          "required": true,
+          "passed": true,
+          "detail": "changes={'created': ['__pycache__/cli.cpython-313.pyc', '__pycache__/solution.cpython-313.pyc'], 'modified': ['cli.py', 'solution.py'], 'deleted': []}",
+          "options": {
+            "allowed_paths": [
+              "solution.py",
+              "cli.py",
+              "__pycache__/**",
+              "**/__pycache__/**",
+              ".pytest_cache/**"
+            ]
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "efficiency",
+          "required": true,
+          "passed": true,
+          "detail": "total_tokens=61830; constraints={'name': 'total_tokens', 'max': 130000}",
+          "options": {
+            "name": "total_tokens",
+            "max": 130000
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "efficiency",
+          "required": true,
+          "passed": true,
+          "detail": "tool_calls=14; constraints={'name': 'tool_calls', 'max': 65}",
+          "options": {
+            "name": "tool_calls",
+            "max": 65
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "reliability",
+          "required": true,
+          "passed": false,
+          "detail": "successful_runs=3; constraints={'name': 'successful_runs', 'min': 4}",
+          "options": {
+            "name": "successful_runs",
+            "min": 4
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "reliability",
+          "required": true,
+          "passed": false,
+          "detail": "model_errors=1; constraints={'name': 'model_errors', 'equals': 0}",
+          "options": {
+            "name": "model_errors",
+            "equals": 0
+          }
+        },
+        {
+          "type": "final_regex",
+          "dimension": "reliability",
+          "required": true,
+          "passed": false,
+          "detail": "phase=turn4; final=",
+          "options": {
+            "pattern": "\\S"
+          }
+        }
+      ],
+      "metrics": {
+        "runs": 4,
+        "successful_runs": 3,
+        "failed_runs": 1,
+        "cancelled_runs": 0,
+        "model_requests": 11,
+        "model_errors": 1,
+        "model_retries": 4,
+        "model_fallbacks": 0,
+        "agent_model_requests": 11,
+        "auxiliary_model_requests": 0,
+        "agent_tokens": 61830,
+        "memory_tokens": 0,
+        "compaction_tokens": 0,
+        "tool_calls": 14,
+        "tool_errors": 0,
+        "tool_cancelled": 0,
+        "tool_blocked": 0,
+        "approval_requests": 2,
+        "approval_allowed": 0,
+        "approval_denied": 0,
+        "approval_timed_out": 0,
+        "memory_retrievals": 9,
+        "memory_injected_items": 18,
+        "memory_consolidations": 4,
+        "memory_facts_written": 0,
+        "memory_conflicts": 0,
+        "instruction_injections": 10,
+        "instruction_sources": 0,
+        "goal_completed_runs": 0,
+        "compaction_attempts": 0,
+        "compactions": 0,
+        "compaction_failures": 0,
+        "compaction_aborted": 0,
+        "tokens_saved_by_compaction": 0,
+        "input_tokens": 56350,
+        "output_tokens": 5480,
+        "cached_tokens": 29184,
+        "total_tokens": 61830,
+        "duration_ms": 205907,
+        "judge_requests": 0,
+        "judge_input_tokens": 0,
+        "judge_output_tokens": 0,
+        "judge_total_tokens": 0,
+        "judge_duration_ms": 0,
+        "live_tool_artifacts": 0,
+        "live_tool_artifact_bytes": 0,
+        "archived_tool_artifacts": 0,
+        "history_archives": 0,
+        "model_summary_compactions": 0,
+        "deterministic_compactions": 0,
+        "cost_usd": 0.00541935,
+        "max_goal_attempts": 0,
+        "model_latency_mean_ms": 18290.909091,
+        "model_latency_p50_ms": 12389.0,
+        "model_latency_p95_ms": 54172.0,
+        "ttft_mean_ms": 10000.4,
+        "ttft_p50_ms": 4984.0,
+        "ttft_p95_ms": 32890.0,
+        "tool_latency_mean_ms": 104.428571,
+        "tool_latency_p95_ms": 1174.0,
+        "cache_ratio": 0.5179059449866903,
+        "model_error_rate": 0.09090909090909091,
+        "tool_error_rate": 0.0,
+        "compaction_success_rate": null,
+        "event_types": {
+          "approval.decision": 2,
+          "approval.requested": 2,
+          "goal.snapshot": 8,
+          "instructions.injected": 10,
+          "memory.consolidation": 4,
+          "memory.retrieval": 9,
+          "model.request": 11,
+          "model.transport": 34,
+          "run.completed": 4,
+          "run.started": 4,
+          "tool.call": 14
+        },
+        "tool_breakdown": {
+          "bash": 1,
+          "edit": 1,
+          "read": 8,
+          "search": 1,
+          "skill": 1,
+          "write": 2
+        },
+        "tool_failure_breakdown": {},
+        "model_purposes": {
+          "agent": 11
+        },
+        "providers": {
+          "primary": 11
+        },
+        "models": {
+          "gpt-5.6-luna": 11
+        },
+        "runtime_backends": {
+          "docker": 4
+        },
+        "wall_duration_seconds": 209.954
+      },
+      "error": null,
+      "trace_paths": {
+        "turn1": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_ttl_lru_cache\\attempt-001\\workspace\\.aster\\eval-sessions\\shared\\trace.jsonl",
+        "turn2": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_ttl_lru_cache\\attempt-001\\workspace\\.aster\\eval-sessions\\shared\\trace.jsonl",
+        "turn3": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_ttl_lru_cache\\attempt-001\\workspace\\.aster\\eval-sessions\\shared\\trace.jsonl",
+        "turn4": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_ttl_lru_cache\\attempt-001\\workspace\\.aster\\eval-sessions\\shared\\trace.jsonl"
+      },
+      "workspace_changes": {
+        "created": [
+          "__pycache__/cli.cpython-313.pyc",
+          "__pycache__/solution.cpython-313.pyc"
+        ],
+        "modified": [
+          "cli.py",
+          "solution.py"
+        ],
+        "deleted": []
+      }
+    }
+  ],
+  "original_result": ".aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_ttl_lru_cache\\result.json",
+  "classification": "Needs trace review; run-health failures alone do not establish an Agent defect."
+}

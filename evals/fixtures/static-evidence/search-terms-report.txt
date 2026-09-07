@@ -1,0 +1,4 @@
+PAGE: Magento admin > Reports > Search Terms
+GRID COLUMNS IN ORDER:
+Search Query | Store | Results | Uses
+The two metric columns to the right of Store are Results and Uses.

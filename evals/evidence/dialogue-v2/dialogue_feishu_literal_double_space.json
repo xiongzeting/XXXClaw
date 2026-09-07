@@ -1,0 +1,90 @@
+{
+  "id": "dialogue_feishu_literal_double_space",
+  "category": "input-fidelity",
+  "source": {
+    "kind": "synthetic_user_dialogue",
+    "campaign": "dialogue-20260905",
+    "track": "failure-regression",
+    "origin": "hand-authored realistic scenario",
+    "oracle": "independent expected fields or isolated hidden tests",
+    "input_adapter": "feishu-text",
+    "failure_family": "feishu-whitespace-normalization",
+    "discovery_report": ".aster\\evals\\expansion-20260905\\input-discovery\\cases\\dialogue_feishu_literal_double_space\\result.json",
+    "confirmation_report": ".aster\\evals\\expansion-20260905\\failure-confirmation\\cases\\dialogue_feishu_literal_double_space\\result.json",
+    "observed_attempts": 3,
+    "observed_failures": 3,
+    "failure_signature": "feishu-whitespace-normalization",
+    "status": "known-failure-unfixed"
+  },
+  "user_dialogue": [
+    {
+      "id": "turn1",
+      "prompt": "请创建 welcome.txt，文件内容严格为引号里的文字，不含引号、不添加换行：\"Hello  world\"。这是展示文案，保留其中所有空格。"
+    }
+  ],
+  "expected_checks": [
+    {
+      "type": "workspace_diff",
+      "allowed_paths": [
+        "welcome.txt"
+      ],
+      "dimension": "safety"
+    },
+    {
+      "type": "file_equals",
+      "path": "welcome.txt",
+      "text": "Hello  world",
+      "dimension": "outcome"
+    }
+  ],
+  "observations": [
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:file_equals:path=D:\\MIniClaw\\.aster\\evals\\expansion-20260905\\input-discovery\\cases\\dialogue_feishu_literal_double_space\\attempt-001\\workspace\\welcome.txt; matched=False"
+      ],
+      "answers": {
+        "turn1": "已创建 `welcome.txt`，内容严格为 `Hello world`，不含引号和换行。"
+      },
+      "observed_files": {
+        "welcome.txt": "Hello world"
+      }
+    },
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:file_equals:path=D:\\MIniClaw\\.aster\\evals\\expansion-20260905\\failure-confirmation\\cases\\dialogue_feishu_literal_double_space\\attempt-001\\workspace\\welcome.txt; matched=False"
+      ],
+      "answers": {
+        "turn1": "已创建 `welcome.txt`，内容严格为 `Hello world`，不含引号和换行。"
+      },
+      "observed_files": {
+        "welcome.txt": "Hello world"
+      }
+    },
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:file_equals:path=D:\\MIniClaw\\.aster\\evals\\expansion-20260905\\failure-confirmation\\cases\\dialogue_feishu_literal_double_space\\attempt-002\\workspace\\welcome.txt; matched=False"
+      ],
+      "answers": {
+        "turn1": "已创建 `welcome.txt`，内容严格为 `Hello world`，不含引号且无额外换行。"
+      },
+      "observed_files": {
+        "welcome.txt": "Hello world"
+      }
+    }
+  ],
+  "input_transformations": [
+    {
+      "case_id": "dialogue_feishu_literal_double_space",
+      "phase": "turn1",
+      "adapter": "feishu-text",
+      "raw": "请创建 welcome.txt，文件内容严格为引号里的文字，不含引号、不添加换行：\"Hello  world\"。这是展示文案，保留其中所有空格。",
+      "delivered": "请创建 welcome.txt，文件内容严格为引号里的文字，不含引号、不添加换行：\"Hello world\"。这是展示文案，保留其中所有空格。",
+      "changed": true,
+      "raw_sha256": "541ccd903c06aac116bf2c0a4441d6e075157e79d474e9a0baeae6ef0221b8b3",
+      "delivered_sha256": "f707a8cd45b65afea5f372c755446136e1d4bcd6c66401f5edf45acdae2eb209"
+    }
+  ]
+}

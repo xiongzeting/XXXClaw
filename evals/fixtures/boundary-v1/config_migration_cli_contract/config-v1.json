@@ -1,0 +1,1 @@
+{"schema":1,"services":[{"name":"db","host":"db","port":5432,"meta":{"zone":"a"}}]}

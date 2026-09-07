@@ -1,0 +1,889 @@
+{
+  "version": 2,
+  "splits": {
+    "development": {
+      "suite": "measured-development-v2.json",
+      "count": 46,
+      "categories": {
+        "compression": 10,
+        "recall": 10,
+        "tools": 8,
+        "safety": 10,
+        "completion": 8
+      },
+      "sha256": "6ce779af23144eb9daa56d585180e393875dad0cca89e820963d5c2b0c4c5bff",
+      "required_dimensions": {
+        "dialogue_cap_compress_latest_patch": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_compress_revoked_fact": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_compress_scope_exception": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_compress_proposal_not_fact": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_compress_exact_literal": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_compress_multi_constraint": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_recall_alias": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_recall_joined_handover": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_recall_numerical_similarity": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_recall_preference_exception": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_recall_selective_erasure": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_recall_untrusted_memory": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_tool_failed_test": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_tool_discover_nested": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_tool_large_result": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_tool_quoted_paths": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_tool_failure_recovery": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_tool_verify_not_echo": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_safety_log_injection": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_safety_doc_secret_request": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_safety_nested_rule": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_safety_encoded_instruction": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_safety_approval_deny": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_safety_approval_timeout": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_complete_multi_file": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_complete_cli": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_complete_revise_csv": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_complete_idempotent": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_complete_late_constraint": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_compress_tool_archive": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_compress_code_constraints": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_recall_alias_density": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_recall_effective_time": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_tool_ordered_pipeline": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_tool_search_pagination": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_safety_workspace_traversal": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_goal_all_outputs": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_goal_verify_failure": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_complete_root_summary": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_approval_app_approve": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_approval_app_deny": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_approval_app_timeout": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_compress_dense_exact": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_compress_successive_updates": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_recall_negative_correction": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_cap_recall_opaque_alias_join": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ]
+      },
+      "fixture_hashes": {
+        "fixtures\\dialogue-campaign\\cap_compress_latest_patch\\README.md": "bbb2edc696bc3665b7362a1856a13f96f6f99127911dfd2bf4a41d73d234ab3e",
+        "fixtures\\dialogue-campaign\\cap_compress_revoked_fact\\README.md": "bbb2edc696bc3665b7362a1856a13f96f6f99127911dfd2bf4a41d73d234ab3e",
+        "fixtures\\dialogue-campaign\\cap_compress_scope_exception\\README.md": "bbb2edc696bc3665b7362a1856a13f96f6f99127911dfd2bf4a41d73d234ab3e",
+        "fixtures\\dialogue-campaign\\cap_compress_proposal_not_fact\\README.md": "bbb2edc696bc3665b7362a1856a13f96f6f99127911dfd2bf4a41d73d234ab3e",
+        "fixtures\\dialogue-campaign\\cap_compress_exact_literal\\README.md": "bbb2edc696bc3665b7362a1856a13f96f6f99127911dfd2bf4a41d73d234ab3e",
+        "fixtures\\dialogue-campaign\\cap_compress_multi_constraint\\README.md": "bbb2edc696bc3665b7362a1856a13f96f6f99127911dfd2bf4a41d73d234ab3e",
+        "fixtures\\dialogue-campaign\\cap_recall_alias\\vendor.md": "d3a11ec3ddc8a775d1b3b9a82225b994a834785b708b795a2d64f272b9f2e57f",
+        "fixtures\\dialogue-campaign\\cap_recall_joined_handover\\vendor.md": "d3a11ec3ddc8a775d1b3b9a82225b994a834785b708b795a2d64f272b9f2e57f",
+        "fixtures\\dialogue-campaign\\cap_recall_numerical_similarity\\vendor.md": "d3a11ec3ddc8a775d1b3b9a82225b994a834785b708b795a2d64f272b9f2e57f",
+        "fixtures\\dialogue-campaign\\cap_recall_preference_exception\\vendor.md": "d3a11ec3ddc8a775d1b3b9a82225b994a834785b708b795a2d64f272b9f2e57f",
+        "fixtures\\dialogue-campaign\\cap_recall_selective_erasure\\vendor.md": "d3a11ec3ddc8a775d1b3b9a82225b994a834785b708b795a2d64f272b9f2e57f",
+        "fixtures\\dialogue-campaign\\cap_recall_untrusted_memory\\vendor.md": "d3a11ec3ddc8a775d1b3b9a82225b994a834785b708b795a2d64f272b9f2e57f",
+        "fixtures\\dialogue-campaign\\cap_tool_failed_test\\app.py": "df3a855eff14e27521df768d3df49c91cf6e9ac6b904d75f0598595c7c7eff00",
+        "fixtures\\dialogue-campaign\\cap_tool_failed_test\\check.py": "768939ceaddc98985cfd27480c1d85630417561b31e2dd24c964bfbfee8ba16c",
+        "fixtures\\dialogue-campaign\\cap_tool_discover_nested\\check.py": "38b09e7ae272386c9ebacae27808deab2006ed580ebd73a5f1f8e049716b621d",
+        "fixtures\\dialogue-campaign\\cap_tool_discover_nested\\lib\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "fixtures\\dialogue-campaign\\cap_tool_discover_nested\\lib\\billing\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "fixtures\\dialogue-campaign\\cap_tool_discover_nested\\lib\\billing\\money.py": "7df78e918ecc2b9e82e973bd6ada40bdde0159121bd981dac5d4d28fea68e5b8",
+        "fixtures\\dialogue-campaign\\cap_tool_discover_nested\\web\\page.py": "fce4180ac982cbad1d91531dd6a0af2c74313be17a7218822b21ede56b391ee1",
+        "fixtures\\dialogue-campaign\\cap_tool_large_result\\events.json": "3460e57f1bd1070dad5ec78c7b2c6c50e37ba3528b0766a512dca0105ad49ed9",
+        "fixtures\\dialogue-campaign\\cap_tool_quoted_paths\\订单资料\\北区 订单.csv": "8d3dd824d2250f5b580f1d59ee43b09e44f09415b01302f77e47c267936f7303",
+        "fixtures\\dialogue-campaign\\cap_tool_failure_recovery\\export.py": "40446326c46cb08ef8fc7bd9c6ec5f8cf8feb3de219bc393748a9588f0407fe6",
+        "fixtures\\dialogue-campaign\\cap_tool_verify_not_echo\\app.py": "dc60f38677eff8d7b9fb5b5b1c766b5ad9ad82a1e63f86a1f45d48bbf49a1eaa",
+        "fixtures\\dialogue-campaign\\cap_tool_verify_not_echo\\verify.py": "14c837aa0185b46b7ecc907461c10ffd21fa4020ea901af7f85229a3376d9434",
+        "fixtures\\dialogue-campaign\\cap_safety_log_injection\\guard.txt": "c7cde8022846cd6aff9b189e32dc3aa4f3eea733835d469093054391490627b2",
+        "fixtures\\dialogue-campaign\\cap_safety_log_injection\\logs\\error.log": "fe7430f4de622b3df3a8f0f7beb6e5119dc2c31d75530971ec1702485dfe70e0",
+        "fixtures\\dialogue-campaign\\cap_safety_log_injection\\module\\config.json": "e9a90e3f68fdc73834ba6b1cac0f78642e33d6830acd4422f221e679b57b710e",
+        "fixtures\\dialogue-campaign\\cap_safety_log_injection\\synthetic-secret.txt": "0f849b4c21739ca3a84abc130bc8c8ae206064a1b2fff30b4ed8756e87b3e011",
+        "fixtures\\dialogue-campaign\\cap_safety_doc_secret_request\\guard.txt": "c7cde8022846cd6aff9b189e32dc3aa4f3eea733835d469093054391490627b2",
+        "fixtures\\dialogue-campaign\\cap_safety_doc_secret_request\\module\\config.json": "e9a90e3f68fdc73834ba6b1cac0f78642e33d6830acd4422f221e679b57b710e",
+        "fixtures\\dialogue-campaign\\cap_safety_doc_secret_request\\README.md": "190a63d113795374ece73300bc05793f90eecbbe5387d1d176a113bc6caafe77",
+        "fixtures\\dialogue-campaign\\cap_safety_doc_secret_request\\synthetic-secret.txt": "0f849b4c21739ca3a84abc130bc8c8ae206064a1b2fff30b4ed8756e87b3e011",
+        "fixtures\\dialogue-campaign\\cap_safety_nested_rule\\guard.txt": "c7cde8022846cd6aff9b189e32dc3aa4f3eea733835d469093054391490627b2",
+        "fixtures\\dialogue-campaign\\cap_safety_nested_rule\\module\\AGENTS.md": "1e15f41985f2028c5fc65f64443e4d99dfc8dc8eab9ddcc797adb87bf41cec3f",
+        "fixtures\\dialogue-campaign\\cap_safety_nested_rule\\module\\config.json": "e9a90e3f68fdc73834ba6b1cac0f78642e33d6830acd4422f221e679b57b710e",
+        "fixtures\\dialogue-campaign\\cap_safety_nested_rule\\synthetic-secret.txt": "0f849b4c21739ca3a84abc130bc8c8ae206064a1b2fff30b4ed8756e87b3e011",
+        "fixtures\\dialogue-campaign\\cap_safety_encoded_instruction\\guard.txt": "c7cde8022846cd6aff9b189e32dc3aa4f3eea733835d469093054391490627b2",
+        "fixtures\\dialogue-campaign\\cap_safety_encoded_instruction\\module\\config.json": "e9a90e3f68fdc73834ba6b1cac0f78642e33d6830acd4422f221e679b57b710e",
+        "fixtures\\dialogue-campaign\\cap_safety_encoded_instruction\\synthetic-secret.txt": "0f849b4c21739ca3a84abc130bc8c8ae206064a1b2fff30b4ed8756e87b3e011",
+        "fixtures\\dialogue-campaign\\cap_safety_encoded_instruction\\ticket.txt": "05c4a79648c6dfcf76ffc0b697c1a67eee48b7bc5ec57d6478a58751bf5e0726",
+        "fixtures\\dialogue-campaign\\cap_safety_approval_deny\\config.json": "a050ef06ea542b8fd8781f1e945f9adcd03c7ae5190719e66ba826e2059fce12",
+        "fixtures\\dialogue-campaign\\cap_safety_approval_timeout\\config.json": "a050ef06ea542b8fd8781f1e945f9adcd03c7ae5190719e66ba826e2059fce12",
+        "fixtures\\dialogue-campaign\\cap_complete_multi_file\\README.md": "2b7dd806b356bcdbc670984244d25cd4cf43a2afbe78302286fca43a4be47603",
+        "fixtures\\dialogue-campaign\\cap_complete_multi_file\\users\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "fixtures\\dialogue-campaign\\cap_complete_multi_file\\users\\core.py": "474514388d21b76efd5f81c8289252f0c5231c2550b463f2f2d488d2ab693cce",
+        "fixtures\\dialogue-campaign\\cap_complete_cli\\stats.py": "94ae986a95d6849361dc8e14a92d20f48da9226bff75000fa816e81a3ce2e6ef",
+        "fixtures\\dialogue-campaign\\cap_complete_revise_csv\\app.py": "40e912c5534de0854a4fbf55d6fdc725777eca32c067da8c198720f365ad94bd",
+        "fixtures\\dialogue-campaign\\cap_complete_idempotent\\app.py": "5022fd1e3251f7a0ef9dc86a770a109d4faa724100fd5904d9b4b3de9d8fb8a0",
+        "fixtures\\dialogue-campaign\\cap_complete_late_constraint\\app.py": "917e695ef1fdce450cabf92b30bb8318f6cb3e9ae35ee1eb11fdf2cb24b8cc93",
+        "fixtures\\dialogue-campaign\\cap_compress_tool_archive\\diagnostic.py": "215512cd6dd087c859102a92b5dde4cf19978de3bbc75e3218563ae1816fb6eb",
+        "fixtures\\dialogue-campaign\\cap_compress_code_constraints\\app.py": "960c243fb4dd84cdd54571f61a93177aa7787e3b6e9b7ec2ae320e465f610f8c",
+        "fixtures\\dialogue-campaign\\cap_recall_alias_density\\README.md": "0908d7d478b119914c0fe8afd5f503d512b6ff1299d0c6547d6bca296902d6ee",
+        "fixtures\\dialogue-campaign\\cap_recall_effective_time\\README.md": "0908d7d478b119914c0fe8afd5f503d512b6ff1299d0c6547d6bca296902d6ee",
+        "fixtures\\dialogue-campaign\\cap_tool_ordered_pipeline\\pipeline.py": "bfe1581ad6b7eed30e9c07ce9db68772d494188766f9c8598efe72aa15aaae81",
+        "fixtures\\dialogue-campaign\\cap_tool_ordered_pipeline\\runbook.md": "709dae3ef8d8d8c42485df2728027a1e55e3e5d126792009dd9072be46a34526",
+        "fixtures\\dialogue-campaign\\cap_tool_search_pagination\\logs\\part-0.jsonl": "99d44eb057a5b39c505ad65424a6493c1e8bd9fe06ef3dfae5f743d625d13a65",
+        "fixtures\\dialogue-campaign\\cap_tool_search_pagination\\logs\\part-1.jsonl": "5e0a84fb2b93d737b6cd7e8ad44670b095e6524fdc84c4f2c48c9f3c24ae8b5f",
+        "fixtures\\dialogue-campaign\\cap_tool_search_pagination\\logs\\part-2.jsonl": "e82e7eaf9cd35993f05b288015b32b599fc6cbcd227e233901e6a3f249c81be9",
+        "fixtures\\dialogue-campaign\\cap_safety_workspace_traversal\\README.md": "22683bc1732aced6d673cf9a8414ec576b20a55b121a838e2e8c31e87abb7bc4",
+        "fixtures\\dialogue-campaign\\cap_goal_all_outputs\\verify.py": "30f874584b1103d451621565fefc2bd2cedbd265204813cad8f276dabdb1956f",
+        "fixtures\\dialogue-campaign\\cap_goal_verify_failure\\result.txt": "70fe0cc3d60b592d78de7e8eb42b919fe0733bf3adcf50c3104aad90afd07c55",
+        "fixtures\\dialogue-campaign\\cap_goal_verify_failure\\verify.py": "b58c3da6b14dd23489175f293b86ad8e8bf390153b0f9915c333732d5bdecde1",
+        "fixtures\\dialogue-campaign\\cap_complete_partial_batch\\data\\a.json": "4905657fcb82cb9145ed753d2b1f34fd811c241f5a9ebe3825c5ae4d1925ed15",
+        "fixtures\\dialogue-campaign\\cap_complete_partial_batch\\data\\sub\\b.json": "6e9631741a238144b4b2978a4a9395d8b152eb84a72bd9372d57c66945a5b360",
+        "fixtures\\dialogue-campaign\\cap_complete_partial_batch\\data\\sub\\c.json": "1809be15d4ae91dcca4a0309152eab97b44fc133dd0b2e6793e29858324b8ba8",
+        "fixtures\\dialogue-campaign\\cap_approval_app_approve\\config.json": "a050ef06ea542b8fd8781f1e945f9adcd03c7ae5190719e66ba826e2059fce12",
+        "fixtures\\dialogue-campaign\\cap_approval_app_deny\\config.json": "a050ef06ea542b8fd8781f1e945f9adcd03c7ae5190719e66ba826e2059fce12",
+        "fixtures\\dialogue-campaign\\cap_approval_app_timeout\\config.json": "a050ef06ea542b8fd8781f1e945f9adcd03c7ae5190719e66ba826e2059fce12",
+        "fixtures\\dialogue-campaign\\cap_compress_dense_exact\\README.md": "ecaa2fe4b61375fa04a5f1d65e0df2e7216549d7daea0d142dbe57f6c31803cf",
+        "fixtures\\dialogue-campaign\\cap_compress_successive_updates\\README.md": "ecaa2fe4b61375fa04a5f1d65e0df2e7216549d7daea0d142dbe57f6c31803cf",
+        "fixtures\\dialogue-campaign\\cap_recall_negative_correction\\README.md": "0908d7d478b119914c0fe8afd5f503d512b6ff1299d0c6547d6bca296902d6ee",
+        "fixtures\\dialogue-campaign\\cap_recall_opaque_alias_join\\README.md": "0908d7d478b119914c0fe8afd5f503d512b6ff1299d0c6547d6bca296902d6ee"
+      }
+    },
+    "retained": {
+      "suite": "fresh-retained-v1.json",
+      "count": 25,
+      "categories": {
+        "recall": 5,
+        "compression": 5,
+        "tools": 5,
+        "safety": 5,
+        "completion": 5
+      },
+      "sha256": "06becc8dc1f3cb28db0aa8f7ea2e053c4cf86a494d1ab0065ee0fb88aad88edc",
+      "required_dimensions": {
+        "dialogue_recall_warehouse_alias": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_recall_region_owner": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_recall_retracted_contact": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_recall_exception_preference": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_recall_joined_routes": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_compression_endpoint": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_compression_retention": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_compression_status": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_compression_literal": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_compression_export_flags": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_tool_fix_and_verify": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_tool_nested_lookup": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_tool_full_dataset": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_tool_csv_unicode_path": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_tool_recover_missing_dir": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_safety_log_command": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_safety_readme_secret": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_safety_permission_revoke": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_safety_ticket_encoding": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_safety_issue_delete": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_complete_package_export": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_complete_json_cli": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_complete_csv_roundtrip": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_complete_nonmutating_patch": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "dialogue_complete_recursive_manifest": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ]
+      },
+      "fixture_hashes": {
+        "fixtures\\dialogue-campaign\\recall_warehouse_alias\\README.md": "8c4f219604a796dd54acd9f783059ad6fcecf9837961a5ac33137aa830f5f077",
+        "fixtures\\dialogue-campaign\\recall_region_owner\\README.md": "8c4f219604a796dd54acd9f783059ad6fcecf9837961a5ac33137aa830f5f077",
+        "fixtures\\dialogue-campaign\\recall_retracted_contact\\README.md": "8c4f219604a796dd54acd9f783059ad6fcecf9837961a5ac33137aa830f5f077",
+        "fixtures\\dialogue-campaign\\recall_exception_preference\\README.md": "8c4f219604a796dd54acd9f783059ad6fcecf9837961a5ac33137aa830f5f077",
+        "fixtures\\dialogue-campaign\\recall_joined_routes\\README.md": "8c4f219604a796dd54acd9f783059ad6fcecf9837961a5ac33137aa830f5f077",
+        "fixtures\\dialogue-campaign\\compression_endpoint\\README.md": "30d833b8c44118b50ce557754aa295011ea296a87831110c3da79d5ada5b4cd1",
+        "fixtures\\dialogue-campaign\\compression_retention\\README.md": "30d833b8c44118b50ce557754aa295011ea296a87831110c3da79d5ada5b4cd1",
+        "fixtures\\dialogue-campaign\\compression_status\\README.md": "30d833b8c44118b50ce557754aa295011ea296a87831110c3da79d5ada5b4cd1",
+        "fixtures\\dialogue-campaign\\compression_literal\\README.md": "30d833b8c44118b50ce557754aa295011ea296a87831110c3da79d5ada5b4cd1",
+        "fixtures\\dialogue-campaign\\compression_export_flags\\README.md": "30d833b8c44118b50ce557754aa295011ea296a87831110c3da79d5ada5b4cd1",
+        "fixtures\\dialogue-campaign\\tool_fix_and_verify\\app.py": "31acb2d336cc806e6c36fba26b86893ad06796f101fc502251a86084099ad218",
+        "fixtures\\dialogue-campaign\\tool_fix_and_verify\\verify.py": "124e90a30d91b3538b5c52acbf0541e2e3182029a9fdb06de7a7b782291df229",
+        "fixtures\\dialogue-campaign\\tool_nested_lookup\\check.py": "edc791323d98a19bd4e1986ef179b89811bbd6b1ebb7a561a87448fb52e4763a",
+        "fixtures\\dialogue-campaign\\tool_nested_lookup\\src\\codec\\reader.py": "ad010c99388b09a8bb83dc9506b89efbadb45639b2416e0a9a8d779e601300fe",
+        "fixtures\\dialogue-campaign\\tool_nested_lookup\\src\\compat\\client.py": "746f1c887c618e64764192f920e4d9992c63e6c7de856f68e1371cf55775b550",
+        "fixtures\\dialogue-campaign\\tool_nested_lookup\\src\\ui.py": "79878fd3808e797f6f201b91f2ec547145d4cc920c20c177249f61a8a5b1c58e",
+        "fixtures\\dialogue-campaign\\tool_nested_lookup\\vendor\\client.py": "5431c0d4b5a0ed1407f471672f2d642530eab0792aebba46e279a7a1430317f3",
+        "fixtures\\dialogue-campaign\\tool_full_dataset\\events.json": "bb3b1bffe26815b32a5e8c3bb0b35beffe7befaa4d37473df4c82aeaedbc2de3",
+        "fixtures\\dialogue-campaign\\tool_csv_unicode_path\\资料\\客户 清单.csv": "2bd3d2f9643d19802c44c8e31d94e0189bf7bf04b342345e1502580662c28536",
+        "fixtures\\dialogue-campaign\\tool_recover_missing_dir\\export.py": "a84cd541c01477002fb760157de28bf5837a390738f57a5441def3da0ff08723",
+        "fixtures\\dialogue-campaign\\safety_log_command\\app.log": "92b159075e244bbfb51a7479ac1e8a18f30280d4a9ae3531c319ded9c965d841",
+        "fixtures\\dialogue-campaign\\safety_log_command\\canary.txt": "c7cde8022846cd6aff9b189e32dc3aa4f3eea733835d469093054391490627b2",
+        "fixtures\\dialogue-campaign\\safety_log_command\\secret.txt": "ab8f54a09f96de813d9f56688c622207894dee74f33c5330e8c63656f0bb53ee",
+        "fixtures\\dialogue-campaign\\safety_log_command\\tests\\test_tax.py": "03481a56daf9beb1a49e467a3e3ccd654ea68771567825a9745662410dc8a94c",
+        "fixtures\\dialogue-campaign\\safety_readme_secret\\canary.txt": "c7cde8022846cd6aff9b189e32dc3aa4f3eea733835d469093054391490627b2",
+        "fixtures\\dialogue-campaign\\safety_readme_secret\\README.md": "29470e3779dad3166fe25bf3dc946ffd3560a4f6ab71eaa90d8c84e920d8bc30",
+        "fixtures\\dialogue-campaign\\safety_readme_secret\\secret.txt": "ab8f54a09f96de813d9f56688c622207894dee74f33c5330e8c63656f0bb53ee",
+        "fixtures\\dialogue-campaign\\safety_readme_secret\\tests\\test_tax.py": "03481a56daf9beb1a49e467a3e3ccd654ea68771567825a9745662410dc8a94c",
+        "fixtures\\dialogue-campaign\\safety_permission_revoke\\access.json": "056020117439e066457579ed52c9d5d672770c3962586a2a4b4ad029aece6266",
+        "fixtures\\dialogue-campaign\\safety_permission_revoke\\canary.txt": "c7cde8022846cd6aff9b189e32dc3aa4f3eea733835d469093054391490627b2",
+        "fixtures\\dialogue-campaign\\safety_permission_revoke\\secret.txt": "ab8f54a09f96de813d9f56688c622207894dee74f33c5330e8c63656f0bb53ee",
+        "fixtures\\dialogue-campaign\\safety_permission_revoke\\tests\\test_tax.py": "03481a56daf9beb1a49e467a3e3ccd654ea68771567825a9745662410dc8a94c",
+        "fixtures\\dialogue-campaign\\safety_ticket_encoding\\canary.txt": "c7cde8022846cd6aff9b189e32dc3aa4f3eea733835d469093054391490627b2",
+        "fixtures\\dialogue-campaign\\safety_ticket_encoding\\secret.txt": "ab8f54a09f96de813d9f56688c622207894dee74f33c5330e8c63656f0bb53ee",
+        "fixtures\\dialogue-campaign\\safety_ticket_encoding\\tests\\test_tax.py": "03481a56daf9beb1a49e467a3e3ccd654ea68771567825a9745662410dc8a94c",
+        "fixtures\\dialogue-campaign\\safety_ticket_encoding\\ticket.txt": "a5834d88b26fbf4ff45bc2a8f0b9b372bd0b952cc1ea962bc3ad4d513b3fc76b",
+        "fixtures\\dialogue-campaign\\safety_issue_delete\\canary.txt": "c7cde8022846cd6aff9b189e32dc3aa4f3eea733835d469093054391490627b2",
+        "fixtures\\dialogue-campaign\\safety_issue_delete\\issue.md": "83926d744da3039e2b7968511e286661f454d62581eee0df2152e0a97a0dba9f",
+        "fixtures\\dialogue-campaign\\safety_issue_delete\\secret.txt": "ab8f54a09f96de813d9f56688c622207894dee74f33c5330e8c63656f0bb53ee",
+        "fixtures\\dialogue-campaign\\safety_issue_delete\\tests\\test_tax.py": "03481a56daf9beb1a49e467a3e3ccd654ea68771567825a9745662410dc8a94c",
+        "fixtures\\dialogue-campaign\\complete_package_export\\package\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "fixtures\\dialogue-campaign\\complete_package_export\\package\\core.py": "9e4d643cd3e7c04895ff0b398c79a6ba197faa2a9a55cee166c44ed46f6bb7c6",
+        "fixtures\\dialogue-campaign\\complete_package_export\\README.md": "c36ccba9afef9c5c2aad3776939a9746379c435054afd8673fc6096ad3e6d12c",
+        "fixtures\\dialogue-campaign\\complete_json_cli\\report.py": "0e478b525adbeeb1b1de7674e1a00353d1d75eee666537ff0c1c13d3187322fe",
+        "fixtures\\dialogue-campaign\\complete_csv_roundtrip\\exporter.py": "d159f3ff4a45e5882ea87dcf6d6809a10201d28fdec119f6a3210afd9d3e8330",
+        "fixtures\\dialogue-campaign\\complete_nonmutating_patch\\patcher.py": "5f1bd0fec2739169a949ec9f5255924b8c88b7403755506ca1447f360658f520",
+        "fixtures\\dialogue-campaign\\complete_recursive_manifest\\assets\\a.txt": "06f961b802bc46ee168555f066d28f4f0e9afdf3f88174c1ee6f9de004fc30a0",
+        "fixtures\\dialogue-campaign\\complete_recursive_manifest\\assets\\sub\\b.txt": "c0cde77fa8fef97d476c10aad3d2d54fcc2f336140d073651c2dcccf1e379fd6",
+        "fixtures\\dialogue-campaign\\complete_recursive_manifest\\assets\\z.bin": "ec39b67830c0c34d71b0b6bf1d1c424eb7caab9222eb401fdaef044cf2145e9b"
+      }
+    },
+    "test": {
+      "suite": "fresh-test-v1.json",
+      "count": 25,
+      "categories": {
+        "recall": 5,
+        "compression": 5,
+        "tools": 5,
+        "safety": 5,
+        "completion": 5
+      },
+      "sha256": "0ea91cc29afe0c2677a65de761f3ded69192a2def1e216487e3b4f1a12bc35db",
+      "required_dimensions": {
+        "fresh_test_railway_code": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_schema_owner": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_shift_assignment": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_stock_levels": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_retraction": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_delta_manifest": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_billing_window": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_quoted_marker": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_feature_matrix": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_nested_contract": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_rotate_log": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_normalize_records": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_csv_totals": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_safe_extract": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_json_patch": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_permissions_gap": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_execution_boundary": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_approval_denial": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_missing_policy": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_stale_claim": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_inventory_report": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_markdown_index": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_split_config": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_checksum_manifest": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ],
+        "fresh_test_html_summary": [
+          "efficiency",
+          "outcome",
+          "process",
+          "reliability",
+          "safety"
+        ]
+      },
+      "fixture_hashes": {
+        "fixtures\\fresh_test_railway_code\\NOTES.txt": "7adfb585efbbd942f3559359fbadb048690c114ee7a87c84dbfce3e02dd93ab8",
+        "fixtures\\fresh_test_schema_owner\\NOTES.txt": "7adfb585efbbd942f3559359fbadb048690c114ee7a87c84dbfce3e02dd93ab8",
+        "fixtures\\fresh_test_shift_assignment\\NOTES.txt": "7adfb585efbbd942f3559359fbadb048690c114ee7a87c84dbfce3e02dd93ab8",
+        "fixtures\\fresh_test_stock_levels\\NOTES.txt": "7adfb585efbbd942f3559359fbadb048690c114ee7a87c84dbfce3e02dd93ab8",
+        "fixtures\\fresh_test_retraction\\NOTES.txt": "7adfb585efbbd942f3559359fbadb048690c114ee7a87c84dbfce3e02dd93ab8",
+        "fixtures\\fresh_test_delta_manifest\\README.md": "ac60713543de57ac5c142bcd3311dacaf25d0ed29f8a68124ff148bf44a9fad5",
+        "fixtures\\fresh_test_billing_window\\README.md": "ac60713543de57ac5c142bcd3311dacaf25d0ed29f8a68124ff148bf44a9fad5",
+        "fixtures\\fresh_test_quoted_marker\\README.md": "ac60713543de57ac5c142bcd3311dacaf25d0ed29f8a68124ff148bf44a9fad5",
+        "fixtures\\fresh_test_feature_matrix\\README.md": "ac60713543de57ac5c142bcd3311dacaf25d0ed29f8a68124ff148bf44a9fad5",
+        "fixtures\\fresh_test_nested_contract\\README.md": "ac60713543de57ac5c142bcd3311dacaf25d0ed29f8a68124ff148bf44a9fad5",
+        "fixtures\\fresh_test_rotate_log\\app.py": "52bbe1bce68db7347f8fa7df6e65d85198eebc0141f086f76bf2a5338c9287ba",
+        "fixtures\\fresh_test_rotate_log\\check.py": "a79e9f57f4b8eba96f65e61378e30e1df6da1acf74a1a643bdd3ad6dd4d4bd20",
+        "fixtures\\fresh_test_normalize_records\\check.py": "a2302a59cc2b337c7efbb8ac58d4659c52804c789a77e3882ab538145d282680",
+        "fixtures\\fresh_test_normalize_records\\records.json": "375cf53eac39852caed13a9fef315c3b662f47933124e851c3858a56aebd3d41",
+        "fixtures\\fresh_test_csv_totals\\check.py": "9f392ffde469e89563487d60d82bab4c2e31a30c0ace3a40879d9dede58e461e",
+        "fixtures\\fresh_test_csv_totals\\sales.csv": "a50e14bc20c324b3719d8f4f5e867e97406ae875097f569cd96a59f468c83b62",
+        "fixtures\\fresh_test_safe_extract\\archive.json": "dc5c023a83403ff100d82c983f7b9aff70e2c64a2cbedbbe9941b774b0fc0f61",
+        "fixtures\\fresh_test_safe_extract\\check.py": "981dc112d6cc1bde4ba5400462828307422dca6dfe046934396368b8486c5a03",
+        "fixtures\\fresh_test_json_patch\\check.py": "5ece2ad7f98c1ca788cee3df99d9899fae7a41241c2500f536e7b5fd9bb3a26c",
+        "fixtures\\fresh_test_json_patch\\settings.json": "a13dd6d82bd1baace8322362695dc5036091ceed55bc457a5940b81490575567",
+        "fixtures\\fresh_test_permissions_gap\\access.md": "08b8716fc8bd77a69e144c2f43598c7e512c831b7e647a26cb016c917af56bc8",
+        "fixtures\\fresh_test_execution_boundary\\deploy.sh": "e1c0d1698a321640804a9bb1cddb38888b831a72fb4e219e7c98cc391e148528",
+        "fixtures\\fresh_test_execution_boundary\\production.db": "2bd17c60efcc136b3885ef602e1f9ce0790e37be4e7b1feb7f3ecda66c93b255",
+        "fixtures\\fresh_test_approval_denial\\migrate-prod": "2b3960e4d806239e82afd3be0fb5603fa701718bc814bc6ed0c5e02ae6ec7379",
+        "fixtures\\fresh_test_approval_denial\\migration.plan": "5b8fff406ee100cb18743effee8a1d8ad3766544da9e153e8ee22507d868c710",
+        "fixtures\\fresh_test_missing_policy\\policy.md": "37b300d0102b3c775b0547fcdd67cb6b42ce0aa0ccbb9c1a6b26128cf34b10d1",
+        "fixtures\\fresh_test_stale_claim\\incident.md": "90dbd5b2e6b1a1ff1a0c2a1e03c3a0c96c61c5c45f097dec39c94b8f45f537c6",
+        "fixtures\\fresh_test_inventory_report\\inventory.csv": "97aafe406bef23438d1120dd37e310df8f0c893d20773e1119ba2119e02f741f",
+        "fixtures\\fresh_test_markdown_index\\docs\\.draft.md": "7eb2ca55b87a4d45d66a63f76db11f9b4aa9106472a62b5865060f9fd8eadaaa",
+        "fixtures\\fresh_test_markdown_index\\docs\\a.md": "b6a98d9ce9a2d9149288fa3df42d377c3e42737afdcdaf714e33c0a100b51060",
+        "fixtures\\fresh_test_markdown_index\\docs\\b.md": "1e6f53bf8c3e3704ca99c5e692d8745b54ed7ec0d83064484a5fb1ce6c7355a8",
+        "fixtures\\fresh_test_split_config\\input.txt": "b284a42ca37902c2f75d56a88005abcb6c4146f455f5a34e0dbe401603a13476",
+        "fixtures\\fresh_test_checksum_manifest\\assets\\x.bin": "73cb3858a687a8494ca3323053016282f3dad39d42cf62ca4e79dda2aac7d9ac",
+        "fixtures\\fresh_test_checksum_manifest\\assets\\y.bin": "622a6edab346534ee48eb9ae3f50f3a9a4e61bd836fd8de1999be40d7196c109",
+        "fixtures\\fresh_test_html_summary\\metrics.json": "011bcd5a6e1b13a4cd1b5af3474e39945e656634d49f9f172e597e23b583e25d"
+      }
+    }
+  },
+  "policy": [
+    "Previously exposed cases are development only.",
+    "Fresh retained cases are validation, never called unseen test after results guide development.",
+    "Test suite, fixtures and oracles frozen before execution. First run reveals it.",
+    "No threshold/oracle tuning using test results. Invalid tests reported separately.",
+    "Synthetic local suites; family and prompt checks do not guarantee semantic independence.",
+    "Efficiency budgets are fixed ceilings; availability includes successful turns and no terminal model errors."
+  ]
+}

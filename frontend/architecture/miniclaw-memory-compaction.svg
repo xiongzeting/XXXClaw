@@ -1,0 +1,415 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3000" height="2850" viewBox="0 0 3000 2850" role="img" aria-labelledby="title desc">
+  <title id="title">MiniClaw 压缩与记忆完整架构图</title>
+  <desc id="desc">展示 MiniClaw 从消息与工具结果进入工作上下文，经过八万软触发、十万硬触发、大输出制品化、完整 JSONL 归档、任务 Checkpoint、稳定事实记忆，再由语义记忆、会话归档、历史 Episode 和近期事实通过 BM25、向量、RRF、重排恢复原始证据的完整流程。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07121c"/>
+      <stop offset="0.52" stop-color="#0a1722"/>
+      <stop offset="1" stop-color="#071018"/>
+    </linearGradient>
+    <linearGradient id="hero" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#43d9d0" stop-opacity="0.24"/>
+      <stop offset="0.5" stop-color="#6fa8ff" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#b996ff" stop-opacity="0.12"/>
+    </linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#294154" stroke-opacity="0.20" stroke-width="1"/>
+    </pattern>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000000" flood-opacity="0.28"/>
+    </filter>
+    <marker id="arrowCyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="#43d9d0"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="#6fa8ff"/>
+    </marker>
+    <marker id="arrowOrange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="#ffb86b"/>
+    </marker>
+    <marker id="arrowPurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="#b996ff"/>
+    </marker>
+    <style>
+      text { font-family: Inter, "Segoe UI", "Microsoft YaHei", sans-serif; fill: #e9f3f7; }
+      .title { font-size: 42px; font-weight: 700; }
+      .subtitle { font-size: 17px; fill: #9bb1bf; }
+      .hero-title { font-size: 26px; font-weight: 700; fill: #f1fbff; }
+      .hero-text { font-size: 17px; fill: #c9dce5; }
+      .section { fill: #0d1b28; stroke: #355268; stroke-width: 2; rx: 18; filter: url(#shadow); }
+      .section-head { fill: #132536; stroke: #355268; stroke-width: 1.5; rx: 14; }
+      .section-index { font-size: 14px; font-weight: 700; fill: #43d9d0; letter-spacing: 1px; }
+      .section-title { font-size: 25px; font-weight: 700; }
+      .section-note { font-size: 13px; fill: #91a9b8; }
+      .node { fill: #102231; stroke: #355268; stroke-width: 1.5; rx: 13; }
+      .node-cyan { fill: #0e2b2e; stroke: #3aa79f; }
+      .node-blue { fill: #10243a; stroke: #4d75aa; }
+      .node-orange { fill: #302419; stroke: #b57d3e; }
+      .node-purple { fill: #251d36; stroke: #765bab; }
+      .node-green { fill: #122b25; stroke: #4d9d70; }
+      .node-red { fill: #321d25; stroke: #b85e70; }
+      .node-muted { fill: #0b1721; stroke: #294154; }
+      .node-title { font-size: 18px; font-weight: 700; }
+      .node-text { font-size: 13px; fill: #c7d8e1; }
+      .small { font-size: 11px; fill: #8fa8b8; }
+      .code { font-family: "Cascadia Code", Consolas, monospace; font-size: 12px; fill: #b8cbd5; }
+      .metric { font-size: 26px; font-weight: 700; fill: #43d9d0; }
+      .metric-label { font-size: 12px; fill: #a9bdc8; }
+      .flow { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+      .cyan { stroke: #43d9d0; marker-end: url(#arrowCyan); }
+      .blue { stroke: #6fa8ff; marker-end: url(#arrowBlue); }
+      .orange { stroke: #ffb86b; marker-end: url(#arrowOrange); stroke-dasharray: 10 7; }
+      .purple { stroke: #b996ff; marker-end: url(#arrowPurple); stroke-dasharray: 6 7; }
+      .divider { stroke: #294154; stroke-width: 1; }
+      .badge { fill: #152a3a; stroke: #355268; stroke-width: 1; rx: 10; }
+      .badge-text { font-size: 11px; fill: #bfd0d9; }
+      .storage { fill: #171f28; stroke: #b57d3e; stroke-width: 1.5; rx: 12; }
+      .storage-title { font-size: 14px; font-weight: 700; fill: #ffca8c; }
+      .storage-text { font-size: 11px; fill: #c7b69f; }
+      .step { fill: #43d9d0; }
+      .step-text { font-size: 12px; font-weight: 700; fill: #071018; text-anchor: middle; dominant-baseline: central; }
+    </style>
+  </defs>
+
+  <rect width="3000" height="2850" fill="url(#bg)"/>
+  <rect width="3000" height="2850" fill="url(#grid)"/>
+
+  <!-- Header -->
+  <rect x="55" y="38" width="2890" height="135" rx="22" fill="url(#hero)" stroke="#355268" stroke-width="1.5"/>
+  <rect x="82" y="67" width="72" height="72" rx="18" fill="#0d2f32" stroke="#43d9d0" stroke-width="2"/>
+  <text x="118" y="114" text-anchor="middle" class="title" fill="#43d9d0" font-size="34">M</text>
+  <text x="180" y="95" class="title">MiniClaw · 压缩与记忆完整架构</text>
+  <text x="182" y="130" class="subtitle">Working Context 减少重复 Token；Archive / Semantic / Episode 在新问题出现时恢复证据；两者通过 MemoryManager 连接</text>
+  <g transform="translate(2225 78)">
+    <line x1="0" y1="8" x2="55" y2="8" class="flow cyan"/><text x="65" y="13" class="small">运行控制流</text>
+    <line x1="175" y1="8" x2="230" y2="8" class="flow blue"/><text x="240" y="13" class="small">上下文 / 证据</text>
+    <line x1="0" y1="48" x2="55" y2="48" class="flow orange"/><text x="65" y="53" class="small">落盘持久化</text>
+    <line x1="175" y1="48" x2="230" y2="48" class="flow purple"/><text x="240" y="53" class="small">召回 / 恢复</text>
+  </g>
+
+  <!-- Core principle -->
+  <rect x="55" y="198" width="2890" height="175" rx="20" fill="#091b27" stroke="#43d9d0" stroke-width="2" filter="url(#shadow)"/>
+  <text x="95" y="240" class="section-index">最重要的设计原则</text>
+  <text x="95" y="279" class="hero-title">摘要维护任务连续性 ≠ 摘要保存全部事实</text>
+  <text x="95" y="316" class="hero-text">Checkpoint 只保留 Goal、决策、错误、文件状态和下一步；完整事实始终保存在 append-only transcript、JSONL Archive 与 Tool Artifact 中。</text>
+  <text x="95" y="345" class="hero-text">新问题到达后，系统自动检索并注入相关原始证据；信息不足时再由模型调用 memory.archive_search 深挖。</text>
+  <rect x="2280" y="226" width="190" height="104" class="node node-cyan"/><text x="2375" y="262" text-anchor="middle" class="metric">80k</text><text x="2375" y="290" text-anchor="middle" class="metric-label">软触发（严格 &gt;）</text><text x="2375" y="313" text-anchor="middle" class="small">确定性可达标才提交</text>
+  <rect x="2490" y="226" width="190" height="104" class="node node-orange"/><text x="2585" y="262" text-anchor="middle" class="metric" fill="#ffb86b">100k</text><text x="2585" y="290" text-anchor="middle" class="metric-label">硬触发（严格 &gt;）</text><text x="2585" y="313" text-anchor="middle" class="small">允许模型摘要兜底</text>
+  <rect x="2700" y="226" width="190" height="104" class="node node-blue"/><text x="2795" y="262" text-anchor="middle" class="metric" fill="#6fa8ff">20k</text><text x="2795" y="290" text-anchor="middle" class="metric-label">近期原文预算</text><text x="2795" y="313" text-anchor="middle" class="small">完整 Turn，不拆工具对</text>
+
+  <!-- Input and trigger -->
+  <g id="input">
+    <rect x="55" y="410" width="520" height="700" class="section"/>
+    <rect x="75" y="430" width="480" height="82" class="section-head"/>
+    <text x="96" y="457" class="section-index">01 · INPUT &amp; TRIGGER</text>
+    <text x="96" y="486" class="section-title">工作上下文入口</text>
+    <text x="96" y="505" class="section-note">每轮消息追加，Tool Result 先做渐进处理</text>
+
+    <rect x="84" y="540" width="462" height="126" class="node node-blue"/>
+    <text x="107" y="572" class="node-title">AgentLoop Messages</text>
+    <text x="107" y="599" class="node-text">User / Assistant / Tool Call / Tool Result</text>
+    <text x="107" y="624" class="code">WorkingContext.append_message()</text>
+    <text x="107" y="646" class="small">每条消息分配 ID，并追加到 session JSONL</text>
+
+    <rect x="84" y="694" width="462" height="138" class="node node-cyan"/>
+    <text x="107" y="726" class="node-title">实时大 Tool Result 制品化</text>
+    <text x="107" y="753" class="node-text">UTF-8 ≥ 16 KiB → 保存全文，只回填引用＋头尾预览</text>
+    <text x="107" y="778" class="code">artifactize_live_result()</text>
+    <text x="107" y="802" class="small">预览 4,000 字符；记录 byte_size / SHA-256 / path</text>
+
+    <rect x="84" y="862" width="462" height="205" class="node node-purple"/>
+    <text x="107" y="895" class="node-title">Token 水位判断</text>
+    <text x="107" y="925" class="node-text">≤ 80k：保持原上下文</text>
+    <text x="107" y="951" class="node-text">80k &lt; tokens ≤ 100k：soft</text>
+    <text x="107" y="977" class="node-text">&gt; 100k：hard</text>
+    <line x1="107" y1="995" x2="523" y2="995" class="divider"/>
+    <text x="107" y="1020" class="small">优先使用 Provider input_tokens；没有时按字符数约 ÷4 估算</text>
+    <text x="107" y="1043" class="small">128k 窗口另留 12.8k reserve，最大输出 8,192</text>
+    <path d="M315 666V694" class="flow cyan"/>
+    <path d="M315 832V862" class="flow cyan"/>
+  </g>
+
+  <!-- Compression pipeline -->
+  <g id="compression">
+    <rect x="610" y="410" width="1135" height="1215" class="section"/>
+    <rect x="630" y="430" width="1095" height="82" class="section-head"/>
+    <text x="651" y="457" class="section-index">02 · FOUR-LAYER COMPACTION</text>
+    <text x="651" y="486" class="section-title">四层压缩流水线</text>
+    <text x="651" y="505" class="section-note">先保存可恢复原文，再生成只负责续跑的 Checkpoint</text>
+
+    <circle cx="675" cy="575" r="19" class="step"/><text x="675" y="575" class="step-text">1</text>
+    <rect x="710" y="540" width="985" height="130" class="node node-cyan"/>
+    <text x="738" y="572" class="node-title">工具结果层 · Tool Result Artifact</text>
+    <text x="738" y="600" class="node-text">实时阶段：超过 16 KiB 立即落盘；压缩阶段：旧 Tool Result 即使较小也转为无预览引用。</text>
+    <text x="738" y="626" class="node-text">收益：长日志、测试输出、命令结果不再在后续每轮重复进入模型输入。</text>
+    <text x="738" y="650" class="code">.aster/context-artifacts/&lt;session&gt;/*-tool-call-id-*.txt</text>
+
+    <circle cx="675" cy="738" r="19" class="step"/><text x="675" y="738" class="step-text">2</text>
+    <rect x="710" y="700" width="985" height="165" class="node node-orange"/>
+    <text x="738" y="734" class="node-title">历史归档层 · Closed History Archive</text>
+    <text x="738" y="762" class="node-text">从后向前保留至少 20k；切点移动到完整 User Turn，极端大回合只在 Assistant 前切。</text>
+    <text x="738" y="788" class="node-text">被移出的旧消息完整序列化为 JSONL；append-only session 原日志也不删除。</text>
+    <text x="738" y="814" class="node-text">随后按消息 / 事实块建立 ArchiveMemoryIndex，默认 1,600 字符分块，并索引 Artifact 原文。</text>
+    <text x="738" y="840" class="code">context-transcript-*.jsonl → .aster/memory/archive-index.jsonl</text>
+
+    <circle cx="675" cy="938" r="19" class="step"/><text x="675" y="938" class="step-text">3</text>
+    <rect x="710" y="900" width="985" height="215" class="node node-blue"/>
+    <text x="738" y="934" class="node-title">任务摘要层 · Working Context Checkpoint</text>
+    <text x="738" y="962" class="node-text">确定性 Checkpoint：当前请求、上一轮 Checkpoint、最近 12 条语义台账、归档路径、文件状态、恢复规则。</text>
+    <text x="738" y="988" class="node-text">当归档语义内容 &gt; 4.5k，或 Checkpoint＋近期原文 &gt; 30k 时，需要模型摘要。</text>
+    <text x="738" y="1014" class="node-text">soft 阶段不能调用模型：若确定性方案不达标则暂缓提交；hard 阶段允许模型摘要。</text>
+    <text x="738" y="1040" class="node-text">模型摘要失败 → deterministic-fallback；当前 User Request 仍由程序精确保留。</text>
+    <text x="738" y="1066" class="code">[MiniClaw Working Context Checkpoint] + recent messages</text>
+    <text x="738" y="1091" class="small">30k 是目标而非绝对截断线；摘要从不承担“保存所有未来可能被问到的事实”。</text>
+
+    <circle cx="675" cy="1185" r="19" class="step"/><text x="675" y="1185" class="step-text">4</text>
+    <rect x="710" y="1148" width="985" height="180" class="node node-green"/>
+    <text x="738" y="1182" class="node-title">语义记忆层 · High-precision Stable Facts</text>
+    <text x="738" y="1210" class="node-text">压缩旧消息时，仅解析用户明确写出的“记住 / remember / 长期记忆: ...”。</text>
+    <text x="738" y="1236" class="node-text">自动写入前执行秘密过滤、临时信息过滤、去重和冲突检测；不会把普通讨论自动长期化。</text>
+    <text x="738" y="1262" class="node-text">分类：preference / project / environment / fact；冲突保留持久 conflict ID 等待处理。</text>
+    <text x="738" y="1290" class="code">.aster/memory/MEMORY.md + MEMORY.conflicts.jsonl</text>
+
+    <rect x="650" y="1362" width="1025" height="220" class="node node-muted"/>
+    <text x="678" y="1397" class="node-title">提交、取消与恢复边界</text>
+    <text x="678" y="1427" class="node-text">取消检查：compaction_start → prepare → model → commit；取消后 Trace 标记 aborted/cancelled。</text>
+    <text x="678" y="1453" class="node-text">提交时记录 first_kept_message_id、strategy、tokens_before/after、archive、artifact、索引与事实写入统计。</text>
+    <text x="678" y="1479" class="node-text">重启读取最后一次 compaction：Checkpoint + first_kept_message_id 之后原始消息；多次压缩合并 previous summary。</text>
+    <text x="678" y="1505" class="node-text">模型摘要出错不破坏可恢复性，因为完整 JSONL Archive 已经先落盘。</text>
+    <text x="678" y="1538" class="small">注意：soft 预处理可能已产生 Archive/Index 文件，但只有满足确定性目标时才切换 active messages。</text>
+
+    <path d="M1177 670V700" class="flow cyan"/>
+    <path d="M1177 865V900" class="flow cyan"/>
+    <path d="M1177 1115V1148" class="flow cyan"/>
+    <path d="M1177 1328V1362" class="flow cyan"/>
+  </g>
+
+  <!-- Retrieval -->
+  <g id="retrieval">
+    <rect x="1780" y="410" width="1165" height="1215" class="section"/>
+    <rect x="1800" y="430" width="1125" height="82" class="section-head"/>
+    <text x="1821" y="457" class="section-index">03 · EVIDENCE RECOVERY</text>
+    <text x="1821" y="486" class="section-title">新请求到达后的自动检索</text>
+    <text x="1821" y="505" class="section-note">RRF/BM25 不负责“压小”，而负责从已移出 Prompt 的当前会话原文中找回证据</text>
+
+    <rect x="1828" y="540" width="1069" height="104" class="node node-cyan"/>
+    <text x="1855" y="574" class="node-title">当前用户请求</text>
+    <text x="1855" y="603" class="node-text">CodingAssistant 在每次 run 开始前调用 MemoryManager.prompt_context(query)</text>
+    <text x="1855" y="626" class="small">检索先发生，得到的内容与项目指令一起组装进 System Prompt</text>
+
+    <rect x="1828" y="682" width="245" height="173" class="node node-green"/>
+    <text x="1851" y="715" class="node-title">Semantic</text>
+    <text x="1851" y="742" class="node-text">长期稳定事实</text>
+    <text x="1851" y="768" class="node-text">显式记忆写入</text>
+    <text x="1851" y="794" class="code">MEMORY.md</text>
+    <text x="1851" y="824" class="small">跨会话；高精度</text>
+
+    <rect x="2093" y="682" width="245" height="173" class="node node-orange"/>
+    <text x="2116" y="715" class="node-title">Archive</text>
+    <text x="2116" y="742" class="node-text">当前会话压缩原文</text>
+    <text x="2116" y="768" class="node-text">Tool Artifact 原文</text>
+    <text x="2116" y="794" class="code">archive-index.jsonl</text>
+    <text x="2116" y="824" class="small">主要事实恢复来源</text>
+
+    <rect x="2358" y="682" width="245" height="173" class="node node-purple"/>
+    <text x="2381" y="715" class="node-title">Episode</text>
+    <text x="2381" y="742" class="node-text">历史 Session 概览</text>
+    <text x="2381" y="768" class="node-text">Goal / 结果 / 状态</text>
+    <text x="2381" y="794" class="code">episodes/*.md</text>
+    <text x="2381" y="824" class="small">当前为词频搜索</text>
+
+    <rect x="2623" y="682" width="274" height="173" class="node node-blue"/>
+    <text x="2646" y="715" class="node-title">Active facts</text>
+    <text x="2646" y="742" class="node-text">近期原文保留在 Working Context</text>
+    <text x="2646" y="768" class="node-text">参与版本裁决</text>
+    <text x="2646" y="794" class="code">active_messages</text>
+    <text x="2646" y="824" class="small">普通近期消息不重复召回</text>
+
+    <rect x="1828" y="900" width="1069" height="260" class="node node-blue"/>
+    <text x="1855" y="935" class="node-title">单来源混合检索：HybridMemoryRetriever</text>
+    <text x="1855" y="968" class="node-text">① 版本裁决：同 subject + relation 只保留最大 version，相关性排序不能决定事实新旧</text>
+    <text x="1855" y="996" class="node-text">② BM25 主检索：权重 0.78；停用词、轻量词形归一化、查询词频封顶</text>
+    <text x="1855" y="1024" class="node-text">③ 向量辅助：权重 0.22；默认 384 维本地 Hash Vector，可选本地 SentenceTransformer 缓存</text>
+    <text x="1855" y="1052" class="node-text">④ Weighted RRF：k=60；BM25/Vector 各取候选池 24，再做 coverage / subject / phrase 重排</text>
+    <text x="1855" y="1080" class="node-text">⑤ Archive 专项：正文去重、时效/个性化查询扩展、Session 角色偏好、上下文块扩展</text>
+    <text x="1855" y="1110" class="small">归档默认 1,600 字符分块；memory 工具返回的派生搜索 JSON 不再反向写回索引。</text>
+
+    <rect x="1828" y="1197" width="1069" height="170" class="node node-purple"/>
+    <text x="1855" y="1231" class="node-title">跨来源 RRF：MemoryManager.retrieve()</text>
+    <text x="1855" y="1261" class="node-text">Semantic 权重 1.0 + Archive 权重 1.0 + Episode 权重 0.6；按正文归一化去重。</text>
+    <text x="1855" y="1289" class="node-text">默认各来源至少取 8 条候选，RRF k=60，最终 Top 8。</text>
+    <text x="1855" y="1317" class="node-text">每条最多约 1,800 字符，整个 &lt;retrieved_memory&gt; 最多约 10,000 字符。</text>
+    <text x="1855" y="1343" class="small">这层 RRF 解决“不同来源分数不可直接比较”，不是长期记忆专属算法。</text>
+
+    <rect x="1828" y="1405" width="1069" height="172" class="node node-green"/>
+    <text x="1855" y="1439" class="node-title">注入与二次深挖</text>
+    <text x="1855" y="1469" class="node-text">Top-8 原始证据自动注入 System Prompt → LLM 直接回答。</text>
+    <text x="1855" y="1497" class="node-text">若多跳信息仍不足 → memory(action='archive_search', query=...) 迭代搜索当前 Session。</text>
+    <text x="1855" y="1525" class="node-text">检索项、来源、得分和注入数量写入 memory.retrieval Trace。</text>
+    <text x="1855" y="1552" class="small">模型无需先“意识到 archive 路径”，自动检索链路已先恢复最相关原文。</text>
+
+    <path d="M2362 644V665H1950V682" class="flow blue"/>
+    <path d="M2362 665H2215V682" class="flow blue"/>
+    <path d="M2362 665V682" class="flow blue"/>
+    <path d="M2362 665H2760V682" class="flow blue"/>
+    <path d="M2362 855V900" class="flow purple"/>
+    <path d="M2362 1160V1197" class="flow purple"/>
+    <path d="M2362 1367V1405" class="flow blue"/>
+  </g>
+
+  <!-- Cross connection -->
+  <path d="M575 965H610" class="flow cyan"/>
+  <path d="M1695 782H1745V770H1780" class="flow orange"/>
+  <path d="M1695 1238H1748V1282H1780" class="flow orange"/>
+
+  <!-- Stores -->
+  <g id="storage">
+    <rect x="55" y="1665" width="2890" height="405" class="section"/>
+    <rect x="75" y="1685" width="2850" height="76" class="section-head"/>
+    <text x="96" y="1712" class="section-index">04 · DURABLE STORAGE</text>
+    <text x="96" y="1741" class="section-title">持久化对象与生命周期</text>
+
+    <rect x="84" y="1800" width="500" height="220" class="storage"/>
+    <text x="109" y="1834" class="storage-title">Session append-only transcript</text>
+    <text x="109" y="1864" class="code">&lt;session_path&gt;.jsonl</text>
+    <text x="109" y="1895" class="storage-text">message：原始消息＋唯一 ID</text>
+    <text x="109" y="1921" class="storage-text">compaction：summary＋first_kept_message_id＋details</text>
+    <text x="109" y="1947" class="storage-text">recovery：重启恢复记录</text>
+    <text x="109" y="1980" class="small">原记录只追加，不因压缩而删除或原地改写</text>
+
+    <rect x="608" y="1800" width="500" height="220" class="storage"/>
+    <text x="633" y="1834" class="storage-title">Context Artifacts</text>
+    <text x="633" y="1864" class="code">.aster/context-artifacts/&lt;session&gt;/</text>
+    <text x="633" y="1895" class="storage-text">*.txt：完整 Tool Result</text>
+    <text x="633" y="1921" class="storage-text">context-transcript-*.jsonl：每次闭合历史原文</text>
+    <text x="633" y="1947" class="storage-text">路径＋字节数＋SHA-256＋预览</text>
+    <text x="633" y="1980" class="small">Artifact 是正文存储；引用只是上下文中的轻量指针</text>
+
+    <rect x="1132" y="1800" width="500" height="220" class="storage"/>
+    <text x="1157" y="1834" class="storage-title">ArchiveMemoryIndex</text>
+    <text x="1157" y="1864" class="code">.aster/memory/archive-index.jsonl</text>
+    <text x="1157" y="1895" class="storage-text">message / tool_artifact</text>
+    <text x="1157" y="1921" class="storage-text">普通分块 / 正文精确去重</text>
+    <text x="1157" y="1947" class="storage-text">record_id＋来源＋角色＋块序号＋事实版本</text>
+    <text x="1157" y="1980" class="small">索引保存可检索文本与 provenance，不保存模型摘要替代原文</text>
+
+    <rect x="1656" y="1800" width="500" height="220" class="storage"/>
+    <text x="1681" y="1834" class="storage-title">Semantic Memory</text>
+    <text x="1681" y="1864" class="code">.aster/memory/MEMORY.md</text>
+    <text x="1681" y="1895" class="storage-text">托管区块之外的人工笔记保留</text>
+    <text x="1681" y="1921" class="storage-text">单条 ≤ 2,000 字符；总文件 ≤ 32 KiB</text>
+    <text x="1681" y="1947" class="storage-text">原子替换＋跨进程 lock＋冲突事件日志</text>
+    <text x="1681" y="1980" class="small">长期稳定事实，主动忘记/替换，生命周期跨 Session</text>
+
+    <rect x="2180" y="1800" width="350" height="220" class="storage"/>
+    <text x="2205" y="1834" class="storage-title">Episodic Memory</text>
+    <text x="2205" y="1864" class="code">.aster/memory/episodes/*.md</text>
+    <text x="2205" y="1895" class="storage-text">Started / Updated / Status</text>
+    <text x="2205" y="1921" class="storage-text">Goal / Latest Outcome / Open Work</text>
+    <text x="2205" y="1947" class="storage-text">run 结束写 completed/failed/cancelled</text>
+    <text x="2205" y="1980" class="small">跨会话事件概览，正文按需读取</text>
+
+    <rect x="2554" y="1800" width="343" height="220" class="storage"/>
+    <text x="2579" y="1834" class="storage-title">Procedural Memory</text>
+    <text x="2579" y="1864" class="code">.aster/skills/*/SKILL.md</text>
+    <text x="2579" y="1895" class="storage-text">Prompt 只注入名称＋简介</text>
+    <text x="2579" y="1921" class="storage-text">正文 / reference 由 skill 工具读取</text>
+    <text x="2579" y="1947" class="storage-text">路径逃逸校验；单资源 ≤ 64 KiB</text>
+    <text x="2579" y="1980" class="small">操作流程记忆，不与对话事实混用</text>
+  </g>
+
+  <!-- Module map -->
+  <g id="modules">
+    <rect x="55" y="2110" width="1845" height="670" class="section"/>
+    <rect x="75" y="2130" width="1805" height="76" class="section-head"/>
+    <text x="96" y="2157" class="section-index">05 · PYTHON MODULE MAP</text>
+    <text x="96" y="2186" class="section-title">代码模块职责</text>
+
+    <rect x="84" y="2240" width="410" height="142" class="node node-cyan"/>
+    <text x="108" y="2272" class="node-title">manager.py</text>
+    <text x="108" y="2300" class="node-text">组合四类记忆、自动检索与跨来源 RRF</text>
+    <text x="108" y="2326" class="node-text">暴露 memory / skill 工具</text>
+    <text x="108" y="2352" class="small">MemoryManager 是产品层统一边界</text>
+
+    <rect x="514" y="2240" width="410" height="142" class="node node-blue"/>
+    <text x="538" y="2272" class="node-title">working.py</text>
+    <text x="538" y="2300" class="node-text">追加消息、阈值判断、切分、归档</text>
+    <text x="538" y="2326" class="node-text">Checkpoint、摘要、恢复、取消</text>
+    <text x="538" y="2352" class="small">当前 Session 发给模型的有界上下文</text>
+
+    <rect x="944" y="2240" width="410" height="142" class="node node-orange"/>
+    <text x="968" y="2272" class="node-title">artifacts.py / archive.py</text>
+    <text x="968" y="2300" class="node-text">全文制品、SHA-256、预览、归档分块</text>
+    <text x="968" y="2326" class="node-text">Session 上下文、角色与时效扩展</text>
+    <text x="968" y="2352" class="small">原始证据的存储和搜索入口</text>
+
+    <rect x="1374" y="2240" width="478" height="142" class="node node-purple"/>
+    <text x="1398" y="2272" class="node-title">retrieval.py</text>
+    <text x="1398" y="2300" class="node-text">BM25、向量、Weighted RRF、rerank</text>
+    <text x="1398" y="2326" class="node-text">版本裁决、停用词、短语与词形处理</text>
+    <text x="1398" y="2352" class="small">同一个检索器复用于 Semantic 和 Archive</text>
+
+    <rect x="84" y="2410" width="410" height="142" class="node node-green"/>
+    <text x="108" y="2442" class="node-title">semantic.py</text>
+    <text x="108" y="2470" class="node-text">长期记忆 CRUD、过滤、冲突创建与解决</text>
+    <text x="108" y="2496" class="node-text">托管 Markdown 区块与原子写入</text>
+    <text x="108" y="2522" class="small">只保存稳定、明确、可复用的信息</text>
+
+    <rect x="514" y="2410" width="410" height="142" class="node"/>
+    <text x="538" y="2442" class="node-title">episodic.py / procedural.py</text>
+    <text x="538" y="2470" class="node-text">历史 Session checkpoint 与 Skill 渐进加载</text>
+    <text x="538" y="2496" class="node-text">不同生命周期，不塞进每轮消息历史</text>
+    <text x="538" y="2522" class="small">Episode 是经历；Skill 是流程</text>
+
+    <rect x="944" y="2410" width="410" height="142" class="node node-muted"/>
+    <text x="968" y="2442" class="node-title">archive.py / locking.py</text>
+    <text x="968" y="2470" class="node-text">普通消息按行分块与正文去重</text>
+    <text x="968" y="2496" class="node-text">独占 lock、陈旧锁回收、并发写保护</text>
+    <text x="968" y="2522" class="small">版本正确性与写入一致性的基础设施</text>
+
+    <rect x="1374" y="2410" width="478" height="142" class="node node-blue"/>
+    <text x="1398" y="2442" class="node-title">tools.py</text>
+    <text x="1398" y="2470" class="node-text">memory：search/remember/archive/episode/conflict</text>
+    <text x="1398" y="2496" class="node-text">skill：list/read；输出统一 ToolResult</text>
+    <text x="1398" y="2522" class="small">自动压缩不依赖模型主动调用 memory 工具</text>
+
+    <rect x="84" y="2580" width="1768" height="150" class="node node-muted"/>
+    <text x="108" y="2614" class="node-title">外部集成点</text>
+    <text x="108" y="2643" class="node-text">coding_agent/assistant/coding.py：run 开始自动检索；turn_finished 后自动压缩；run_finished 写 Episode。</text>
+    <text x="108" y="2671" class="node-text">ToolExecutor result transform：大输出 Artifact 化；TracingModelClient：摘要调用单独标 purpose=compaction。</text>
+    <text x="108" y="2699" class="node-text">Trace：memory.retrieval、compaction.started/completed/failed/aborted，并统计 tokens_saved。</text>
+  </g>
+
+  <!-- Metrics and invariants -->
+  <g id="metrics">
+    <rect x="1935" y="2110" width="1010" height="670" class="section"/>
+    <rect x="1955" y="2130" width="970" height="76" class="section-head"/>
+    <text x="1976" y="2157" class="section-index">06 · CURRENT RESULT &amp; INVARIANTS</text>
+    <text x="1976" y="2186" class="section-title">当前实测与不变量</text>
+
+    <rect x="1984" y="2240" width="285" height="126" class="node node-cyan"/>
+    <text x="2126" y="2281" text-anchor="middle" class="metric">102,880</text>
+    <text x="2126" y="2310" text-anchor="middle" class="metric-label">压缩前 Token</text>
+    <text x="2126" y="2338" text-anchor="middle" class="small">LongMemEval 真实案例</text>
+    <rect x="2297" y="2240" width="285" height="126" class="node node-blue"/>
+    <text x="2439" y="2281" text-anchor="middle" class="metric" fill="#6fa8ff">21,196</text>
+    <text x="2439" y="2310" text-anchor="middle" class="metric-label">压缩后估算 Token</text>
+    <text x="2439" y="2338" text-anchor="middle" class="small">保留近期原文＋Checkpoint</text>
+    <rect x="2610" y="2240" width="285" height="126" class="node node-orange"/>
+    <text x="2752" y="2281" text-anchor="middle" class="metric" fill="#ffb86b">81,684</text>
+    <text x="2752" y="2310" text-anchor="middle" class="metric-label">上下文差值</text>
+    <text x="2752" y="2338" text-anchor="middle" class="small">不等同净费用节省</text>
+
+    <rect x="1984" y="2398" width="911" height="184" class="node node-green"/>
+    <text x="2009" y="2432" class="node-title">必须始终成立的四条不变量</text>
+    <text x="2009" y="2463" class="node-text">1. 压缩不删除 append-only 原始 transcript。</text>
+    <text x="2009" y="2491" class="node-text">2. Tool Call 与对应 Tool Result 不跨压缩切点。</text>
+    <text x="2009" y="2519" class="node-text">3. 摘要缺失不等于事实不存在；回答前优先检索 Archive 原文。</text>
+    <text x="2009" y="2547" class="node-text">4. 事实最新版本在相关性排序之前裁决，不能靠分数碰运气。</text>
+
+    <rect x="1984" y="2614" width="911" height="116" class="node node-purple"/>
+    <text x="2009" y="2648" class="node-title">评测状态</text>
+    <text x="2009" y="2677" class="node-text">LongMemEval：56 个不重复压缩案例，首次 46/56（82.1%）；10 个分布类问题完成通用修复后回归。</text>
+    <text x="2009" y="2705" class="node-text">全项目单元测试：151/151；评测结束后当前按用户要求暂停继续扩跑和修复。</text>
+  </g>
+</svg>

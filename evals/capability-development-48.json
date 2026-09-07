@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "name": "capability-development-48",
+  "includes": [
+    "capability-all-development.json",
+    "capability-extension-development.json",
+    "capability-followup-development.json"
+  ]
+}

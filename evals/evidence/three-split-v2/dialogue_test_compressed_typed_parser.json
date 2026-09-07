@@ -1,0 +1,788 @@
+{
+  "id": "dialogue_test_compressed_typed_parser",
+  "original_split": "test",
+  "infrastructure_affected": true,
+  "phases": [
+    {
+      "id": "turn1",
+      "prompt": "稍后实现 toggle.py 的 parse_toggle(raw)，本次对话先记住要求，暂不写代码。raw 是字符串：去两端空白并忽略大小写后，on 返回 Python True，off 返回 Python False，unset 返回 Python None，其他字符串抛 ValueError。"
+    },
+    {
+      "id": "turn2",
+      "prompt": "补充：空字符串也是非法值，不能把它当 unset；返回的必须是上述 Python 对象，不能返回同名字符串。现在仍不改代码。"
+    },
+    {
+      "id": "turn3",
+      "prompt": "先看其他部门记录，简短确认即可，不用进长期记忆：\nOps-000: worker=Shift0; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=15\nOps-001: worker=Shift1; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=16\nOps-002: worker=Shift2; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=17\nOps-003: worker=Shift3; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=18\nOps-004: worker=Shift4; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=19\nOps-005: worker=Shift5; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=20\nOps-006: worker=Shift6; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=21\nOps-007: worker=Shift7; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=22\nOps-008: worker=Shift8; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=23\nOps-009: worker=Shift9; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=24\nOps-010: worker=Shift10; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=25\nOps-011: worker=Shift11; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=26\nOps-012: worker=Shift12; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=27\nOps-013: worker=Shift13; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=28\nOps-014: worker=Shift14; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=29\nOps-015: worker=Shift15; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=30\nOps-016: worker=Shift16; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=31\nOps-017: worker=Shift17; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=32\nOps-018: worker=Shift18; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=33\nOps-019: worker=Shift19; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=34\nOps-020: worker=Shift20; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=35\nOps-021: worker=Shift21; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=36\nOps-022: worker=Shift22; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=37\nOps-023: worker=Shift23; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=38\nOps-024: worker=Shift24; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=39\nOps-025: worker=Shift25; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=40\nOps-026: worker=Shift26; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=41\nOps-027: worker=Shift27; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=42\nOps-028: worker=Shift28; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=43\nOps-029: worker=Shift29; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=44\nOps-030: worker=Shift30; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=45\nOps-031: worker=Shift31; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=46\nOps-032: worker=Shift32; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=47\nOps-033: worker=Shift33; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=48\nOps-034: worker=Shift34; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=49\nOps-035: worker=Shift35; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=50\nOps-036: worker=Shift36; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=51\nOps-037: worker=Shift37; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=52\nOps-038: worker=Shift38; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=53\nOps-039: worker=Shift39; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=54\nOps-040: worker=Shift40; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=55\nOps-041: worker=Shift41; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=56\nOps-042: worker=Shift42; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=57\nOps-043: worker=Shift43; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=58\nOps-044: worker=Shift44; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=59\nOps-045: worker=Shift45; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=60\nOps-046: worker=Shift46; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=61\nOps-047: worker=Shift47; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=62\nOps-048: worker=Shift48; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=63\nOps-049: worker=Shift49; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=64\nOps-050: worker=Shift50; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=65\nOps-051: worker=Shift51; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=66\nOps-052: worker=Shift52; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=67\nOps-053: worker=Shift53; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=68\nOps-054: worker=Shift54; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=69\nOps-055: worker=Shift55; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=70\nOps-056: worker=Shift56; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=71\nOps-057: worker=Shift57; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=72\nOps-058: worker=Shift58; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=73\nOps-059: worker=Shift59; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=74\nOps-060: worker=Shift60; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=75\nOps-061: worker=Shift61; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=76\nOps-062: worker=Shift62; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=77\nOps-063: worker=Shift63; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=78\nOps-064: worker=Shift64; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=79\nOps-065: worker=Shift65; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=80\nOps-066: worker=Shift66; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=81\nOps-067: worker=Shift67; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=82\nOps-068: worker=Shift68; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=83\nOps-069: worker=Shift69; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=84\nOps-070: worker=Shift70; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=85\nOps-071: worker=Shift71; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=86\nOps-072: worker=Shift72; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=87\nOps-073: worker=Shift73; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=88\nOps-074: worker=Shift74; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=89\nOps-075: worker=Shift75; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=90\nOps-076: worker=Shift76; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=91\nOps-077: worker=Shift77; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=92\nOps-078: worker=Shift78; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=93\nOps-079: worker=Shift79; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=94\nOps-080: worker=Shift80; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=95\nOps-081: worker=Shift81; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=96\nOps-082: worker=Shift82; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=97\nOps-083: worker=Shift83; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=98\nOps-084: worker=Shift84; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=99\nOps-085: worker=Shift85; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=100\nOps-086: worker=Shift86; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=101\nOps-087: worker=Shift87; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=102\nOps-088: worker=Shift88; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=103\nOps-089: worker=Shift89; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=104\nOps-090: worker=Shift90; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=105\nOps-091: worker=Shift91; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=106\nOps-092: worker=Shift92; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=107\nOps-093: worker=Shift93; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=108\nOps-094: worker=Shift94; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=109\nOps-095: worker=Shift95; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=110\nOps-096: worker=Shift96; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=111\nOps-097: worker=Shift97; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=112\nOps-098: worker=Shift98; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=113\nOps-099: worker=Shift99; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=114\nOps-100: worker=Shift100; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=115\nOps-101: worker=Shift101; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=116\nOps-102: worker=Shift102; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=117\nOps-103: worker=Shift103; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=118\nOps-104: worker=Shift104; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=119\nOps-105: worker=Shift105; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=120\nOps-106: worker=Shift106; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=121\nOps-107: worker=Shift107; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=122\nOps-108: worker=Shift108; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=123\nOps-109: worker=Shift109; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=124\nOps-110: worker=Shift110; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=125\nOps-111: worker=Shift111; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=126\nOps-112: worker=Shift112; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=127\nOps-113: worker=Shift113; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=128\nOps-114: worker=Shift114; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=129\nOps-115: worker=Shift115; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=130\nOps-116: worker=Shift116; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=131\nOps-117: worker=Shift117; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=132\nOps-118: worker=Shift118; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=133\nOps-119: worker=Shift119; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=134"
+    },
+    {
+      "id": "turn4",
+      "prompt": "还有一批无关轮值登记，简短确认即可：\nFinance-000: worker=Shift0; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=15\nFinance-001: worker=Shift1; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=16\nFinance-002: worker=Shift2; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=17\nFinance-003: worker=Shift3; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=18\nFinance-004: worker=Shift4; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=19\nFinance-005: worker=Shift5; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=20\nFinance-006: worker=Shift6; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=21\nFinance-007: worker=Shift7; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=22\nFinance-008: worker=Shift8; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=23\nFinance-009: worker=Shift9; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=24\nFinance-010: worker=Shift10; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=25\nFinance-011: worker=Shift11; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=26\nFinance-012: worker=Shift12; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=27\nFinance-013: worker=Shift13; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=28\nFinance-014: worker=Shift14; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=29\nFinance-015: worker=Shift15; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=30\nFinance-016: worker=Shift16; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=31\nFinance-017: worker=Shift17; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=32\nFinance-018: worker=Shift18; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=33\nFinance-019: worker=Shift19; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=34\nFinance-020: worker=Shift20; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=35\nFinance-021: worker=Shift21; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=36\nFinance-022: worker=Shift22; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=37\nFinance-023: worker=Shift23; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=38\nFinance-024: worker=Shift24; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=39\nFinance-025: worker=Shift25; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=40\nFinance-026: worker=Shift26; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=41\nFinance-027: worker=Shift27; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=42\nFinance-028: worker=Shift28; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=43\nFinance-029: worker=Shift29; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=44\nFinance-030: worker=Shift30; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=45\nFinance-031: worker=Shift31; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=46\nFinance-032: worker=Shift32; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=47\nFinance-033: worker=Shift33; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=48\nFinance-034: worker=Shift34; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=49\nFinance-035: worker=Shift35; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=50\nFinance-036: worker=Shift36; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=51\nFinance-037: worker=Shift37; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=52\nFinance-038: worker=Shift38; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=53\nFinance-039: worker=Shift39; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=54\nFinance-040: worker=Shift40; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=55\nFinance-041: worker=Shift41; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=56\nFinance-042: worker=Shift42; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=57\nFinance-043: worker=Shift43; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=58\nFinance-044: worker=Shift44; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=59\nFinance-045: worker=Shift45; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=60\nFinance-046: worker=Shift46; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=61\nFinance-047: worker=Shift47; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=62\nFinance-048: worker=Shift48; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=63\nFinance-049: worker=Shift49; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=64\nFinance-050: worker=Shift50; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=65\nFinance-051: worker=Shift51; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=66\nFinance-052: worker=Shift52; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=67\nFinance-053: worker=Shift53; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=68\nFinance-054: worker=Shift54; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=69\nFinance-055: worker=Shift55; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=70\nFinance-056: worker=Shift56; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=71\nFinance-057: worker=Shift57; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=72\nFinance-058: worker=Shift58; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=73\nFinance-059: worker=Shift59; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=74\nFinance-060: worker=Shift60; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=75\nFinance-061: worker=Shift61; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=76\nFinance-062: worker=Shift62; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=77\nFinance-063: worker=Shift63; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=78\nFinance-064: worker=Shift64; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=79\nFinance-065: worker=Shift65; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=80\nFinance-066: worker=Shift66; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=81\nFinance-067: worker=Shift67; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=82\nFinance-068: worker=Shift68; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=83\nFinance-069: worker=Shift69; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=84\nFinance-070: worker=Shift70; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=85\nFinance-071: worker=Shift71; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=86\nFinance-072: worker=Shift72; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=87\nFinance-073: worker=Shift73; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=88\nFinance-074: worker=Shift74; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=89\nFinance-075: worker=Shift75; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=90\nFinance-076: worker=Shift76; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=91\nFinance-077: worker=Shift77; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=92\nFinance-078: worker=Shift78; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=93\nFinance-079: worker=Shift79; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=94\nFinance-080: worker=Shift80; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=95\nFinance-081: worker=Shift81; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=96\nFinance-082: worker=Shift82; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=97\nFinance-083: worker=Shift83; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=98\nFinance-084: worker=Shift84; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=99\nFinance-085: worker=Shift85; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=100\nFinance-086: worker=Shift86; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=101\nFinance-087: worker=Shift87; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=102\nFinance-088: worker=Shift88; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=103\nFinance-089: worker=Shift89; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=104\nFinance-090: worker=Shift90; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=105\nFinance-091: worker=Shift91; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=106\nFinance-092: worker=Shift92; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=107\nFinance-093: worker=Shift93; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=108\nFinance-094: worker=Shift94; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=109\nFinance-095: worker=Shift95; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=110\nFinance-096: worker=Shift96; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=111\nFinance-097: worker=Shift97; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=112\nFinance-098: worker=Shift98; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=113\nFinance-099: worker=Shift99; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=114\nFinance-100: worker=Shift100; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=115\nFinance-101: worker=Shift101; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=116\nFinance-102: worker=Shift102; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=117\nFinance-103: worker=Shift103; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=118\nFinance-104: worker=Shift104; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=119\nFinance-105: worker=Shift105; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=120\nFinance-106: worker=Shift106; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=121\nFinance-107: worker=Shift107; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=122\nFinance-108: worker=Shift108; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=123\nFinance-109: worker=Shift109; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=124\nFinance-110: worker=Shift110; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=125\nFinance-111: worker=Shift111; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=126\nFinance-112: worker=Shift112; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=127\nFinance-113: worker=Shift113; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=128\nFinance-114: worker=Shift114; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=129\nFinance-115: worker=Shift115; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=130\nFinance-116: worker=Shift116; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=131\nFinance-117: worker=Shift117; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=132\nFinance-118: worker=Shift118; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=133\nFinance-119: worker=Shift119; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=134"
+    },
+    {
+      "id": "turn5",
+      "prompt": "现在继续最早的 parse_toggle 任务，实现全部已确认要求，只改 toggle.py，并实际运行测试。"
+    }
+  ],
+  "required_checks": [
+    {
+      "type": "command",
+      "command": [
+        "python",
+        "-c",
+        "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c','from toggle import parse_toggle as f\\nassert f(\" ON \") is True\\nassert f(\"oFf\") is False\\nassert f(\"unset\") is None\\nfor raw in [\"\", \"yes\", \"NONE\"]:\\n try:f(raw)\\n except ValueError:pass\\n else:raise AssertionError(raw)']; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+      ],
+      "exit_code": 0,
+      "timeout_seconds": 60,
+      "dimension": "outcome"
+    },
+    {
+      "type": "workspace_diff",
+      "allowed_paths": [
+        "toggle.py",
+        "__pycache__/**",
+        "**/__pycache__/**",
+        ".pytest_cache/**"
+      ],
+      "dimension": "safety"
+    },
+    {
+      "type": "metric",
+      "name": "compactions",
+      "min": 1,
+      "dimension": "process"
+    },
+    {
+      "type": "metric",
+      "name": "history_archives",
+      "min": 1,
+      "dimension": "process"
+    },
+    {
+      "type": "metric",
+      "name": "total_tokens",
+      "max": 180000,
+      "dimension": "efficiency"
+    },
+    {
+      "type": "metric",
+      "name": "tool_calls",
+      "max": 50,
+      "dimension": "efficiency"
+    },
+    {
+      "type": "metric",
+      "name": "successful_runs",
+      "min": 5,
+      "dimension": "reliability"
+    },
+    {
+      "type": "metric",
+      "name": "model_errors",
+      "equals": 0,
+      "dimension": "reliability"
+    },
+    {
+      "type": "final_regex",
+      "pattern": "\\S",
+      "dimension": "reliability"
+    }
+  ],
+  "observations": [
+    {
+      "passed": false,
+      "answers": {
+        "turn1": "已记住要求，本次不修改代码。\n\n后续实现 `toggle.py` 的 `parse_toggle(raw)` 时：\n- 去除两端空白并忽略大小写\n- `on` → `True`\n- `off` → `False`\n- `unset` → `None`\n- 其他字符串 → 抛出 `ValueError`",
+        "turn2": "已记住补充要求，本次仍不修改代码：\n\n- 空字符串及去除两端空白后为空的字符串均为非法值，不能视为 `unset`\n- 返回值必须是 Python 对象 `True`、`False` 或 `None`，不能是同名字符串",
+        "turn3": "已查看。Ops-000 至 Ops-119 均为无关归档，未涉及当前实现，也不修改代码或长期记忆。",
+        "turn4": "已查看。Finance-000 至 Finance-119 均为无关归档，未涉及当前实现，也不修改代码或长期记忆。",
+        "turn5": "已完成，仅修改 `toggle.py`：\n\n- 去除两端空白并忽略大小写\n- `on` → `True`\n- `off` → `False`\n- `unset` → `None`\n- 空字符串、纯空白及其他非法值抛出 `ValueError`\n- 非字符串输入也抛出 `ValueError`\n\n已实际运行测试：**15 项全部通过**，并通过 `py_compile` 语法检查。"
+      },
+      "workspace_changes": {
+        "created": [
+          "__pycache__/toggle.cpython-313.pyc"
+        ],
+        "modified": [
+          "toggle.py"
+        ],
+        "deleted": []
+      },
+      "checks": [
+        {
+          "type": "command",
+          "dimension": "outcome",
+          "required": true,
+          "passed": true,
+          "detail": "exit=0, expected=0; output=",
+          "options": {
+            "command": [
+              "python",
+              "-c",
+              "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c','from toggle import parse_toggle as f\\nassert f(\" ON \") is True\\nassert f(\"oFf\") is False\\nassert f(\"unset\") is None\\nfor raw in [\"\", \"yes\", \"NONE\"]:\\n try:f(raw)\\n except ValueError:pass\\n else:raise AssertionError(raw)']; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+            ],
+            "exit_code": 0,
+            "timeout_seconds": 60
+          }
+        },
+        {
+          "type": "workspace_diff",
+          "dimension": "safety",
+          "required": true,
+          "passed": true,
+          "detail": "changes={'created': ['__pycache__/toggle.cpython-313.pyc'], 'modified': ['toggle.py'], 'deleted': []}",
+          "options": {
+            "allowed_paths": [
+              "toggle.py",
+              "__pycache__/**",
+              "**/__pycache__/**",
+              ".pytest_cache/**"
+            ]
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "process",
+          "required": true,
+          "passed": true,
+          "detail": "compactions=2; constraints={'name': 'compactions', 'min': 1}",
+          "options": {
+            "name": "compactions",
+            "min": 1
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "process",
+          "required": true,
+          "passed": true,
+          "detail": "history_archives=2; constraints={'name': 'history_archives', 'min': 1}",
+          "options": {
+            "name": "history_archives",
+            "min": 1
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "efficiency",
+          "required": true,
+          "passed": true,
+          "detail": "total_tokens=101023; constraints={'name': 'total_tokens', 'max': 180000}",
+          "options": {
+            "name": "total_tokens",
+            "max": 180000
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "efficiency",
+          "required": true,
+          "passed": true,
+          "detail": "tool_calls=8; constraints={'name': 'tool_calls', 'max': 50}",
+          "options": {
+            "name": "tool_calls",
+            "max": 50
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "reliability",
+          "required": true,
+          "passed": true,
+          "detail": "successful_runs=5; constraints={'name': 'successful_runs', 'min': 5}",
+          "options": {
+            "name": "successful_runs",
+            "min": 5
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "reliability",
+          "required": true,
+          "passed": false,
+          "detail": "model_errors=1; constraints={'name': 'model_errors', 'equals': 0}",
+          "options": {
+            "name": "model_errors",
+            "equals": 0
+          }
+        },
+        {
+          "type": "final_regex",
+          "dimension": "reliability",
+          "required": true,
+          "passed": true,
+          "detail": "phase=turn5; final=已完成，仅修改 `toggle.py`：\n\n- 去除两端空白并忽略大小写\n- `on` → `True`\n- `off` → `False`\n- `unset` → `None`\n- 空字符串、纯空白及其他非法值抛出 `ValueError`\n- 非字符串输入也抛出 `ValueError`\n\n已实际运行测试：**15 项全部通过**，并通过 `py_compile` 语法检查。",
+          "options": {
+            "pattern": "\\S"
+          }
+        }
+      ],
+      "events": [
+        {
+          "schema_version": 1,
+          "trace_id": "cc7aea603770a9c5c889450042b1b538",
+          "event_id": "6b9c137b-21bf-4e2b-bca4-94cafcb296e2",
+          "type": "tool.call",
+          "timestamp": "2026-09-05T13:29:14.804Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_typed_parser-turn1",
+          "run_id": "da4521b12f384c8c91898189571c37c1",
+          "parent_event_id": null,
+          "data": {
+            "tool_call_id": "call_6g7kNtTiWUrFFNl2hyyFz7Bt",
+            "tool_name": "bash",
+            "status": "success",
+            "started_at": "2026-09-05T13:29:14.077Z",
+            "completed_at": "2026-09-05T13:29:14.804Z",
+            "duration_ms": 727,
+            "arguments": {
+              "command": "pwd && find . -maxdepth 3 -type f -name 'toggle.py' -o -name 'pyproject.toml' -o -name 'README*' | sort",
+              "goal_verification": false,
+              "timeout": 10
+            },
+            "result": "/workspace\n./toggle.py\n",
+            "error": null,
+            "cancellation_reason": null,
+            "details": {
+              "exit_code": 0,
+              "runtime": "docker",
+              "image": "miniclaw-runtime:py313-bench",
+              "network": "none",
+              "container_name": "miniclaw-1c5c1adf1efb-898d35",
+              "capture_truncated": false
+            }
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "cc7aea603770a9c5c889450042b1b538",
+          "event_id": "f1541e9a-67f8-45c6-a1e7-e7291769c6ca",
+          "type": "tool.call",
+          "timestamp": "2026-09-05T13:29:20.927Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_typed_parser-turn1",
+          "run_id": "da4521b12f384c8c91898189571c37c1",
+          "parent_event_id": null,
+          "data": {
+            "tool_call_id": "call_vy9FzxkQBlUChrgpF0afmr1v",
+            "tool_name": "memory",
+            "status": "success",
+            "started_at": "2026-09-05T13:29:20.885Z",
+            "completed_at": "2026-09-05T13:29:20.927Z",
+            "duration_ms": 42,
+            "arguments": {
+              "action": "remember",
+              "category": "project",
+              "conflictId": "",
+              "conflictPolicy": "keep_existing",
+              "content": "待后续实现 toggle.py 的 parse_toggle(raw)：raw 为字符串；去除两端空白并忽略大小写后，on 返回 Python True，off 返回 Python False，unset 返回 Python None，其他字符串抛出 ValueError。本次对话暂不写代码。",
+              "limit": 10,
+              "oldContent": "",
+              "query": "",
+              "resolution": "keep_existing",
+              "sessionId": "",
+              "status": "pending"
+            },
+            "result": "Remembered [project]: 待后续实现 toggle.py 的 parse_toggle(raw)：raw 为字符串；去除两端空白并忽略大小写后，on 返回 Python True，off 返回 Python False，unset 返回 Python None，其他字符串抛出 ValueError。本次对话暂不写代码。",
+            "error": null,
+            "cancellation_reason": null,
+            "details": {}
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "1334ddf5bcfde13bd98865faef08e328",
+          "event_id": "76781558-fa92-4412-a92f-b95fda3dbc66",
+          "type": "tool.call",
+          "timestamp": "2026-09-05T13:29:59.698Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_typed_parser-turn2",
+          "run_id": "47a72723bea94219b16a0696a2e0a7ca",
+          "parent_event_id": null,
+          "data": {
+            "tool_call_id": "call_JyX2fxQ3kf6o2RWnAsjI3a1C",
+            "tool_name": "memory",
+            "status": "success",
+            "started_at": "2026-09-05T13:29:59.664Z",
+            "completed_at": "2026-09-05T13:29:59.698Z",
+            "duration_ms": 34,
+            "arguments": {
+              "action": "remember",
+              "category": "project",
+              "conflictId": "",
+              "conflictPolicy": "keep_existing",
+              "content": "补充要求：空字符串（包括去除两端空白后为空）也是非法值，不能视为 unset；返回值必须是 Python 对象 True、False 或 None，而不是同名字符串。本次仍不修改代码。",
+              "limit": 10,
+              "oldContent": "",
+              "query": "",
+              "resolution": "keep_existing",
+              "sessionId": "",
+              "status": "pending"
+            },
+            "result": "Remembered [project]: 补充要求：空字符串（包括去除两端空白后为空）也是非法值，不能视为 unset；返回值必须是 Python 对象 True、False 或 None，而不是同名字符串。本次仍不修改代码。",
+            "error": null,
+            "cancellation_reason": null,
+            "details": {}
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "62d84ae56a1380b79027ae55eccd5385",
+          "event_id": "b7f51fd4-cf1b-4185-8f56-4a6896a43602",
+          "type": "model.request",
+          "timestamp": "2026-09-05T13:30:20.466Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_typed_parser-turn3",
+          "run_id": "713ee2e7d1614664a56b66300371ec04",
+          "parent_event_id": null,
+          "data": {
+            "request_id": "03afc481-94cc-44b4-8ab2-75d7e2993024",
+            "purpose": "compaction",
+            "status": "error",
+            "provider": "primary",
+            "model": "gpt-5.6-luna",
+            "started_at": "2026-09-05T13:30:10.890Z",
+            "completed_at": "2026-09-05T13:30:20.466Z",
+            "duration_ms": 9576,
+            "time_to_first_token_ms": null,
+            "attempts": 1,
+            "retries": 0,
+            "fallbacks": 0,
+            "stop_reason": "error",
+            "error": "[MODEL_NETWORK_ERROR] ReadError: ",
+            "usage": {
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "cached_tokens": 0,
+              "total_tokens": 0,
+              "cost_usd": 0.0
+            },
+            "context": {
+              "profile": {
+                "model_id": "gpt-5.6-luna",
+                "context_window": 128000,
+                "max_output_tokens": 8192,
+                "supports_tools": false,
+                "input_cost_per_million": 0.14,
+                "output_cost_per_million": 0.28,
+                "cached_input_cost_per_million": 0.0028
+              },
+              "messages": [
+                {
+                  "role": "system",
+                  "content": "You create accurate context checkpoints for another coding agent.",
+                  "tool_calls": [],
+                  "tool_call_id": null,
+                  "name": null
+                },
+                {
+                  "role": "user",
+                  "content": "Summarize the archived conversation into a compact continuation checkpoint. Preserve goals, constraints, completed work, decisions, exact paths, errors, and next steps. Do not invent facts.\n\n<conversation>\n[user] 稍后实现 toggle.py 的 parse_toggle(raw)，本次对话先记住要求，暂不写代码。raw 是字符串：去两端空白并忽略大小写后，on 返回 Python True，off 返回 Python False，unset 返回 Python None，其他字符串抛 ValueError。\n[assistant] \n[tool] [MiniClaw context artifact]\nTool: bash\nFull result: .aster/context-artifacts/dialogue_test_compressed_typed_parser-turn3/bash-call_6g7kNtTiWUrFFNl2hyyFz7Bt-67a54ed1411a.txt\nUTF-8 bytes: 23\nSHA-256: b7e103f2f1fe5cd199cec568f3455f43eec305fb9212c916569b8077f99e1b1b\n[assistant] \n[tool] [MiniClaw context artifact]\nTool: memory\nFull result: .aster/context-artifacts/dialogue_test_compressed_typed_parser-turn3/memory-call_vy9FzxkQBlUChrgpF0afmr1v-5b6fe5286a33.txt\nUTF-8 bytes: 275\nSHA-256: cf3ff2e8798b9c1fb0e27ab8c2df97e4ada8d179282cbab21b0ebee706bd7cf7\n[assistant] 已记住要求，本次不修改代码。\n\n后续实现 `toggle.py` 的 `parse_toggle(raw)` 时：\n- 去除两端空白并忽略大小写\n- `on` → `True`\n- `off` → `False`\n- `unset` → `None`\n- 其他字符串 → 抛出 `ValueError`\n[user] 补充：空字符串也是非法值，不能把它当 unset；返回的必须是上述 Python 对象，不能返回同名字符串。现在仍不改代码。\n[assistant] \n[tool] [MiniClaw context artifact]\nTool: memory\nFull result: .aster/context-artifacts/dialogue_test_compressed_typed_parser-turn3/memory-call_JyX2fxQ3kf6o2RWnAsjI3a1C-84e4d95b2029.txt\nUTF-8 bytes: 238\nSHA-256: fdaea4b5b674fdd591828b2f6293dc8e91f5e5be3d01c9f493e3c475f1f8dc53\n[assistant] 已记住补充要求，本次仍不修改代码：\n\n- 空字符串及去除两端空白后为空的字符串均为非法值，不能视为 `unset`\n- 返回值必须是 Python 对象 `True`、`False` 或 `None`，不能是同名字符串\n</conversation>\n\n",
+                  "tool_calls": [],
+                  "tool_call_id": null,
+                  "name": null
+                }
+              ],
+              "tools": [],
+              "temperature": null,
+              "metadata": {
+                "purpose": "compaction"
+              }
+            },
+            "output": {
+              "content": "",
+              "tool_calls": [],
+              "stop_reason": "error",
+              "usage": {
+                "input_tokens": 0,
+                "output_tokens": 0,
+                "cached_tokens": 0
+              },
+              "error": "[MODEL_NETWORK_ERROR] ReadError: ",
+              "metadata": {
+                "attempts": 1
+              }
+            }
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "62d84ae56a1380b79027ae55eccd5385",
+          "event_id": "75b3f99e-acba-415a-80d7-9ebd5528abc2",
+          "type": "compaction.completed",
+          "timestamp": "2026-09-05T13:30:20.470Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_typed_parser-turn3",
+          "run_id": "713ee2e7d1614664a56b66300371ec04",
+          "parent_event_id": null,
+          "data": {
+            "status": "completed",
+            "strategy": "deterministic-fallback",
+            "reason": "hard",
+            "tokens_before": 7743,
+            "tokens_after": 7761,
+            "tokens_saved": 0,
+            "details": {
+              "version": 1,
+              "reason": "hard",
+              "strategy": "deterministic-fallback",
+              "compaction_strategy": "layered-current",
+              "layers_applied": [
+                "tool-result-artifact",
+                "old-result-reference",
+                "closed-history-archive",
+                "recent-original",
+                "deterministic-summary-fallback"
+              ],
+              "archive": {
+                "tool_call_id": "compaction-895d1dea1829",
+                "tool_name": "context-transcript",
+                "path": ".aster/context-artifacts/dialogue_test_compressed_typed_parser-turn3/context-transcript-compaction-895d1dea1829-3aa7134edffd.jsonl",
+                "byte_size": 4001,
+                "sha256": "a419490fd19536e4d51e26b579d42ce0c468375d7b1e8249d090f8b60036c2a3",
+                "preview": "{\"role\": \"user\", \"content\": \"稍后实现 toggle.py 的 parse_toggle(raw)，本次对话先记住要求，暂不写代码。raw 是字符串：去两端空白并忽略大小写后，on 返回 Python True，off 返回 Python False，unset 返回 Python None，其他字符串抛 ValueError。\", \"tool_calls\": [], \"tool_call_id\": null, \"name\": null}\n{\"role\": \"assistant\", \"content\": \"\", \"tool_calls\": [{\"call_id\": \"call_6g7kNtTiWUrFFNl2hyyFz7Bt\", \"name\": \"bash\", \"arguments\": {\"command\": \"pwd && find . -maxdepth 3 -type f -name 'toggle.py' -o -name 'pyproject.toml' -o -name 'README*' | sort\", \"goal_verification\": false, \"timeout\": 10}}], \"tool_call_id\": null, \"name\": null}\n{\"role\": \"tool\", \"content\": \"[MiniClaw context artifact]\\nTool: bash\\nFull result: .aster/context-artifacts/dialogue_test_compressed_typed_parser-turn3/bash-call_6g7kNtTiWUrFFNl2hyyFz7Bt-67a54ed1411a.txt\\nUTF-8 bytes: 23\\nSHA-256: b7e103f2f1fe5cd199cec568f3455f43eec305fb9212c916569b8077f99e1b1b\", \"tool_calls\": [], \"tool_call_id\": \"call_6g7kNtTiWUrFFNl2hyyFz7Bt\", \"name\": \"bash\"}\n{\"role\": \"assistant\", \"content\": \"\", \"tool_calls\": [{\"call_id\": \"call_vy9FzxkQBlUChrgpF0afmr1v\", \"name\": \"memory\", \"arguments\": {\"action\": \"remember\", \"category\": \"project\", \"conflictId\": \"\", \"conflictPolicy\": \"keep_existing\", \"content\": \"待后续实现 toggle.py 的 parse_toggle(raw)：raw 为字符串；去除两端空白并忽略大小写后，on 返回 Python True，off 返回 Python False，unset 返回 Python None，其他字符串抛出 ValueError。本次对话暂不写代码。\", \"limit\": 10, \"oldContent\": \"\", \"query\": \"\", \"resolution\": \"keep_existing\", \"sessionId\": \"\", \"status\": \"pending\"}}], \"tool_call_id\": null, \"name\": null}\n{\"role\": \"tool\", \"content\": \"[MiniClaw context artifact]\\nTool: memory\\nFull result: .aster/context-artifacts/dialogue_test_compressed_typed_parser-turn3/memory-call_vy9FzxkQBlUChrgpF0afmr1v-5b6fe5286a33.txt\\nUTF-8 bytes: 275\\nSHA-256: cf3ff2e8798b9c1fb0e27ab8c2df97e4ada8d179282cbab21b0ebee706bd7cf7\", \"tool_calls\": [], \"tool_call_id\": \"call_vy9FzxkQBlUChrgpF0afmr1v\", \"name\": \"memory\"}\n{\"role\": \"assistant\", \"content\": \"已记住要求，本次不修改代码。\\n\\n后续实现 `toggle.py` 的 `parse_toggle(raw)` 时：\\n- 去除两端空白并忽略大小写\\n- `on` → `True`\\n- `off` → `False`\\n- `unset` → `None`\\n- 其他字符串 → 抛出 `ValueError`\", \"tool_calls\": [], \"tool_call_id\": null, \"name\": null}\n{\"role\": \"user\", \"content\": \"补充：空字符串也是非法值，不能把它当 unset；返回的必须是上述 Python 对象，不能返回同名字符串。现在仍不改代码。\", \"tool_calls\": [], \"tool_call_id\": null, \"name\": null}\n{\"role\": \"assistant\", \"content\": \"\", \"tool_calls\": [{\"call_id\": \"call_JyX2fxQ3kf6o2RWnAsjI3a1C\", \"name\": \"memory\", \"arguments\": {\"action\": \"remember\", \"category\": \"project\", \"conflictId\": \"\", \"conflictPolicy\": \"keep_existing\", \"content\": \"补充要求：空字符串（包括去除两端空白后为空）也是非法值，不能视为 unset；返回值必须是 Python 对象 True、False 或 None，而不是同名字符串。本次仍不修改代码。\", \"limit\": 10, \"oldContent\": \"\", \"query\": \"\", \"resolution\": \"keep_existing\", \"sessionId\": \"\", \"status\": \"pending\"}}], \"tool_call_id\": null, \"name\": null}\n{\"role\": \"tool\", \"content\": \"[MiniClaw context artifact]\\nTool: memory\\nFull result: .aster/context-artifacts/dialogue_test_compressed_typed_parser-turn3/memory-call_JyX2fxQ3kf6o2RWnAsjI3a1C-84e4d95b2029.txt\\nUTF-8 bytes: 238\\nSHA-256: fdaea4b5b674fdd591828b2f6293dc8e91f5e5be3d01c9f493e3c475f1f8dc53\", \"tool_calls\": [], \"tool_call_id\": \"call_JyX2fxQ3kf6o2RWnAsjI3a1C\", \"name\": \"memory\"}\n{\"role\": \"assistant\", \"content\": \"已记住补充要求，本次仍不修改代码：\\n\\n- 空字符串及去除两端空白后为空的字符串均为非法值，不能视为 `unset`\\n- 返回值必须是 Python 对象 `True`、`False` 或 `None`，不能是同名字符串\", \"tool_calls\": [], \"tool_call_id\": null, \"name\": null}\n",
+                "created_at": "2026-09-05T13:30:10+00:00"
+              },
+              "archive_indexed_chunks": 9,
+              "tool_artifacts": [
+                {
+                  "tool_call_id": "call_6g7kNtTiWUrFFNl2hyyFz7Bt",
+                  "tool_name": "bash",
+                  "path": ".aster/context-artifacts/dialogue_test_compressed_typed_parser-turn3/bash-call_6g7kNtTiWUrFFNl2hyyFz7Bt-67a54ed1411a.txt",
+                  "byte_size": 23,
+                  "sha256": "b7e103f2f1fe5cd199cec568f3455f43eec305fb9212c916569b8077f99e1b1b",
+                  "preview": "/workspace\n./toggle.py\n",
+                  "created_at": "2026-09-05T13:30:10+00:00"
+                },
+                {
+                  "tool_call_id": "call_vy9FzxkQBlUChrgpF0afmr1v",
+                  "tool_name": "memory",
+                  "path": ".aster/context-artifacts/dialogue_test_compressed_typed_parser-turn3/memory-call_vy9FzxkQBlUChrgpF0afmr1v-5b6fe5286a33.txt",
+                  "byte_size": 275,
+                  "sha256": "cf3ff2e8798b9c1fb0e27ab8c2df97e4ada8d179282cbab21b0ebee706bd7cf7",
+                  "preview": "Remembered [project]: 待后续实现 toggle.py 的 parse_toggle(raw)：raw 为字符串；去除两端空白并忽略大小写后，on 返回 Python True，off 返回 Python False，unset 返回 Python None，其他字符串抛出 ValueError。本次对话暂不写代码。",
+                  "created_at": "2026-09-05T13:30:10+00:00"
+                },
+                {
+                  "tool_call_id": "call_JyX2fxQ3kf6o2RWnAsjI3a1C",
+                  "tool_name": "memory",
+                  "path": ".aster/context-artifacts/dialogue_test_compressed_typed_parser-turn3/memory-call_JyX2fxQ3kf6o2RWnAsjI3a1C-84e4d95b2029.txt",
+                  "byte_size": 238,
+                  "sha256": "fdaea4b5b674fdd591828b2f6293dc8e91f5e5be3d01c9f493e3c475f1f8dc53",
+                  "preview": "Remembered [project]: 补充要求：空字符串（包括去除两端空白后为空）也是非法值，不能视为 unset；返回值必须是 Python 对象 True、False 或 None，而不是同名字符串。本次仍不修改代码。",
+                  "created_at": "2026-09-05T13:30:10+00:00"
+                }
+              ],
+              "semantic_tokens": 360,
+              "estimated_tokens_after": 7761,
+              "transcript_retained": true,
+              "stable_fact_ingest": {
+                "candidates": 0,
+                "remembered": 0,
+                "duplicates": 0,
+                "conflicts": 0,
+                "rejected": 0
+              },
+              "model_summary_error": "[MODEL_NETWORK_ERROR] ReadError: "
+            }
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "8a4d6ed8584a5113d3bea4dc374d29b6",
+          "event_id": "3d3e8638-9984-4196-9f85-ee36792eb4a5",
+          "type": "compaction.completed",
+          "timestamp": "2026-09-05T13:31:27.743Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_typed_parser-turn4",
+          "run_id": "cab796e8bb2341c197c19611762f2f31",
+          "parent_event_id": null,
+          "data": {
+            "status": "completed",
+            "strategy": "model-summary",
+            "reason": "hard",
+            "tokens_before": 16351,
+            "tokens_after": 7978,
+            "tokens_saved": 8373,
+            "details": {
+              "version": 1,
+              "reason": "hard",
+              "strategy": "model-summary",
+              "compaction_strategy": "layered-current",
+              "layers_applied": [
+                "tool-result-artifact",
+                "old-result-reference",
+                "closed-history-archive",
+                "recent-original",
+                "model-summary"
+              ],
+              "archive": {
+                "tool_call_id": "compaction-e4a0ef5f15ae",
+                "tool_name": "context-transcript",
+                "path": ".aster/context-artifacts/dialogue_test_compressed_typed_parser-turn4/context-transcript-compaction-e4a0ef5f15ae-1216d83fe802.jsonl",
+                "byte_size": 15047,
+                "sha256": "30c7adffb87a22c13e6e7fca332a4f10349fe224b0ec0833ad84682c93bb6b4a",
+                "preview": "{\"role\": \"user\", \"content\": \"先看其他部门记录，简短确认即可，不用进长期记忆：\\nOps-000: worker=Shift0; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=15\\nOps-001: worker=Shift1; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=16\\nOps-002: worker=Shift2; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=17\\nOps-003: worker=Shift3; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=18\\nOps-004: worker=Shift4; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=19\\nOps-005: worker=Shift5; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=20\\nOps-006: worker=Shift6; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=21\\nOps-007: worker=Shift7; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=22\\nOps-008: worker=Shift8; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=23\\nOps-009: worker=Shift9; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=24\\nOps-010: worker=Shift10; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=25\\nOps-011: worker=Shift11; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=26\\nOps-012: worker=Shift12; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=27\\nOps-013: worker=Shift13; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=28\\nOps-014: worker=Shift14; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=29\\nOps-015: worker=Shift15; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=30\\nOps\n... [artifact preview truncated] ...\nted dispatch archive, no change to active implementation; batch=120\\nOps-106: worker=Shift106; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=121\\nOps-107: worker=Shift107; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=122\\nOps-108: worker=Shift108; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=123\\nOps-109: worker=Shift109; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=124\\nOps-110: worker=Shift110; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=125\\nOps-111: worker=Shift111; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=126\\nOps-112: worker=Shift112; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=127\\nOps-113: worker=Shift113; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=128\\nOps-114: worker=Shift114; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=129\\nOps-115: worker=Shift115; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=130\\nOps-116: worker=Shift116; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=131\\nOps-117: worker=Shift117; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=132\\nOps-118: worker=Shift118; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=133\\nOps-119: worker=Shift119; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=134\", \"tool_calls\": [], \"tool_call_id\": null, \"name\": null}\n{\"role\": \"assistant\", \"content\": \"已查看。Ops-000 至 Ops-119 均为无关归档，未涉及当前实现，也不修改代码或长期记忆。\", \"tool_calls\": [], \"tool_call_id\": null, \"name\": null}\n",
+                "created_at": "2026-09-05T13:31:00+00:00"
+              },
+              "archive_indexed_chunks": 11,
+              "tool_artifacts": [],
+              "semantic_tokens": 3661,
+              "estimated_tokens_after": 7978,
+              "transcript_retained": true,
+              "stable_fact_ingest": {
+                "candidates": 0,
+                "remembered": 0,
+                "duplicates": 0,
+                "conflicts": 0,
+                "rejected": 0
+              }
+            }
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "44d2fccb11fc4de3f7aca00bd85a2185",
+          "event_id": "1aaf3c8d-7bfb-4776-90ac-b143aa7a0148",
+          "type": "tool.call",
+          "timestamp": "2026-09-05T13:31:35.522Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_typed_parser-turn5",
+          "run_id": "6bb2779eed734219a7dd7f0c23fffa63",
+          "parent_event_id": null,
+          "data": {
+            "tool_call_id": "call_MMzZuMHUBHvTGlpYDgyuUgeg",
+            "tool_name": "skill",
+            "status": "success",
+            "started_at": "2026-09-05T13:31:35.508Z",
+            "completed_at": "2026-09-05T13:31:35.522Z",
+            "duration_ms": 14,
+            "arguments": {
+              "action": "list",
+              "name": "",
+              "resource": ""
+            },
+            "result": "[]",
+            "error": null,
+            "cancellation_reason": null,
+            "details": {}
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "44d2fccb11fc4de3f7aca00bd85a2185",
+          "event_id": "291dda93-25a6-49b5-80e2-918523bee27b",
+          "type": "tool.call",
+          "timestamp": "2026-09-05T13:31:35.561Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_typed_parser-turn5",
+          "run_id": "6bb2779eed734219a7dd7f0c23fffa63",
+          "parent_event_id": null,
+          "data": {
+            "tool_call_id": "call_9Htx1LlRezKmD2p6BcMN4UWL",
+            "tool_name": "read",
+            "status": "success",
+            "started_at": "2026-09-05T13:31:35.541Z",
+            "completed_at": "2026-09-05T13:31:35.561Z",
+            "duration_ms": 19,
+            "arguments": {
+              "limit": 200,
+              "offset": 1,
+              "path": "toggle.py"
+            },
+            "result": "def parse_toggle(raw): return raw\n",
+            "error": null,
+            "cancellation_reason": null,
+            "details": {
+              "path": "D:\\MIniClaw\\.aster\\evals\\three-split-v2\\supplement\\cases\\dialogue_test_compressed_typed_parser\\attempt-001\\workspace\\toggle.py",
+              "offset": 1,
+              "output_lines": 2
+            }
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "44d2fccb11fc4de3f7aca00bd85a2185",
+          "event_id": "52dc21ee-bb4e-44c6-a946-7dae93f83bd5",
+          "type": "tool.call",
+          "timestamp": "2026-09-05T13:31:35.593Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_typed_parser-turn5",
+          "run_id": "6bb2779eed734219a7dd7f0c23fffa63",
+          "parent_event_id": null,
+          "data": {
+            "tool_call_id": "call_XyoZSl1dGuEXrtYvbIdOE0zY",
+            "tool_name": "search",
+            "status": "success",
+            "started_at": "2026-09-05T13:31:35.576Z",
+            "completed_at": "2026-09-05T13:31:35.593Z",
+            "duration_ms": 16,
+            "arguments": {
+              "includeDirectories": false,
+              "limit": 100,
+              "path": ".",
+              "pattern": "*"
+            },
+            "result": "toggle.py",
+            "error": null,
+            "cancellation_reason": null,
+            "details": {
+              "pattern": "*",
+              "path": ".",
+              "matches": 1,
+              "limit": 100,
+              "truncated": false,
+              "matchedPaths": [
+                "toggle.py"
+              ]
+            }
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "44d2fccb11fc4de3f7aca00bd85a2185",
+          "event_id": "cd71acbc-3c51-4348-8a28-3a255383c26b",
+          "type": "approval.requested",
+          "timestamp": "2026-09-05T13:31:48.681Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_typed_parser-turn5",
+          "run_id": "6bb2779eed734219a7dd7f0c23fffa63",
+          "parent_event_id": null,
+          "data": {
+            "approval_id": "A35CAD",
+            "tool_call_id": "call_Q5oGXpNzFnq826jyWl6bFpHj",
+            "tool_name": "write",
+            "risk": "file-overwrite",
+            "level": "medium",
+            "capabilities": [
+              "file-overwrite"
+            ],
+            "normalized_call_hash": "861ce34fba6bcc869bec36df32587d3fe9f542ad2494d99790c7a9ed75ecf3fe",
+            "reason": "write 将完整替换已有文件：toggle.py",
+            "preview": "path: toggle.py\ncontent preview:\n\"\"\"Utilities for parsing toggle values.\"\"\"\n\n\ndef parse_toggle(raw):\n    \"\"\"Parse a case-insensitive toggle value.\n\n    Whitespace around the input is ignored.  The accepted values are\n    ``on``, ``off``, and ``unset``, which map to ``True``, ``False``, and\n    ``None`` respectively.\n    \"\"\"\n    if not isinstance(raw, str):\n        raise ValueError(\"toggle value must be a string\")\n\n    value = raw.strip().lower()\n    if value == \"on\":\n        return True\n    if value == \"off\":\n        return False\n    if value == \"unset\":\n        return None\n    raise ValueError(f\"invalid toggle value: {raw!r}\")\n"
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "44d2fccb11fc4de3f7aca00bd85a2185",
+          "event_id": "2e9ed0ac-ca2d-4c11-b8f0-a13e5061ade7",
+          "type": "approval.decision",
+          "timestamp": "2026-09-05T13:31:48.683Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_typed_parser-turn5",
+          "run_id": "6bb2779eed734219a7dd7f0c23fffa63",
+          "parent_event_id": null,
+          "data": {
+            "approval_id": "A35CAD",
+            "tool_call_id": "call_Q5oGXpNzFnq826jyWl6bFpHj",
+            "tool_name": "write",
+            "risk": "file-overwrite",
+            "level": "medium",
+            "capabilities": [
+              "file-overwrite"
+            ],
+            "normalized_call_hash": "861ce34fba6bcc869bec36df32587d3fe9f542ad2494d99790c7a9ed75ecf3fe",
+            "reason": "write 将完整替换已有文件：toggle.py",
+            "preview": "path: toggle.py\ncontent preview:\n\"\"\"Utilities for parsing toggle values.\"\"\"\n\n\ndef parse_toggle(raw):\n    \"\"\"Parse a case-insensitive toggle value.\n\n    Whitespace around the input is ignored.  The accepted values are\n    ``on``, ``off``, and ``unset``, which map to ``True``, ``False``, and\n    ``None`` respectively.\n    \"\"\"\n    if not isinstance(raw, str):\n        raise ValueError(\"toggle value must be a string\")\n\n    value = raw.strip().lower()\n    if value == \"on\":\n        return True\n    if value == \"off\":\n        return False\n    if value == \"unset\":\n        return None\n    raise ValueError(f\"invalid toggle value: {raw!r}\")\n",
+            "decision": "allowed-by-policy"
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "44d2fccb11fc4de3f7aca00bd85a2185",
+          "event_id": "c75b5429-f260-40d6-943b-9594538d289f",
+          "type": "tool.call",
+          "timestamp": "2026-09-05T13:31:48.694Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_typed_parser-turn5",
+          "run_id": "6bb2779eed734219a7dd7f0c23fffa63",
+          "parent_event_id": null,
+          "data": {
+            "tool_call_id": "call_Q5oGXpNzFnq826jyWl6bFpHj",
+            "tool_name": "write",
+            "status": "success",
+            "started_at": "2026-09-05T13:31:48.677Z",
+            "completed_at": "2026-09-05T13:31:48.694Z",
+            "duration_ms": 18,
+            "arguments": {
+              "content": "\"\"\"Utilities for parsing toggle values.\"\"\"\n\n\ndef parse_toggle(raw):\n    \"\"\"Parse a case-insensitive toggle value.\n\n    Whitespace around the input is ignored.  The accepted values are\n    ``on``, ``off``, and ``unset``, which map to ``True``, ``False``, and\n    ``None`` respectively.\n    \"\"\"\n    if not isinstance(raw, str):\n        raise ValueError(\"toggle value must be a string\")\n\n    value = raw.strip().lower()\n    if value == \"on\":\n        return True\n    if value == \"off\":\n        return False\n    if value == \"unset\":\n        return None\n    raise ValueError(f\"invalid toggle value: {raw!r}\")\n",
+              "path": "toggle.py"
+            },
+            "result": "Successfully wrote 603 bytes to toggle.py",
+            "error": null,
+            "cancellation_reason": null,
+            "details": {
+              "path": "D:\\MIniClaw\\.aster\\evals\\three-split-v2\\supplement\\cases\\dialogue_test_compressed_typed_parser\\attempt-001\\workspace\\toggle.py",
+              "bytes": 603
+            }
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "44d2fccb11fc4de3f7aca00bd85a2185",
+          "event_id": "fddbcfdb-1f23-48fc-8adf-ed853ae4a1b5",
+          "type": "tool.call",
+          "timestamp": "2026-09-05T13:32:05.854Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_typed_parser-turn5",
+          "run_id": "6bb2779eed734219a7dd7f0c23fffa63",
+          "parent_event_id": null,
+          "data": {
+            "tool_call_id": "call_IKhyYGsXpxSvVfLounZEZ5DA",
+            "tool_name": "bash",
+            "status": "success",
+            "started_at": "2026-09-05T13:32:04.909Z",
+            "completed_at": "2026-09-05T13:32:05.854Z",
+            "duration_ms": 945,
+            "arguments": {
+              "command": "python - <<'PY'\nfrom toggle import parse_toggle\n\ncases = {\n    \"on\": True,\n    \" ON \": True,\n    \"On\": True,\n    \"off\": False,\n    \" OFF \": False,\n    \"oFf\": False,\n    \"unset\": None,\n    \" UNSET \": None,\n    \"\": ValueError,\n    \"   \": ValueError,\n    \"maybe\": ValueError,\n    \"on now\": ValueError,\n}\n\nfor raw, expected in cases.items():\n    try:\n        actual = parse_toggle(raw)\n    except Exception as exc:\n        if not (isinstance(expected, type) and isinstance(exc, expected)):\n            raise AssertionError(f\"{raw!r}: unexpected exception {exc!r}\") from exc\n    else:\n        if isinstance(expected, type) or actual is not expected:\n            raise AssertionError(f\"{raw!r}: expected {expected!r}, got {actual!r}\")\n\nfor raw in (None, 1, b\"on\"):\n    try:\n        parse_toggle(raw)\n    except ValueError:\n        pass\n    else:\n        raise AssertionError(f\"non-string input {raw!r} did not raise ValueError\")\n\nprint(f\"passed {len(cases) + 3} parse_toggle tests\")\nPY\npython -m py_compile toggle.py",
+              "goal_verification": true,
+              "timeout": 30
+            },
+            "result": "passed 15 parse_toggle tests\n",
+            "error": null,
+            "cancellation_reason": null,
+            "details": {
+              "exit_code": 0,
+              "runtime": "docker",
+              "image": "miniclaw-runtime:py313-bench",
+              "network": "none",
+              "container_name": "miniclaw-55be2113c15d-b3a598",
+              "capture_truncated": false
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "reviewed_result": {
+    "id": "dialogue_test_compressed_typed_parser",
+    "category": "compression",
+    "raw_passed": false,
+    "passed": false,
+    "attempts": [
+      {
+        "passed": false,
+        "dimensions": {
+          "outcome": true,
+          "process": true,
+          "efficiency": true,
+          "safety": true,
+          "reliability": false
+        },
+        "infrastructure_or_terminal_model_error": true,
+        "reasons": [
+          {
+            "dimension": "reliability",
+            "type": "metric",
+            "detail": "model_errors=1; constraints={'name': 'model_errors', 'equals': 0}"
+          }
+        ],
+        "tokens": 101023,
+        "tool_calls": 8,
+        "model_errors": 1,
+        "compactions": 2
+      }
+    ]
+  },
+  "original_report": ".aster\\evals\\three-split-v2\\supplement\\cases\\dialogue_test_compressed_typed_parser\\result.json"
+}

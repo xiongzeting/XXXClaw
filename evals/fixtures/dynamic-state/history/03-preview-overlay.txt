@@ -1,0 +1,3 @@
+STATE: Preview overlay opened later.
+Controls: Desktop, Tablet, Mobile preview sizes.
+These are preview controls, not tabs in the left column of the theme detail page.

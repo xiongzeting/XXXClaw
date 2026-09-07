@@ -1,0 +1,3 @@
+STATE: Themes grid before opening a detail page.
+Visible controls: Search, Filters, View buttons.
+Left-column tabs: none because this is not the detail page.

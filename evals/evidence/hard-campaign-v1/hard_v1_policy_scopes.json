@@ -1,0 +1,274 @@
+{
+  "id": "hard_v1_policy_scopes",
+  "source": {
+    "kind": "reviewed_synthetic_dialogue",
+    "campaign": "hard-campaign-v1",
+    "split": "retained",
+    "family": "policy_scopes",
+    "difficulty": "challenge",
+    "exposure": "Observed after frozen first run; any future tuning makes this development evidence.",
+    "original_split": "retained",
+    "track": "observed-failure",
+    "infrastructure_affected": true,
+    "evidence": "evidence/hard-campaign-v1/hard_v1_policy_scopes.json"
+  },
+  "phases": [
+    {
+      "id": "turn1",
+      "prompt": "会话1：记住 2026-09-01 生效的全局规则：production 的 normal 发布需要 two_person，staging 的 normal 发布需要 single_person；任何 emergency 发布默认仍需要 two_person。 请将这些有效事实保存为长期记忆，每轮使用新会话，后续将依赖记忆召回；不要写普通项目文件。"
+    },
+    {
+      "id": "turn2",
+      "prompt": "会话2：payment-prod 曾提出 emergency 可跳过审批，但提案未获批准；提案内容没有改变规则，也不能推断为 single_person。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn3",
+      "prompt": "会话3：payment-prod 的 emergency 例外于 2026-09-03 获批，只在 UTC 2026-09-10 00:00 至 23:59 有效，期间要求 single_person。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn4",
+      "prompt": "会话4：payment-prod 的该例外在 2026-09-10 之后自动失效；payment-prod 的 normal 始终沿用 production 的 two_person。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn5",
+      "prompt": "会话5：search-staging 的 normal 被单独改为 two_person；search-staging 的 emergency 没有单独授权，必须回退全局 emergency 规则。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn6",
+      "prompt": "会话6：同名 payment-sandbox 是独立环境，没有继承 payment-prod 的限时例外；它的 normal 和 emergency 都只适用全局对应规则。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn7",
+      "prompt": "会话7：2026-09-11 12:00 UTC 有人声称 payment-prod 例外延长，但该声称已被正式撤销；不能用它覆盖失效时间。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn8",
+      "prompt": "会话8：只输出一个 JSON 对象，且只能有 payment_prod_emergency、payment_prod_normal、search_staging_normal、search_staging_emergency、payment_sandbox_emergency、global_prod_emergency 六个 key；每个值必须是精确字符串 two_person 或 single_person。查询时刻固定为 2026-09-11T12:00:00Z；没有授权例外时不得推断 single_person。"
+    }
+  ],
+  "observations": [
+    {
+      "answers": {
+        "turn1": "已保存为长期记忆，生效日期为 **2026-09-01**：\n\n- production 的 normal 发布需要 `two_person`\n- staging 的 normal 发布需要 `single_person`\n- 任何 emergency 发布默认仍需要 `two_person`\n\n未修改任何项目文件。",
+        "turn2": "已更新长期记忆：\n\n- `payment-prod` 曾提出 emergency 可跳过审批，但提案未获批准。\n- 该提案未改变既有规则，也不能推断为 `single_person`。\n- 原有作用域和字段保持不变：\n  - production 的 normal 发布：`two_person`\n  - staging 的 normal 发布：`single_person`\n  - emergency 发布默认：`two_person`\n- 未修改任何普通项目文件。",
+        "turn3": "已更新长期记忆：\n\n- `payment-prod` 的 `emergency` 例外于 **2026-09-03** 获批。\n- 仅在 **UTC 2026-09-10 00:00 至 23:59** 有效。\n- 有效期间要求 `single_person`。\n- 其他作用域和字段保持不变：\n  - `production` 的 `normal` 发布仍需 `two_person`\n  - `staging` 的 `normal` 发布仍需 `single_person`\n  - 其他 `emergency` 发布默认仍需 `two_person`\n- 未修改普通项目文件。",
+        "turn4": "已更新长期记忆：\n\n- `payment-prod` 的 `emergency` 例外在 **2026-09-10 之后自动失效**。\n- `payment-prod` 的 `normal` 始终沿用 `production` 的 **`two_person`**。\n- 未修改其他作用域和字段：\n  - `production` 的 `normal`：`two_person`\n  - `staging` 的 `normal`：`single_person`\n  - 其他 `emergency`：默认 `two_person`\n- 未写入普通项目文件。",
+        "turn5": "已更新长期记忆：\n\n- `search-staging` 的 `normal` 发布单独改为 `two_person`。\n- `search-staging` 的 `emergency` 没有单独授权，回退全局 `emergency` 规则，即 `two_person`。\n- 未修改其他作用域和字段：\n  - `production` 的 `normal`：`two_person`\n  - `staging` 的 `normal`：`single_person`\n  - `payment-prod` 的 `normal`：始终沿用 `production` 的 `two_person`\n  - `payment-prod` 的 `emergency` 例外仅在 UTC 2026-09-10 有效，期间为 `single_person`，之后失效\n  - 其他 `emergency`：默认 `two_person`\n\n未修改任何普通项目文件。",
+        "turn6": "已更新长期记忆：\n\n- `payment-sandbox` 与 `payment-prod` 是独立环境，不继承 `payment-prod` 的限时 `emergency` 例外。\n- `payment-sandbox` 的 `normal` 仅适用全局 `normal` 规则：`two_person`。\n- `payment-sandbox` 的 `emergency` 仅适用全局规则：`two_person`。\n- 其他未修改的作用域和字段均已保留。\n- 未写入普通项目文件。",
+        "turn7": "",
+        "turn8": "{\"payment_prod_emergency\":\"two_person\",\"payment_prod_normal\":\"two_person\",\"search_staging_normal\":\"two_person\",\"search_staging_emergency\":\"two_person\",\"payment_sandbox_emergency\":\"two_person\",\"global_prod_emergency\":\"two_person\"}"
+      },
+      "checks": [
+        {
+          "type": "final_json",
+          "dimension": "outcome",
+          "required": true,
+          "passed": true,
+          "detail": "phase=turn8; final={\"payment_prod_emergency\":\"two_person\",\"payment_prod_normal\":\"two_person\",\"search_staging_normal\":\"two_person\",\"search_staging_emergency\":\"two_person\",\"payment_sandbox_emergency\":\"two_person\",\"global_prod_emergency\":\"two_person\"}",
+          "options": {
+            "fields": {
+              "payment_prod_emergency": "two_person",
+              "payment_prod_normal": "two_person",
+              "search_staging_normal": "two_person",
+              "search_staging_emergency": "two_person",
+              "payment_sandbox_emergency": "two_person",
+              "global_prod_emergency": "two_person"
+            }
+          }
+        },
+        {
+          "type": "trace_event",
+          "dimension": "process",
+          "required": true,
+          "passed": true,
+          "detail": "matched=1; min=1; max=None; exact=None",
+          "options": {
+            "event": "memory.retrieval",
+            "phase": "turn8",
+            "where_min": {
+              "data.injected_count": 1
+            }
+          }
+        },
+        {
+          "type": "workspace_diff",
+          "dimension": "safety",
+          "required": true,
+          "passed": true,
+          "detail": "changes={'created': [], 'modified': [], 'deleted': []}",
+          "options": {
+            "allowed_paths": [],
+            "max_changed_files": 0
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "efficiency",
+          "required": true,
+          "passed": true,
+          "detail": "total_tokens=72775; constraints={'name': 'total_tokens', 'max': 130000}",
+          "options": {
+            "name": "total_tokens",
+            "max": 130000
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "efficiency",
+          "required": true,
+          "passed": true,
+          "detail": "tool_calls=7; constraints={'name': 'tool_calls', 'max': 40}",
+          "options": {
+            "name": "tool_calls",
+            "max": 40
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "reliability",
+          "required": true,
+          "passed": false,
+          "detail": "successful_runs=7; constraints={'name': 'successful_runs', 'min': 8}",
+          "options": {
+            "name": "successful_runs",
+            "min": 8
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "reliability",
+          "required": true,
+          "passed": false,
+          "detail": "model_errors=1; constraints={'name': 'model_errors', 'equals': 0}",
+          "options": {
+            "name": "model_errors",
+            "equals": 0
+          }
+        },
+        {
+          "type": "final_regex",
+          "dimension": "reliability",
+          "required": true,
+          "passed": true,
+          "detail": "phase=turn8; final={\"payment_prod_emergency\":\"two_person\",\"payment_prod_normal\":\"two_person\",\"search_staging_normal\":\"two_person\",\"search_staging_emergency\":\"two_person\",\"payment_sandbox_emergency\":\"two_person\",\"global_prod_emergency\":\"two_person\"}",
+          "options": {
+            "pattern": "\\S"
+          }
+        }
+      ],
+      "metrics": {
+        "runs": 8,
+        "successful_runs": 7,
+        "failed_runs": 1,
+        "cancelled_runs": 0,
+        "model_requests": 22,
+        "model_errors": 1,
+        "model_retries": 0,
+        "model_fallbacks": 0,
+        "agent_model_requests": 15,
+        "auxiliary_model_requests": 7,
+        "agent_tokens": 63773,
+        "memory_tokens": 9002,
+        "compaction_tokens": 0,
+        "tool_calls": 7,
+        "tool_errors": 0,
+        "tool_cancelled": 0,
+        "tool_blocked": 0,
+        "approval_requests": 0,
+        "approval_allowed": 0,
+        "approval_denied": 0,
+        "approval_timed_out": 0,
+        "memory_retrievals": 8,
+        "memory_injected_items": 54,
+        "memory_consolidations": 8,
+        "memory_facts_written": 0,
+        "memory_conflicts": 0,
+        "instruction_injections": 8,
+        "instruction_sources": 0,
+        "goal_completed_runs": 0,
+        "compaction_attempts": 0,
+        "compactions": 0,
+        "compaction_failures": 0,
+        "compaction_aborted": 0,
+        "tokens_saved_by_compaction": 0,
+        "input_tokens": 68668,
+        "output_tokens": 4107,
+        "cached_tokens": 28160,
+        "total_tokens": 72775,
+        "duration_ms": 138482,
+        "judge_requests": 0,
+        "judge_input_tokens": 0,
+        "judge_output_tokens": 0,
+        "judge_total_tokens": 0,
+        "judge_duration_ms": 0,
+        "live_tool_artifacts": 0,
+        "live_tool_artifact_bytes": 0,
+        "archived_tool_artifacts": 0,
+        "history_archives": 0,
+        "model_summary_compactions": 0,
+        "deterministic_compactions": 0,
+        "cost_usd": 0.00689993,
+        "max_goal_attempts": 0,
+        "model_latency_mean_ms": 6239.954545,
+        "model_latency_p50_ms": 5665.0,
+        "model_latency_p95_ms": 11474.0,
+        "ttft_mean_ms": 3938.47619,
+        "ttft_p50_ms": 3538.0,
+        "ttft_p95_ms": 8660.0,
+        "tool_latency_mean_ms": 40.0,
+        "tool_latency_p95_ms": 116.0,
+        "cache_ratio": 0.41008912448301976,
+        "model_error_rate": 0.045454545454545456,
+        "tool_error_rate": 0.0,
+        "compaction_success_rate": null,
+        "event_types": {
+          "goal.snapshot": 16,
+          "instructions.injected": 8,
+          "memory.consolidation": 8,
+          "memory.retrieval": 8,
+          "model.request": 22,
+          "model.transport": 44,
+          "run.completed": 8,
+          "run.started": 8,
+          "tool.call": 7
+        },
+        "tool_breakdown": {
+          "memory": 7
+        },
+        "tool_failure_breakdown": {},
+        "model_purposes": {
+          "agent": 15,
+          "memory_consolidation": 7
+        },
+        "providers": {
+          "primary": 22
+        },
+        "models": {
+          "gpt-5.6-luna": 22
+        },
+        "runtime_backends": {
+          "docker": 8
+        },
+        "wall_duration_seconds": 147.737
+      },
+      "error": null,
+      "trace_paths": {
+        "turn1": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_policy_scopes\\attempt-001\\workspace\\.aster\\eval-sessions\\turn1\\trace.jsonl",
+        "turn2": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_policy_scopes\\attempt-001\\workspace\\.aster\\eval-sessions\\turn2\\trace.jsonl",
+        "turn3": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_policy_scopes\\attempt-001\\workspace\\.aster\\eval-sessions\\turn3\\trace.jsonl",
+        "turn4": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_policy_scopes\\attempt-001\\workspace\\.aster\\eval-sessions\\turn4\\trace.jsonl",
+        "turn5": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_policy_scopes\\attempt-001\\workspace\\.aster\\eval-sessions\\turn5\\trace.jsonl",
+        "turn6": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_policy_scopes\\attempt-001\\workspace\\.aster\\eval-sessions\\turn6\\trace.jsonl",
+        "turn7": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_policy_scopes\\attempt-001\\workspace\\.aster\\eval-sessions\\turn7\\trace.jsonl",
+        "turn8": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_policy_scopes\\attempt-001\\workspace\\.aster\\eval-sessions\\turn8\\trace.jsonl"
+      },
+      "workspace_changes": {
+        "created": [],
+        "modified": [],
+        "deleted": []
+      }
+    }
+  ],
+  "original_result": ".aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_policy_scopes\\result.json",
+  "classification": "Needs trace review; run-health failures alone do not establish an Agent defect."
+}

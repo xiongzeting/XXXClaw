@@ -1,0 +1,194 @@
+{
+  "basic_cases": 31,
+  "moves": [
+    {
+      "id": "dialogue_cap_recall_alias",
+      "original_suite": "measured-development-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_cap_recall_numerical_similarity",
+      "original_suite": "measured-development-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_cap_recall_preference_exception",
+      "original_suite": "measured-development-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_cap_tool_discover_nested",
+      "original_suite": "measured-development-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_cap_tool_quoted_paths",
+      "original_suite": "measured-development-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_cap_complete_cli",
+      "original_suite": "measured-development-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_recall_warehouse_alias",
+      "original_suite": "retained-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_recall_region_owner",
+      "original_suite": "retained-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_recall_exception_preference",
+      "original_suite": "retained-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_recall_joined_routes",
+      "original_suite": "retained-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_compression_endpoint",
+      "original_suite": "retained-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_compression_retention",
+      "original_suite": "retained-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_compression_status",
+      "original_suite": "retained-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_compression_literal",
+      "original_suite": "retained-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_compression_export_flags",
+      "original_suite": "retained-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_tool_fix_and_verify",
+      "original_suite": "retained-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_tool_csv_unicode_path",
+      "original_suite": "retained-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_tool_recover_missing_dir",
+      "original_suite": "retained-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_complete_package_export",
+      "original_suite": "retained-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_complete_csv_roundtrip",
+      "original_suite": "retained-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_retained_file_cli_contract",
+      "original_suite": "retained-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_retained_root_recursive_manifest",
+      "original_suite": "retained-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "fresh_test_railway_code",
+      "original_suite": "test-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "fresh_test_schema_owner",
+      "original_suite": "test-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "fresh_test_shift_assignment",
+      "original_suite": "test-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "fresh_test_stock_levels",
+      "original_suite": "test-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "fresh_test_retraction",
+      "original_suite": "test-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "fresh_test_inventory_report",
+      "original_suite": "test-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "fresh_test_html_summary",
+      "original_suite": "test-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_test_root_markdown_index",
+      "original_suite": "test-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    },
+    {
+      "id": "dialogue_test_root_checksum_manifest",
+      "original_suite": "test-release-v2.json",
+      "destination": "smoke-basic-v3.json",
+      "reason": "Basic field recall, small direct transformation, or short single-artifact delivery; retain as mechanism smoke coverage."
+    }
+  ],
+  "main_replacement": "main-challenge-v3.json",
+  "legacy_cases_no_longer_main": 96,
+  "policy": "Only the explicitly listed basic cases are called smoke. Other prior cases remain historical baselines or known-failure regressions. No original frozen suite was rewritten or deleted."
+}

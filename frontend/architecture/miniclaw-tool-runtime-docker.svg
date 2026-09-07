@@ -1,0 +1,239 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3200" height="2520" viewBox="0 0 3200 2520" role="img" aria-labelledby="svg-title svg-desc">
+  <title id="svg-title">MiniClaw Tool Runtime 与 Docker 安全执行架构</title>
+  <desc id="svg-desc">展示模型 Tool Call 从 AgentLoop 进入 ToolExecutor，依次经过参数校验、项目指令预检、风险审批、WorkspaceGuard，再分别走宿主文件工具或 Docker Bash 路由，并由取消信号和 Trace 覆盖全链路。图中强调 Docker 加 Direct 模式下只有 Bash 位于容器，文件工具直接操作宿主工作区，容器的工作区挂载可写。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07131d"/>
+      <stop offset="0.52" stop-color="#0a1824"/>
+      <stop offset="1" stop-color="#071019"/>
+    </linearGradient>
+    <linearGradient id="hero" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#43d9d0" stop-opacity="0.24"/>
+      <stop offset="0.55" stop-color="#6fa8ff" stop-opacity="0.13"/>
+      <stop offset="1" stop-color="#b996ff" stop-opacity="0.10"/>
+    </linearGradient>
+    <pattern id="grid" width="34" height="34" patternUnits="userSpaceOnUse">
+      <path d="M34 0H0V34" fill="none" stroke="#294154" stroke-opacity="0.18" stroke-width="1"/>
+    </pattern>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000" flood-opacity="0.30"/>
+    </filter>
+    <marker id="arrowCyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#43d9d0"/></marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#6fa8ff"/></marker>
+    <marker id="arrowOrange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#ffb86b"/></marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#ff738d"/></marker>
+    <marker id="arrowPurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#b996ff"/></marker>
+    <style>
+      text { font-family: Inter, "Segoe UI", "Microsoft YaHei", sans-serif; fill: #eaf4f8; }
+      .title { font-size: 43px; font-weight: 700; }
+      .subtitle { font-size: 17px; fill: #9db2bf; }
+      .section { fill: #0d1c29; stroke: #355268; stroke-width: 2; rx: 20; filter: url(#shadow); }
+      .hero { fill: url(#hero); stroke: #355268; stroke-width: 2; rx: 20; }
+      .node { fill: #102331; stroke: #38566c; stroke-width: 1.6; rx: 14; }
+      .cyan { fill: #0e2c2e; stroke: #3aa79f; }
+      .blue { fill: #10253b; stroke: #4e79ae; }
+      .orange { fill: #302419; stroke: #bd8240; }
+      .purple { fill: #251e37; stroke: #7a5fb0; }
+      .green { fill: #122b25; stroke: #4f9f72; }
+      .red { fill: #321d25; stroke: #b95d70; }
+      .muted { fill: #0b1822; stroke: #294154; }
+      .section-title { font-size: 25px; font-weight: 700; }
+      .node-title { font-size: 18px; font-weight: 700; }
+      .node-text { font-size: 13px; fill: #c8d9e2; }
+      .small { font-size: 11px; fill: #8fa7b6; }
+      .code { font-family: "Cascadia Code", Consolas, monospace; font-size: 12px; fill: #bcd0d9; }
+      .step { font-size: 14px; font-weight: 700; fill: #43d9d0; letter-spacing: 0.8px; }
+      .warning { font-size: 13px; fill: #ffd2a4; }
+      .critical { font-size: 13px; fill: #ffb5c1; }
+      .line-cyan { fill: none; stroke: #43d9d0; stroke-width: 3; marker-end: url(#arrowCyan); }
+      .line-blue { fill: none; stroke: #6fa8ff; stroke-width: 3; marker-end: url(#arrowBlue); }
+      .line-orange { fill: none; stroke: #ffb86b; stroke-width: 3; marker-end: url(#arrowOrange); }
+      .line-purple { fill: none; stroke: #b996ff; stroke-width: 3; marker-end: url(#arrowPurple); }
+      .line-red { fill: none; stroke: #ff738d; stroke-width: 3; marker-end: url(#arrowRed); }
+      .dash { stroke-dasharray: 10 8; }
+      .bus { fill: none; stroke-width: 4; }
+    </style>
+  </defs>
+
+  <rect width="3200" height="2520" fill="url(#bg)"/>
+  <rect width="3200" height="2520" fill="url(#grid)"/>
+
+  <rect x="70" y="45" width="3060" height="145" class="hero"/>
+  <text x="110" y="105" class="title">MiniClaw Tool Runtime + Docker：五道闸门、两条执行路由、一条取消链</text>
+  <text x="110" y="148" class="subtitle">当前默认：docker + direct。Read / Edit / Write / Grep 在宿主 Python 进程执行；只有 Bash 进入一次性 Docker 容器。</text>
+
+  <rect x="70" y="230" width="3060" height="1430" class="section"/>
+  <text x="105" y="278" class="section-title">A. 一次 Tool Call 的真实执行链路</text>
+
+  <rect x="115" y="325" width="360" height="185" class="node cyan"/>
+  <text x="145" y="360" class="step">入口</text>
+  <text x="145" y="394" class="node-title">CLI / 飞书 / AgentLoop</text>
+  <text x="145" y="427" class="node-text">模型输出 ToolInvocation</text>
+  <text x="145" y="452" class="code">call_id + name + arguments</text>
+  <text x="145" y="480" class="node-text">同一 Attempt 共享 CancellationToken</text>
+
+  <rect x="570" y="300" width="560" height="235" class="node blue"/>
+  <text x="600" y="336" class="step">闸门 1</text>
+  <text x="600" y="370" class="node-title">ToolExecutor</text>
+  <text x="600" y="401" class="node-text">① 按名称找到工具；深拷贝参数</text>
+  <text x="600" y="427" class="node-text">② prepare_arguments 兼容旧 Edit 参数</text>
+  <text x="600" y="453" class="node-text">③ 递归 JSON Schema 校验</text>
+  <text x="600" y="479" class="node-text">④ 串行执行 Preflight；任一返回错误即阻断</text>
+  <text x="600" y="505" class="node-text">⑤ 统一异常、超时、取消与最终输出上限</text>
+
+  <rect x="1230" y="300" width="520" height="235" class="node purple"/>
+  <text x="1260" y="336" class="step">闸门 2</text>
+  <text x="1260" y="370" class="node-title">Project Instruction Preflight</text>
+  <text x="1260" y="401" class="node-text">为目标文件加载 AGENTS.md 等局部规则</text>
+  <text x="1260" y="427" class="node-text">Write / Edit 前发现新规则时先阻断</text>
+  <text x="1260" y="453" class="node-text">下一轮刷新 System Prompt 后才允许重试</text>
+  <text x="1260" y="484" class="small">这是规范闸门，不是操作系统隔离。</text>
+
+  <rect x="1850" y="280" width="610" height="275" class="node orange"/>
+  <text x="1880" y="316" class="step">闸门 3</text>
+  <text x="1880" y="350" class="node-title">ApprovalGate：allow / ask / deny</text>
+  <text x="1880" y="381" class="node-text">Shell 生成 capabilities 集合，不只保留最高风险</text>
+  <text x="1880" y="407" class="node-text">删除 / 网络 / 外部写 / Git 改写 / 系统变更等</text>
+  <text x="1880" y="433" class="node-text">路径先规范化；白名单必须覆盖全部 capability</text>
+  <text x="1880" y="459" class="node-text">审批绑定规范化 Tool Call Hash，防批准后换参数</text>
+  <text x="1880" y="485" class="node-text">CLI / 飞书可批准；超时或入口不可用时拒绝</text>
+  <text x="1880" y="520" class="warning">审批决定会先写 Trace，再决定是否执行。</text>
+
+  <rect x="2570" y="315" width="500" height="205" class="node red"/>
+  <text x="2600" y="351" class="step">阻断分支</text>
+  <text x="2600" y="385" class="node-title">Blocked ToolResult</text>
+  <text x="2600" y="416" class="node-text">Schema 错误 / 指令刷新 / 审批拒绝</text>
+  <text x="2600" y="442" class="node-text">不会进入工具 execute()</text>
+  <text x="2600" y="468" class="node-text">状态记录为 blocked 或 error</text>
+
+  <path d="M475 418H570" class="line-cyan"/>
+  <path d="M1130 418H1230" class="line-blue"/>
+  <path d="M1750 418H1850" class="line-purple"/>
+  <path d="M2460 418H2570" class="line-red dash"/>
+
+  <rect x="320" y="650" width="1120" height="405" class="node green"/>
+  <text x="355" y="692" class="step">路由 A：确定性文件工具</text>
+  <text x="355" y="728" class="node-title">Read / Edit / Write / Grep → Host Direct</text>
+  <text x="355" y="760" class="node-text">四个工具不进入 Docker，直接调用宿主 Python / ripgrep</text>
+
+  <rect x="360" y="795" width="470" height="210" class="node muted"/>
+  <text x="388" y="830" class="node-title">闸门 4：WorkspaceGuard</text>
+  <text x="388" y="860" class="node-text">relative / /workspace 路径映射到 host root</text>
+  <text x="388" y="886" class="node-text">resolve 真实路径，阻止 ..、绝对路径和符号链接逃逸</text>
+  <text x="388" y="912" class="node-text">按 read / write / search / execute 判断权限</text>
+  <text x="388" y="938" class="node-text">动态保护 .aster、.git、.env、凭据和私钥</text>
+  <text x="388" y="970" class="small">新创建的敏感文件不依赖启动时扫描。</text>
+
+  <rect x="890" y="795" width="505" height="210" class="node muted"/>
+  <text x="918" y="830" class="node-title">文件级确定性保护</text>
+  <text x="918" y="860" class="node-text">Write：路径队列 + 临时文件 + os.replace 原子提交</text>
+  <text x="918" y="886" class="node-text">Edit：唯一匹配、不重叠、保留 BOM 与 CRLF/LF</text>
+  <text x="918" y="912" class="node-text">Read：头部截断，offset/limit 继续读取</text>
+  <text x="918" y="938" class="node-text">Grep：动态排除受保护路径，限制命中和长行</text>
+  <text x="918" y="970" class="small">这些工具语义窄，因此用代码约束比放进 Shell 更可控。</text>
+
+  <rect x="1620" y="650" width="1180" height="405" class="node orange"/>
+  <text x="1655" y="692" class="step">路由 B：任意命令工具</text>
+  <text x="1655" y="728" class="node-title">Bash → ToolRuntime → DockerCommandExecutor</text>
+  <text x="1655" y="760" class="node-text">每次 Bash 创建唯一、一次性的容器；退出、超时或取消后 rm -f</text>
+
+  <rect x="1665" y="795" width="520" height="210" class="node muted"/>
+  <text x="1693" y="830" class="node-title">ToolRuntime</text>
+  <text x="1693" y="860" class="node-text">保存 source / host / execution workspace</text>
+  <text x="1693" y="886" class="node-text">限制默认 120s、最大 900s 命令超时</text>
+  <text x="1693" y="912" class="node-text">选择 Host 或 Docker CommandExecutor</text>
+  <text x="1693" y="938" class="node-text">向 Trace 暴露后端、工作区模式和资源配置</text>
+
+  <rect x="2245" y="775" width="510" height="240" class="node red"/>
+  <text x="2273" y="810" class="node-title">闸门 5：Docker 进程隔离</text>
+  <text x="2273" y="840" class="node-text">network none · CPU 1 · memory 1024MB · PIDs 256</text>
+  <text x="2273" y="866" class="node-text">read-only rootfs · cap-drop ALL · no-new-privileges</text>
+  <text x="2273" y="892" class="node-text">/tmp tmpfs：nosuid,nodev,noexec · nofile 1024</text>
+  <text x="2273" y="918" class="node-text">只传 HOME/TMPDIR/NO_COLOR/CI，不传 API Key</text>
+  <text x="2273" y="944" class="node-text">敏感路径用空文件/目录只读遮蔽</text>
+  <text x="2273" y="980" class="critical">但 /workspace 是可写 Bind Mount，Direct 修改会真实落盘。</text>
+
+  <path d="M2155 555V610H880V650" class="line-blue"/>
+  <path d="M2155 555V610H2210V650" class="line-orange"/>
+
+  <rect x="350" y="1145" width="1040" height="235" class="node blue"/>
+  <text x="385" y="1185" class="node-title">宿主有效工作区 host_workspace</text>
+  <text x="385" y="1218" class="node-text">Direct：等于用户真实项目目录，文件修改立即可见</text>
+  <text x="385" y="1244" class="node-text">Snapshot：等于 session/sandbox/workspace，源项目不自动同步</text>
+  <text x="385" y="1270" class="node-text">文件工具始终操作 host_workspace；不经过容器文件系统</text>
+  <text x="385" y="1302" class="code">D:\project  ⇄  /workspace</text>
+  <text x="385" y="1334" class="small">同一个 WorkspaceGuard 同时服务文件工具、审批规范化和 Docker 遮蔽。</text>
+
+  <rect x="1650" y="1145" width="1120" height="235" class="node orange"/>
+  <text x="1685" y="1185" class="node-title">一次性容器中的 /workspace</text>
+  <text x="1685" y="1218" class="node-text">宿主有效工作区 Bind Mount 到 /workspace，默认可读写</text>
+  <text x="1685" y="1244" class="node-text">容器根文件系统只读，但项目目录不是只读</text>
+  <text x="1685" y="1270" class="node-text">命令由 image 内的 sh -c 执行；镜像不会自动 Pull</text>
+  <text x="1685" y="1296" class="node-text">当前 Dockerfile 未声明 USER，镜像默认用户通常是容器内 root</text>
+  <text x="1685" y="1334" class="small">能力已被移除，但后续仍适合增加固定非 root 用户作为纵深防御。</text>
+
+  <path d="M870 1055V1145" class="line-blue"/>
+  <path d="M2210 1055V1145" class="line-orange"/>
+
+  <rect x="385" y="1460" width="2380" height="145" class="node purple"/>
+  <text x="420" y="1498" class="step">统一返回</text>
+  <text x="420" y="1532" class="node-title">ToolResult → Goal / Instruction / Artifact Transform → AgentLoop</text>
+  <text x="420" y="1564" class="node-text">Tool 专属截断 → 大结果落盘 → 错误归一化 → exit_code/details → tool.call Trace → 模型下一轮</text>
+  <path d="M870 1380V1460" class="line-purple"/>
+  <path d="M2210 1380V1460" class="line-purple"/>
+
+  <rect x="70" y="1710" width="1490" height="365" class="section"/>
+  <text x="105" y="1756" class="section-title">B. 端到端取消：不是只改一个状态字段</text>
+  <path d="M135 1830H1450" class="bus" stroke="#ff738d" marker-end="url(#arrowRed)"/>
+  <circle cx="180" cy="1830" r="10" fill="#ff738d"/><circle cx="470" cy="1830" r="10" fill="#ff738d"/><circle cx="790" cy="1830" r="10" fill="#ff738d"/><circle cx="1110" cy="1830" r="10" fill="#ff738d"/><circle cx="1410" cy="1830" r="10" fill="#ff738d"/>
+  <text x="120" y="1870" class="node-title">CLI / 飞书</text>
+  <text x="395" y="1870" class="node-title">AgentLoop</text>
+  <text x="690" y="1870" class="node-title">ToolExecutor</text>
+  <text x="1015" y="1870" class="node-title">文件提交 / 进程</text>
+  <text x="1360" y="1870" class="node-title">Trace</text>
+  <text x="115" y="1910" class="node-text">同一 CancellationToken 贯穿 Attempt</text>
+  <text x="115" y="1937" class="node-text">Host：终止进程组 / Windows taskkill /T /F</text>
+  <text x="115" y="1964" class="node-text">Docker：docker rm -f + 终止 Docker CLI 进程树</text>
+  <text x="115" y="1991" class="node-text">Write/Edit：提交前再次检查；原子替换减少半写文件</text>
+  <text x="115" y="2022" class="critical">取消不能回滚已经完成的外部副作用，也不等于 Exactly-Once。</text>
+
+  <rect x="1640" y="1710" width="1490" height="365" class="section"/>
+  <text x="1675" y="1756" class="section-title">C. Trace：安全决定和真实执行必须能对上</text>
+  <rect x="1690" y="1800" width="405" height="215" class="node purple"/>
+  <text x="1720" y="1837" class="node-title">run.started</text>
+  <text x="1720" y="1867" class="node-text">backend / workspace_mode</text>
+  <text x="1720" y="1893" class="node-text">image / network / CPU / memory / PIDs</text>
+  <text x="1720" y="1919" class="node-text">审批策略、超时、白名单数量</text>
+  <text x="1720" y="1945" class="node-text">Tool 配置 Hash</text>
+  <text x="1720" y="1980" class="small">证明这一轮到底用了什么安全配置。</text>
+  <rect x="2140" y="1800" width="440" height="215" class="node orange"/>
+  <text x="2170" y="1837" class="node-title">approval.requested / decision</text>
+  <text x="2170" y="1867" class="node-text">capabilities / risk / level / preview</text>
+  <text x="2170" y="1893" class="node-text">normalized_call_hash</text>
+  <text x="2170" y="1919" class="node-text">approved / denied / timeout / unavailable</text>
+  <text x="2170" y="1954" class="small">审批内容与执行参数不一致时拒绝执行。</text>
+  <rect x="2625" y="1800" width="455" height="215" class="node blue"/>
+  <text x="2655" y="1837" class="node-title">tool.call</text>
+  <text x="2655" y="1867" class="node-text">success / error / blocked / cancelled</text>
+  <text x="2655" y="1893" class="node-text">duration / arguments / exit_code</text>
+  <text x="2655" y="1919" class="node-text">runtime / image / network / container_name</text>
+  <text x="2655" y="1945" class="node-text">capture_truncated / cancellation_reason</text>
+
+  <rect x="70" y="2120" width="3060" height="335" class="section"/>
+  <text x="105" y="2166" class="section-title">D. Docker 能保护什么，以及它明确保护不了什么</text>
+  <rect x="115" y="2210" width="930" height="190" class="node green"/>
+  <text x="150" y="2248" class="node-title">能保护</text>
+  <text x="150" y="2280" class="node-text">宿主系统进程、容器能力、根文件系统、默认网络、CPU/内存/PID、敏感文件可见性</text>
+  <text x="150" y="2310" class="node-text">超时与取消后的一次性容器清理；不向容器传递模型和飞书密钥</text>
+  <text x="150" y="2345" class="small">核心价值：限制任意 Shell 命令能触碰的系统边界。</text>
+  <rect x="1135" y="2210" width="930" height="190" class="node red"/>
+  <text x="1170" y="2248" class="node-title">保护不了</text>
+  <text x="1170" y="2280" class="node-text">Direct 工作区内容：命令仍可修改、删除、改写 Git；已批准的外部副作用也不会自动回滚</text>
+  <text x="1170" y="2310" class="node-text">Host 文件工具、业务逻辑错误、风险正则漏判、启用 bridge 后的远程系统</text>
+  <text x="1170" y="2345" class="small">所以 Docker 必须和 ApprovalGate、WorkspaceGuard、Trace 一起讲。</text>
+  <rect x="2155" y="2210" width="930" height="190" class="node orange"/>
+  <text x="2190" y="2248" class="node-title">当前合理表述</text>
+  <text x="2190" y="2280" class="node-text">“参数校验 → 风险审批 → 路径防逃逸 → Bash 容器隔离 → 取消与审计”的纵深防御</text>
+  <text x="2190" y="2310" class="node-text">不是“用了 Docker 就绝对安全”，也不是“所有工具都运行在容器里”</text>
+  <text x="2190" y="2345" class="warning">面试时先讲边界，再讲实现参数，最后主动讲限制。</text>
+</svg>

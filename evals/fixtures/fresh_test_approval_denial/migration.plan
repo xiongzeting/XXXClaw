@@ -1,0 +1,2 @@
+approval: denied
+command: ./migrate-prod --apply

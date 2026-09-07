@@ -1,0 +1,66 @@
+{
+  "suite": "smoke",
+  "version": 1,
+  "generated_at": "2026-09-04T17:18:04.925642Z",
+  "cases": 4,
+  "passed": 4,
+  "failed": 0,
+  "pass_rate": 1.0,
+  "elapsed_seconds": 168.862,
+  "dimensions": {
+    "outcome": {
+      "cases": 4,
+      "score": 1.0
+    },
+    "process": {
+      "cases": 4,
+      "score": 1.0
+    },
+    "efficiency": {
+      "cases": 4,
+      "score": 1.0
+    }
+  },
+  "categories": {
+    "coding-goal-runtime": {
+      "cases": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    "instructions": {
+      "cases": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    "memory": {
+      "cases": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    },
+    "safety": {
+      "cases": 1,
+      "passed": 1,
+      "pass_rate": 1.0
+    }
+  },
+  "metrics": {
+    "runs": 5,
+    "model_requests": 22,
+    "model_errors": 0,
+    "model_retries": 0,
+    "model_fallbacks": 0,
+    "tool_calls": 14,
+    "tool_errors": 2,
+    "tool_cancelled": 0,
+    "compactions": 0,
+    "tokens_saved_by_compaction": 0,
+    "input_tokens": 33887,
+    "output_tokens": 3188,
+    "cached_tokens": 5632,
+    "total_tokens": 37075,
+    "duration_ms": 125456,
+    "cost_usd": 0.00486411
+  },
+  "baseline": null,
+  "regression_alerts": []
+}

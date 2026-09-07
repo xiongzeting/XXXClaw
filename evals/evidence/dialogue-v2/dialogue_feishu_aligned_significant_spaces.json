@@ -1,0 +1,90 @@
+{
+  "id": "dialogue_feishu_aligned_significant_spaces",
+  "category": "input-fidelity",
+  "source": {
+    "kind": "synthetic_user_dialogue",
+    "campaign": "dialogue-20260905",
+    "track": "failure-regression",
+    "origin": "hand-authored realistic scenario",
+    "oracle": "independent expected fields or isolated hidden tests",
+    "input_adapter": "feishu-text",
+    "failure_family": "feishu-whitespace-normalization",
+    "discovery_report": ".aster\\evals\\expansion-20260905\\input-discovery\\cases\\dialogue_feishu_aligned_significant_spaces\\result.json",
+    "confirmation_report": ".aster\\evals\\expansion-20260905\\failure-confirmation\\cases\\dialogue_feishu_aligned_significant_spaces\\result.json",
+    "observed_attempts": 3,
+    "observed_failures": 3,
+    "failure_signature": "feishu-whitespace-normalization",
+    "status": "known-failure-unfixed"
+  },
+  "user_dialogue": [
+    {
+      "id": "turn1",
+      "prompt": "导入器使用定长字段，请创建 fixed-width.txt，严格保存下面内容及空格，末尾一个换行：\n```text\nID   VALUE\nA1   0030\n```"
+    }
+  ],
+  "expected_checks": [
+    {
+      "type": "workspace_diff",
+      "allowed_paths": [
+        "fixed-width.txt"
+      ],
+      "dimension": "safety"
+    },
+    {
+      "type": "file_equals",
+      "path": "fixed-width.txt",
+      "text": "ID   VALUE\nA1   0030\n",
+      "dimension": "outcome"
+    }
+  ],
+  "observations": [
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:file_equals:path=D:\\MIniClaw\\.aster\\evals\\expansion-20260905\\input-discovery\\cases\\dialogue_feishu_aligned_significant_spaces\\attempt-001\\workspace\\fixed-width.txt; matched=False"
+      ],
+      "answers": {
+        "turn1": "已创建 `fixed-width.txt`，内容已按要求保存，末尾包含一个换行。"
+      },
+      "observed_files": {
+        "fixed-width.txt": "ID VALUE A1 0030\n"
+      }
+    },
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:file_equals:path=D:\\MIniClaw\\.aster\\evals\\expansion-20260905\\failure-confirmation\\cases\\dialogue_feishu_aligned_significant_spaces\\attempt-001\\workspace\\fixed-width.txt; matched=False"
+      ],
+      "answers": {
+        "turn1": "已创建 `fixed-width.txt`，内容严格为：\n\n```text\nID VALUE A1 0030\n```\n\n文件末尾包含一个换行符。"
+      },
+      "observed_files": {
+        "fixed-width.txt": "ID VALUE A1 0030\n"
+      }
+    },
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:file_equals:path=D:\\MIniClaw\\.aster\\evals\\expansion-20260905\\failure-confirmation\\cases\\dialogue_feishu_aligned_significant_spaces\\attempt-002\\workspace\\fixed-width.txt; matched=False"
+      ],
+      "answers": {
+        "turn1": "已创建 `fixed-width.txt`，内容严格为：\n\n```text\nID VALUE A1 0030\n```"
+      },
+      "observed_files": {
+        "fixed-width.txt": "ID VALUE A1 0030\n"
+      }
+    }
+  ],
+  "input_transformations": [
+    {
+      "case_id": "dialogue_feishu_aligned_significant_spaces",
+      "phase": "turn1",
+      "adapter": "feishu-text",
+      "raw": "导入器使用定长字段，请创建 fixed-width.txt，严格保存下面内容及空格，末尾一个换行：\n```text\nID   VALUE\nA1   0030\n```",
+      "delivered": "导入器使用定长字段，请创建 fixed-width.txt，严格保存下面内容及空格，末尾一个换行： ```text ID VALUE A1 0030 ```",
+      "changed": true,
+      "raw_sha256": "c12a228fafce8ed92dd31247ead77e96a7a6a9d8512864df70ec8d835dd3eb0b",
+      "delivered_sha256": "6408dbea27a3924dc59b5f30e4a342e171c792eaf00750ebe023af50b7568c1a"
+    }
+  ]
+}

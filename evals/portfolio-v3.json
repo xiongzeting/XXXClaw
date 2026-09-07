@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "name": "miniclaw-portfolio-v3",
+  "includes": [
+    "portfolio-v2.json",
+    "capability-core-v1.json"
+  ]
+}

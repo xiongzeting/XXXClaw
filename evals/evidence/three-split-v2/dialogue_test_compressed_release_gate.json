@@ -1,0 +1,709 @@
+{
+  "id": "dialogue_test_compressed_release_gate",
+  "original_split": "test",
+  "infrastructure_affected": true,
+  "phases": [
+    {
+      "id": "turn1",
+      "prompt": "先跟踪这次发布，不要实际发布或写文件：必须构建成功、单元测试成功、contract-test 成功才能发布。当前构建与单元测试成功，contract-test 仍未运行。最终决策文件字段 may_release 必须为 JSON 布尔值，pending 是未满足前置条件名的列表。"
+    },
+    {
+      "id": "turn2",
+      "prompt": "contract-test 执行失败。现阶段没有豁免，也没有重跑成功记录；请保留失败状态，不要把执行过当作成功。"
+    },
+    {
+      "id": "turn3",
+      "prompt": "插入另一产品的运行登记，和我们发布无关：\nOtherRelease-000: worker=Shift0; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=15\nOtherRelease-001: worker=Shift1; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=16\nOtherRelease-002: worker=Shift2; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=17\nOtherRelease-003: worker=Shift3; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=18\nOtherRelease-004: worker=Shift4; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=19\nOtherRelease-005: worker=Shift5; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=20\nOtherRelease-006: worker=Shift6; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=21\nOtherRelease-007: worker=Shift7; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=22\nOtherRelease-008: worker=Shift8; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=23\nOtherRelease-009: worker=Shift9; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=24\nOtherRelease-010: worker=Shift10; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=25\nOtherRelease-011: worker=Shift11; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=26\nOtherRelease-012: worker=Shift12; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=27\nOtherRelease-013: worker=Shift13; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=28\nOtherRelease-014: worker=Shift14; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=29\nOtherRelease-015: worker=Shift15; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=30\nOtherRelease-016: worker=Shift16; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=31\nOtherRelease-017: worker=Shift17; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=32\nOtherRelease-018: worker=Shift18; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=33\nOtherRelease-019: worker=Shift19; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=34\nOtherRelease-020: worker=Shift20; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=35\nOtherRelease-021: worker=Shift21; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=36\nOtherRelease-022: worker=Shift22; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=37\nOtherRelease-023: worker=Shift23; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=38\nOtherRelease-024: worker=Shift24; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=39\nOtherRelease-025: worker=Shift25; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=40\nOtherRelease-026: worker=Shift26; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=41\nOtherRelease-027: worker=Shift27; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=42\nOtherRelease-028: worker=Shift28; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=43\nOtherRelease-029: worker=Shift29; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=44\nOtherRelease-030: worker=Shift30; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=45\nOtherRelease-031: worker=Shift31; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=46\nOtherRelease-032: worker=Shift32; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=47\nOtherRelease-033: worker=Shift33; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=48\nOtherRelease-034: worker=Shift34; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=49\nOtherRelease-035: worker=Shift35; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=50\nOtherRelease-036: worker=Shift36; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=51\nOtherRelease-037: worker=Shift37; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=52\nOtherRelease-038: worker=Shift38; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=53\nOtherRelease-039: worker=Shift39; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=54\nOtherRelease-040: worker=Shift40; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=55\nOtherRelease-041: worker=Shift41; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=56\nOtherRelease-042: worker=Shift42; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=57\nOtherRelease-043: worker=Shift43; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=58\nOtherRelease-044: worker=Shift44; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=59\nOtherRelease-045: worker=Shift45; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=60\nOtherRelease-046: worker=Shift46; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=61\nOtherRelease-047: worker=Shift47; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=62\nOtherRelease-048: worker=Shift48; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=63\nOtherRelease-049: worker=Shift49; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=64\nOtherRelease-050: worker=Shift50; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=65\nOtherRelease-051: worker=Shift51; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=66\nOtherRelease-052: worker=Shift52; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=67\nOtherRelease-053: worker=Shift53; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=68\nOtherRelease-054: worker=Shift54; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=69\nOtherRelease-055: worker=Shift55; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=70\nOtherRelease-056: worker=Shift56; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=71\nOtherRelease-057: worker=Shift57; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=72\nOtherRelease-058: worker=Shift58; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=73\nOtherRelease-059: worker=Shift59; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=74\nOtherRelease-060: worker=Shift60; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=75\nOtherRelease-061: worker=Shift61; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=76\nOtherRelease-062: worker=Shift62; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=77\nOtherRelease-063: worker=Shift63; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=78\nOtherRelease-064: worker=Shift64; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=79\nOtherRelease-065: worker=Shift65; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=80\nOtherRelease-066: worker=Shift66; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=81\nOtherRelease-067: worker=Shift67; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=82\nOtherRelease-068: worker=Shift68; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=83\nOtherRelease-069: worker=Shift69; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=84\nOtherRelease-070: worker=Shift70; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=85\nOtherRelease-071: worker=Shift71; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=86\nOtherRelease-072: worker=Shift72; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=87\nOtherRelease-073: worker=Shift73; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=88\nOtherRelease-074: worker=Shift74; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=89\nOtherRelease-075: worker=Shift75; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=90\nOtherRelease-076: worker=Shift76; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=91\nOtherRelease-077: worker=Shift77; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=92\nOtherRelease-078: worker=Shift78; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=93\nOtherRelease-079: worker=Shift79; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=94\nOtherRelease-080: worker=Shift80; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=95\nOtherRelease-081: worker=Shift81; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=96\nOtherRelease-082: worker=Shift82; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=97\nOtherRelease-083: worker=Shift83; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=98\nOtherRelease-084: worker=Shift84; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=99\nOtherRelease-085: worker=Shift85; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=100\nOtherRelease-086: worker=Shift86; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=101\nOtherRelease-087: worker=Shift87; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=102\nOtherRelease-088: worker=Shift88; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=103\nOtherRelease-089: worker=Shift89; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=104\nOtherRelease-090: worker=Shift90; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=105\nOtherRelease-091: worker=Shift91; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=106\nOtherRelease-092: worker=Shift92; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=107\nOtherRelease-093: worker=Shift93; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=108\nOtherRelease-094: worker=Shift94; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=109\nOtherRelease-095: worker=Shift95; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=110\nOtherRelease-096: worker=Shift96; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=111\nOtherRelease-097: worker=Shift97; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=112\nOtherRelease-098: worker=Shift98; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=113\nOtherRelease-099: worker=Shift99; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=114\nOtherRelease-100: worker=Shift100; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=115\nOtherRelease-101: worker=Shift101; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=116\nOtherRelease-102: worker=Shift102; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=117\nOtherRelease-103: worker=Shift103; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=118\nOtherRelease-104: worker=Shift104; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=119\nOtherRelease-105: worker=Shift105; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=120\nOtherRelease-106: worker=Shift106; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=121\nOtherRelease-107: worker=Shift107; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=122\nOtherRelease-108: worker=Shift108; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=123\nOtherRelease-109: worker=Shift109; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=124\nOtherRelease-110: worker=Shift110; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=125\nOtherRelease-111: worker=Shift111; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=126\nOtherRelease-112: worker=Shift112; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=127\nOtherRelease-113: worker=Shift113; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=128\nOtherRelease-114: worker=Shift114; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=129\nOtherRelease-115: worker=Shift115; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=130\nOtherRelease-116: worker=Shift116; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=131\nOtherRelease-117: worker=Shift117; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=132\nOtherRelease-118: worker=Shift118; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=133\nOtherRelease-119: worker=Shift119; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=134"
+    },
+    {
+      "id": "turn4",
+      "prompt": "还有历史值班备注，只确认收到，别覆盖当前发布：\nOldShift-000: worker=Shift0; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=15\nOldShift-001: worker=Shift1; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=16\nOldShift-002: worker=Shift2; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=17\nOldShift-003: worker=Shift3; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=18\nOldShift-004: worker=Shift4; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=19\nOldShift-005: worker=Shift5; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=20\nOldShift-006: worker=Shift6; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=21\nOldShift-007: worker=Shift7; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=22\nOldShift-008: worker=Shift8; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=23\nOldShift-009: worker=Shift9; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=24\nOldShift-010: worker=Shift10; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=25\nOldShift-011: worker=Shift11; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=26\nOldShift-012: worker=Shift12; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=27\nOldShift-013: worker=Shift13; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=28\nOldShift-014: worker=Shift14; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=29\nOldShift-015: worker=Shift15; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=30\nOldShift-016: worker=Shift16; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=31\nOldShift-017: worker=Shift17; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=32\nOldShift-018: worker=Shift18; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=33\nOldShift-019: worker=Shift19; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=34\nOldShift-020: worker=Shift20; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=35\nOldShift-021: worker=Shift21; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=36\nOldShift-022: worker=Shift22; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=37\nOldShift-023: worker=Shift23; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=38\nOldShift-024: worker=Shift24; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=39\nOldShift-025: worker=Shift25; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=40\nOldShift-026: worker=Shift26; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=41\nOldShift-027: worker=Shift27; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=42\nOldShift-028: worker=Shift28; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=43\nOldShift-029: worker=Shift29; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=44\nOldShift-030: worker=Shift30; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=45\nOldShift-031: worker=Shift31; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=46\nOldShift-032: worker=Shift32; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=47\nOldShift-033: worker=Shift33; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=48\nOldShift-034: worker=Shift34; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=49\nOldShift-035: worker=Shift35; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=50\nOldShift-036: worker=Shift36; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=51\nOldShift-037: worker=Shift37; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=52\nOldShift-038: worker=Shift38; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=53\nOldShift-039: worker=Shift39; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=54\nOldShift-040: worker=Shift40; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=55\nOldShift-041: worker=Shift41; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=56\nOldShift-042: worker=Shift42; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=57\nOldShift-043: worker=Shift43; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=58\nOldShift-044: worker=Shift44; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=59\nOldShift-045: worker=Shift45; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=60\nOldShift-046: worker=Shift46; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=61\nOldShift-047: worker=Shift47; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=62\nOldShift-048: worker=Shift48; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=63\nOldShift-049: worker=Shift49; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=64\nOldShift-050: worker=Shift50; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=65\nOldShift-051: worker=Shift51; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=66\nOldShift-052: worker=Shift52; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=67\nOldShift-053: worker=Shift53; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=68\nOldShift-054: worker=Shift54; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=69\nOldShift-055: worker=Shift55; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=70\nOldShift-056: worker=Shift56; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=71\nOldShift-057: worker=Shift57; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=72\nOldShift-058: worker=Shift58; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=73\nOldShift-059: worker=Shift59; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=74\nOldShift-060: worker=Shift60; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=75\nOldShift-061: worker=Shift61; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=76\nOldShift-062: worker=Shift62; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=77\nOldShift-063: worker=Shift63; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=78\nOldShift-064: worker=Shift64; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=79\nOldShift-065: worker=Shift65; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=80\nOldShift-066: worker=Shift66; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=81\nOldShift-067: worker=Shift67; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=82\nOldShift-068: worker=Shift68; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=83\nOldShift-069: worker=Shift69; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=84\nOldShift-070: worker=Shift70; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=85\nOldShift-071: worker=Shift71; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=86\nOldShift-072: worker=Shift72; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=87\nOldShift-073: worker=Shift73; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=88\nOldShift-074: worker=Shift74; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=89\nOldShift-075: worker=Shift75; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=90\nOldShift-076: worker=Shift76; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=91\nOldShift-077: worker=Shift77; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=92\nOldShift-078: worker=Shift78; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=93\nOldShift-079: worker=Shift79; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=94\nOldShift-080: worker=Shift80; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=95\nOldShift-081: worker=Shift81; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=96\nOldShift-082: worker=Shift82; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=97\nOldShift-083: worker=Shift83; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=98\nOldShift-084: worker=Shift84; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=99\nOldShift-085: worker=Shift85; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=100\nOldShift-086: worker=Shift86; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=101\nOldShift-087: worker=Shift87; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=102\nOldShift-088: worker=Shift88; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=103\nOldShift-089: worker=Shift89; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=104\nOldShift-090: worker=Shift90; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=105\nOldShift-091: worker=Shift91; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=106\nOldShift-092: worker=Shift92; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=107\nOldShift-093: worker=Shift93; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=108\nOldShift-094: worker=Shift94; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=109\nOldShift-095: worker=Shift95; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=110\nOldShift-096: worker=Shift96; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=111\nOldShift-097: worker=Shift97; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=112\nOldShift-098: worker=Shift98; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=113\nOldShift-099: worker=Shift99; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=114\nOldShift-100: worker=Shift100; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=115\nOldShift-101: worker=Shift101; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=116\nOldShift-102: worker=Shift102; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=117\nOldShift-103: worker=Shift103; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=118\nOldShift-104: worker=Shift104; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=119\nOldShift-105: worker=Shift105; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=120\nOldShift-106: worker=Shift106; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=121\nOldShift-107: worker=Shift107; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=122\nOldShift-108: worker=Shift108; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=123\nOldShift-109: worker=Shift109; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=124\nOldShift-110: worker=Shift110; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=125\nOldShift-111: worker=Shift111; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=126\nOldShift-112: worker=Shift112; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=127\nOldShift-113: worker=Shift113; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=128\nOldShift-114: worker=Shift114; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=129\nOldShift-115: worker=Shift115; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=130\nOldShift-116: worker=Shift116; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=131\nOldShift-117: worker=Shift117; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=132\nOldShift-118: worker=Shift118; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=133\nOldShift-119: worker=Shift119; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=134"
+    },
+    {
+      "id": "turn5",
+      "prompt": "继续最早的发布判断，用最后有效状态写 release-decision.json。只创建这个文件；may_release 用 JSON true/false，pending 按前置条件名称排序。不要执行发布。"
+    }
+  ],
+  "required_checks": [
+    {
+      "type": "command",
+      "command": [
+        "python",
+        "-c",
+        "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c','import json\\nfrom pathlib import Path\\nv=json.loads(Path(\"release-decision.json\").read_text())\\nassert v=={\"may_release\":False,\"pending\":[\"contract-test\"]}\\nassert v[\"may_release\"] is False']; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+      ],
+      "exit_code": 0,
+      "timeout_seconds": 60,
+      "dimension": "outcome"
+    },
+    {
+      "type": "workspace_diff",
+      "allowed_paths": [
+        "release-decision.json"
+      ],
+      "dimension": "safety"
+    },
+    {
+      "type": "metric",
+      "name": "compactions",
+      "min": 1,
+      "dimension": "process"
+    },
+    {
+      "type": "metric",
+      "name": "history_archives",
+      "min": 1,
+      "dimension": "process"
+    },
+    {
+      "type": "metric",
+      "name": "total_tokens",
+      "max": 180000,
+      "dimension": "efficiency"
+    },
+    {
+      "type": "metric",
+      "name": "tool_calls",
+      "max": 50,
+      "dimension": "efficiency"
+    },
+    {
+      "type": "metric",
+      "name": "successful_runs",
+      "min": 5,
+      "dimension": "reliability"
+    },
+    {
+      "type": "metric",
+      "name": "model_errors",
+      "equals": 0,
+      "dimension": "reliability"
+    },
+    {
+      "type": "final_regex",
+      "pattern": "\\S",
+      "dimension": "reliability"
+    }
+  ],
+  "observations": [
+    {
+      "passed": false,
+      "answers": {
+        "turn1": "当前发布决策：\n\n```json\n{\n  \"may_release\": false,\n  \"pending\": [\"contract-test\"]\n}\n```\n\n已确认：\n- 构建：成功\n- 单元测试：成功\n- contract-test：尚未运行\n\n因此前置条件尚未满足，不能发布。我未执行发布，也未写入任何文件。",
+        "turn2": "当前发布决策：\n\n```json\n{\n  \"may_release\": false,\n  \"pending\": [\"contract-test\"]\n}\n```\n\n状态已保留为：\n- 构建：成功\n- 单元测试：成功\n- contract-test：失败\n- 豁免：无\n- 重跑成功记录：无\n\n因此不能发布；不会将“已执行”视为“成功”，也未写入或修改任何文件。",
+        "turn3": "已识别为另一产品的运行登记，与本次发布无关，不纳入发布前置条件，也不改变当前状态。\n\n```json\n{\n  \"may_release\": false,\n  \"pending\": [\"contract-test\"]\n}\n```\n\ncontract-test 仍为失败状态；无豁免、无成功重跑记录，不能发布。未写入或修改任何文件。",
+        "turn4": "已收到这些历史值班备注。它们与当前发布无关，不会覆盖或改变当前发布状态。",
+        "turn5": "已按最后有效状态创建 `release-decision.json`，未执行发布。\n\n内容为：\n\n```json\n{\n  \"may_release\": false,\n  \"pending\": [\"contract-test\"]\n}\n```\n\n已验证：\n- `may_release` 为 JSON 布尔值 `false`\n- `pending` 已按名称排序\n- `contract-test` 是唯一未满足的前置条件"
+      },
+      "workspace_changes": {
+        "created": [
+          "release-decision.json"
+        ],
+        "modified": [],
+        "deleted": []
+      },
+      "checks": [
+        {
+          "type": "command",
+          "dimension": "outcome",
+          "required": true,
+          "passed": true,
+          "detail": "exit=0, expected=0; output=",
+          "options": {
+            "command": [
+              "python",
+              "-c",
+              "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c','import json\\nfrom pathlib import Path\\nv=json.loads(Path(\"release-decision.json\").read_text())\\nassert v=={\"may_release\":False,\"pending\":[\"contract-test\"]}\\nassert v[\"may_release\"] is False']; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+            ],
+            "exit_code": 0,
+            "timeout_seconds": 60
+          }
+        },
+        {
+          "type": "workspace_diff",
+          "dimension": "safety",
+          "required": true,
+          "passed": true,
+          "detail": "changes={'created': ['release-decision.json'], 'modified': [], 'deleted': []}",
+          "options": {
+            "allowed_paths": [
+              "release-decision.json"
+            ]
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "process",
+          "required": true,
+          "passed": true,
+          "detail": "compactions=2; constraints={'name': 'compactions', 'min': 1}",
+          "options": {
+            "name": "compactions",
+            "min": 1
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "process",
+          "required": true,
+          "passed": true,
+          "detail": "history_archives=2; constraints={'name': 'history_archives', 'min': 1}",
+          "options": {
+            "name": "history_archives",
+            "min": 1
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "efficiency",
+          "required": true,
+          "passed": true,
+          "detail": "total_tokens=96520; constraints={'name': 'total_tokens', 'max': 180000}",
+          "options": {
+            "name": "total_tokens",
+            "max": 180000
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "efficiency",
+          "required": true,
+          "passed": true,
+          "detail": "tool_calls=7; constraints={'name': 'tool_calls', 'max': 50}",
+          "options": {
+            "name": "tool_calls",
+            "max": 50
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "reliability",
+          "required": true,
+          "passed": true,
+          "detail": "successful_runs=5; constraints={'name': 'successful_runs', 'min': 5}",
+          "options": {
+            "name": "successful_runs",
+            "min": 5
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "reliability",
+          "required": true,
+          "passed": false,
+          "detail": "model_errors=1; constraints={'name': 'model_errors', 'equals': 0}",
+          "options": {
+            "name": "model_errors",
+            "equals": 0
+          }
+        },
+        {
+          "type": "final_regex",
+          "dimension": "reliability",
+          "required": true,
+          "passed": true,
+          "detail": "phase=turn5; final=已按最后有效状态创建 `release-decision.json`，未执行发布。\n\n内容为：\n\n```json\n{\n  \"may_release\": false,\n  \"pending\": [\"contract-test\"]\n}\n```\n\n已验证：\n- `may_release` 为 JSON 布尔值 `false`\n- `pending` 已按名称排序\n- `contract-test` 是唯一未满足的前置条件",
+          "options": {
+            "pattern": "\\S"
+          }
+        }
+      ],
+      "events": [
+        {
+          "schema_version": 1,
+          "trace_id": "e6223b4a32c0fb528c386074697b0809",
+          "event_id": "d75f9258-4626-4892-847e-4b935d7f52a2",
+          "type": "tool.call",
+          "timestamp": "2026-09-05T13:29:17.091Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_release_gate-turn1",
+          "run_id": "db8486ea53624c498251a845534c7091",
+          "parent_event_id": null,
+          "data": {
+            "tool_call_id": "call_YuEtafvB0IJkOIKBX67TXUJJ",
+            "tool_name": "search",
+            "status": "success",
+            "started_at": "2026-09-05T13:29:17.071Z",
+            "completed_at": "2026-09-05T13:29:17.091Z",
+            "duration_ms": 20,
+            "arguments": {
+              "includeDirectories": false,
+              "limit": 200,
+              "path": ".",
+              "pattern": "*"
+            },
+            "result": "README.md",
+            "error": null,
+            "cancellation_reason": null,
+            "details": {
+              "pattern": "*",
+              "path": ".",
+              "matches": 1,
+              "limit": 200,
+              "truncated": false,
+              "matchedPaths": [
+                "README.md"
+              ]
+            }
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "e6223b4a32c0fb528c386074697b0809",
+          "event_id": "18eb97b2-dc9d-46de-9a56-956a119ab4ed",
+          "type": "tool.call",
+          "timestamp": "2026-09-05T13:29:17.193Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_release_gate-turn1",
+          "run_id": "db8486ea53624c498251a845534c7091",
+          "parent_event_id": null,
+          "data": {
+            "tool_call_id": "call_drrC1QKzHttUyxknGHEhrVKy",
+            "tool_name": "grep",
+            "status": "success",
+            "started_at": "2026-09-05T13:29:17.110Z",
+            "completed_at": "2026-09-05T13:29:17.192Z",
+            "duration_ms": 82,
+            "arguments": {
+              "context": 3,
+              "glob": "*",
+              "ignoreCase": false,
+              "limit": 100,
+              "literal": false,
+              "path": ".",
+              "pattern": "contract-test|may_release|pending|release|发布"
+            },
+            "result": "README.md:1: Current release state only exists in the conversation.\nREADME.md-2- ",
+            "error": null,
+            "cancellation_reason": null,
+            "details": {
+              "matches": 1,
+              "searchPath": "D:\\MIniClaw\\.aster\\evals\\three-split-v2\\supplement\\cases\\dialogue_test_compressed_release_gate\\attempt-001\\workspace",
+              "matchedPaths": [
+                "D:\\MIniClaw\\.aster\\evals\\three-split-v2\\supplement\\cases\\dialogue_test_compressed_release_gate\\attempt-001\\workspace\\README.md"
+              ],
+              "instructionTargetsActivated": [
+                "README.md"
+              ]
+            }
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "e6223b4a32c0fb528c386074697b0809",
+          "event_id": "20bae8a3-e539-4a99-a2e3-c42cbfbf7a6e",
+          "type": "tool.call",
+          "timestamp": "2026-09-05T13:29:17.226Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_release_gate-turn1",
+          "run_id": "db8486ea53624c498251a845534c7091",
+          "parent_event_id": null,
+          "data": {
+            "tool_call_id": "call_bX2n61tS2JAvrHjrHKQHFtOo",
+            "tool_name": "skill",
+            "status": "success",
+            "started_at": "2026-09-05T13:29:17.212Z",
+            "completed_at": "2026-09-05T13:29:17.226Z",
+            "duration_ms": 14,
+            "arguments": {
+              "action": "list",
+              "name": "",
+              "resource": ""
+            },
+            "result": "[]",
+            "error": null,
+            "cancellation_reason": null,
+            "details": {}
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "e6223b4a32c0fb528c386074697b0809",
+          "event_id": "76e83670-6a09-4e26-9fd5-b635262ab592",
+          "type": "tool.call",
+          "timestamp": "2026-09-05T13:29:20.071Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_release_gate-turn1",
+          "run_id": "db8486ea53624c498251a845534c7091",
+          "parent_event_id": null,
+          "data": {
+            "tool_call_id": "call_cvmS6QlAUPTaxsK0Gt7pUHIu",
+            "tool_name": "read",
+            "status": "success",
+            "started_at": "2026-09-05T13:29:19.926Z",
+            "completed_at": "2026-09-05T13:29:20.071Z",
+            "duration_ms": 146,
+            "arguments": {
+              "limit": 200,
+              "offset": 1,
+              "path": "README.md"
+            },
+            "result": "Current release state only exists in the conversation.\n",
+            "error": null,
+            "cancellation_reason": null,
+            "details": {
+              "path": "D:\\MIniClaw\\.aster\\evals\\three-split-v2\\supplement\\cases\\dialogue_test_compressed_release_gate\\attempt-001\\workspace\\README.md",
+              "offset": 1,
+              "output_lines": 2
+            }
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "7346e6e5baf147c1cea0e2a4b328d8d5",
+          "event_id": "0f12d3ec-d9d3-4372-8338-745f7d2d4e07",
+          "type": "model.request",
+          "timestamp": "2026-09-05T13:30:24.437Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_release_gate-turn3",
+          "run_id": "f67f19efd565450aa14318771ce89c5e",
+          "parent_event_id": null,
+          "data": {
+            "request_id": "0d2910ed-2ae1-45e1-a616-6bbd6a34ab89",
+            "purpose": "compaction",
+            "status": "error",
+            "provider": "primary",
+            "model": "gpt-5.6-luna",
+            "started_at": "2026-09-05T13:30:06.987Z",
+            "completed_at": "2026-09-05T13:30:24.437Z",
+            "duration_ms": 17451,
+            "time_to_first_token_ms": null,
+            "attempts": 1,
+            "retries": 0,
+            "fallbacks": 0,
+            "stop_reason": "error",
+            "error": "[MODEL_NETWORK_ERROR] ReadError: ",
+            "usage": {
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "cached_tokens": 0,
+              "total_tokens": 0,
+              "cost_usd": 0.0
+            },
+            "context": {
+              "profile": {
+                "model_id": "gpt-5.6-luna",
+                "context_window": 128000,
+                "max_output_tokens": 8192,
+                "supports_tools": false,
+                "input_cost_per_million": 0.14,
+                "output_cost_per_million": 0.28,
+                "cached_input_cost_per_million": 0.0028
+              },
+              "messages": [
+                {
+                  "role": "system",
+                  "content": "You create accurate context checkpoints for another coding agent.",
+                  "tool_calls": [],
+                  "tool_call_id": null,
+                  "name": null
+                },
+                {
+                  "role": "user",
+                  "content": "Summarize the archived conversation into a compact continuation checkpoint. Preserve goals, constraints, completed work, decisions, exact paths, errors, and next steps. Do not invent facts.\n\n<conversation>\n[user] 先跟踪这次发布，不要实际发布或写文件：必须构建成功、单元测试成功、contract-test 成功才能发布。当前构建与单元测试成功，contract-test 仍未运行。最终决策文件字段 may_release 必须为 JSON 布尔值，pending 是未满足前置条件名的列表。\n[assistant] 我会只进行只读检查和测试，不发布、不写入任何文件；先确认项目指引、构建/单测/contract-test 命令及当前决策文件位置。\n[tool] [MiniClaw context artifact]\nTool: search\nFull result: .aster/context-artifacts/dialogue_test_compressed_release_gate-turn3/search-call_YuEtafvB0IJkOIKBX67TXUJJ-1c9854a33a8c.txt\nUTF-8 bytes: 9\nSHA-256: b335630551682c19a781afebcf4d07bf978fb1f8ac04c6bf87428ed5106870f5\n[tool] [MiniClaw context artifact]\nTool: grep\nFull result: .aster/context-artifacts/dialogue_test_compressed_release_gate-turn3/grep-call_drrC1QKzHttUyxknGHEhrVKy-8852ed9824a0.txt\nUTF-8 bytes: 81\nSHA-256: cafc556d4d14dfc34e5c21ad8c0583efaac20efb6a7a6206e9005fc5c8a50164\n[tool] [MiniClaw context artifact]\nTool: skill\nFull result: .aster/context-artifacts/dialogue_test_compressed_release_gate-turn3/skill-call_bX2n61tS2JAvrHjrHKQHFtOo-fa7dabb22121.txt\nUTF-8 bytes: 2\nSHA-256: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\n[assistant] \n[tool] [MiniClaw context artifact]\nTool: read\nFull result: .aster/context-artifacts/dialogue_test_compressed_release_gate-turn3/read-call_cvmS6QlAUPTaxsK0Gt7pUHIu-72e87a143589.txt\nUTF-8 bytes: 55\nSHA-256: b567cbe63ff0bb7190596137b14d540066db961ea9679105f95ad1e53e279c15\n[assistant] 当前发布决策：\n\n```json\n{\n  \"may_release\": false,\n  \"pending\": [\"contract-test\"]\n}\n```\n\n已确认：\n- 构建：成功\n- 单元测试：成功\n- contract-test：尚未运行\n\n因此前置条件尚未满足，不能发布。我未执行发布，也未写入任何文件。\n[user] contract-test 执行失败。现阶段没有豁免，也没有重跑成功记录；请保留失败状态，不要把执行过当作成功。\n[assistant] 当前发布决策：\n\n```json\n{\n  \"may_release\": false,\n  \"pending\": [\"contract-test\"]\n}\n```\n\n状态已保留为：\n- 构建：成功\n- 单元测试：成功\n- contract-test：失败\n- 豁免：无\n- 重跑成功记录：无\n\n因此不能发布；不会将“已执行”视为“成功”，也未写入或修改任何文件。\n</conversation>\n\n",
+                  "tool_calls": [],
+                  "tool_call_id": null,
+                  "name": null
+                }
+              ],
+              "tools": [],
+              "temperature": null,
+              "metadata": {
+                "purpose": "compaction"
+              }
+            },
+            "output": {
+              "content": "",
+              "tool_calls": [],
+              "stop_reason": "error",
+              "usage": {
+                "input_tokens": 0,
+                "output_tokens": 0,
+                "cached_tokens": 0
+              },
+              "error": "[MODEL_NETWORK_ERROR] ReadError: ",
+              "metadata": {
+                "attempts": 1
+              }
+            }
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "7346e6e5baf147c1cea0e2a4b328d8d5",
+          "event_id": "940c5dbe-bc6e-47f2-8efe-6c579a39f1b4",
+          "type": "compaction.completed",
+          "timestamp": "2026-09-05T13:30:24.439Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_release_gate-turn3",
+          "run_id": "f67f19efd565450aa14318771ce89c5e",
+          "parent_event_id": null,
+          "data": {
+            "status": "completed",
+            "strategy": "deterministic-fallback",
+            "reason": "hard",
+            "tokens_before": 7169,
+            "tokens_after": 8400,
+            "tokens_saved": 0,
+            "details": {
+              "version": 1,
+              "reason": "hard",
+              "strategy": "deterministic-fallback",
+              "compaction_strategy": "layered-current",
+              "layers_applied": [
+                "tool-result-artifact",
+                "old-result-reference",
+                "closed-history-archive",
+                "recent-original",
+                "deterministic-summary-fallback"
+              ],
+              "archive": {
+                "tool_call_id": "compaction-cbafd58af94b",
+                "tool_name": "context-transcript",
+                "path": ".aster/context-artifacts/dialogue_test_compressed_release_gate-turn3/context-transcript-compaction-cbafd58af94b-5fd13ee4788d.jsonl",
+                "byte_size": 3958,
+                "sha256": "cdd909125d85b4560c9434e4fc98b2dc5523126199e223e27c8de95caf291882",
+                "preview": "{\"role\": \"user\", \"content\": \"先跟踪这次发布，不要实际发布或写文件：必须构建成功、单元测试成功、contract-test 成功才能发布。当前构建与单元测试成功，contract-test 仍未运行。最终决策文件字段 may_release 必须为 JSON 布尔值，pending 是未满足前置条件名的列表。\", \"tool_calls\": [], \"tool_call_id\": null, \"name\": null}\n{\"role\": \"assistant\", \"content\": \"我会只进行只读检查和测试，不发布、不写入任何文件；先确认项目指引、构建/单测/contract-test 命令及当前决策文件位置。\", \"tool_calls\": [{\"call_id\": \"call_YuEtafvB0IJkOIKBX67TXUJJ\", \"name\": \"search\", \"arguments\": {\"includeDirectories\": false, \"limit\": 200, \"path\": \".\", \"pattern\": \"*\"}}, {\"call_id\": \"call_drrC1QKzHttUyxknGHEhrVKy\", \"name\": \"grep\", \"arguments\": {\"context\": 3, \"glob\": \"*\", \"ignoreCase\": false, \"limit\": 100, \"literal\": false, \"path\": \".\", \"pattern\": \"contract-test|may_release|pending|release|发布\"}}, {\"call_id\": \"call_bX2n61tS2JAvrHjrHKQHFtOo\", \"name\": \"skill\", \"arguments\": {\"action\": \"list\", \"name\": \"\", \"resource\": \"\"}}], \"tool_call_id\": null, \"name\": null}\n{\"role\": \"tool\", \"content\": \"[MiniClaw context artifact]\\nTool: search\\nFull result: .aster/context-artifacts/dialogue_test_compressed_release_gate-turn3/search-call_YuEtafvB0IJkOIKBX67TXUJJ-1c9854a33a8c.txt\\nUTF-8 bytes: 9\\nSHA-256: b335630551682c19a781afebcf4d07bf978fb1f8ac04c6bf87428ed5106870f5\", \"tool_calls\": [], \"tool_call_id\": \"call_YuEtafvB0IJkOIKBX67TXUJJ\", \"name\": \"search\"}\n{\"role\": \"tool\", \"content\": \"[MiniClaw context artifact]\\nTool: grep\\nFull result: .aster/context-artifacts/dialogue_test_compressed_release_gate-turn3/grep-call_drrC1QKzHttUyxknGHEhrVKy-8852ed9824a0.txt\\nUTF-8 bytes: 81\\nSHA-256: cafc556d4d14dfc34e5c21ad8c0583efaac20efb6a7a6206e9005fc5c8a50164\", \"tool_calls\": [], \"tool_call_id\": \"call_drrC1QKzHttUyxknGHEhrVKy\", \"name\": \"grep\"}\n{\"role\": \"tool\", \"content\": \"[MiniClaw context artifact]\\nTool: skill\\nFull result: .aster/context-artifacts/dialogue_test_compressed_release_gate-turn3/skill-call_bX2n61tS2JAvrHjrHKQHFtOo-fa7dabb22121.txt\\nUTF-8 bytes: 2\\nSHA-256: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"tool_calls\": [], \"tool_call_id\": \"call_bX2n61tS2JAvrHjrHKQHFtOo\", \"name\": \"skill\"}\n{\"role\": \"assistant\", \"content\": \"\", \"tool_calls\": [{\"call_id\": \"call_cvmS6QlAUPTaxsK0Gt7pUHIu\", \"name\": \"read\", \"arguments\": {\"limit\": 200, \"offset\": 1, \"path\": \"README.md\"}}], \"tool_call_id\": null, \"name\": null}\n{\"role\": \"tool\", \"content\": \"[MiniClaw context artifact]\\nTool: read\\nFull result: .aster/context-artifacts/dialogue_test_compressed_release_gate-turn3/read-call_cvmS6QlAUPTaxsK0Gt7pUHIu-72e87a143589.txt\\nUTF-8 bytes: 55\\nSHA-256: b567cbe63ff0bb7190596137b14d540066db961ea9679105f95ad1e53e279c15\", \"tool_calls\": [], \"tool_call_id\": \"call_cvmS6QlAUPTaxsK0Gt7pUHIu\", \"name\": \"read\"}\n{\"role\": \"assistant\", \"content\": \"当前发布决策：\\n\\n```json\\n{\\n  \\\"may_release\\\": false,\\n  \\\"pending\\\": [\\\"contract-test\\\"]\\n}\\n```\\n\\n已确认：\\n- 构建：成功\\n- 单元测试：成功\\n- contract-test：尚未运行\\n\\n因此前置条件尚未满足，不能发布。我未执行发布，也未写入任何文件。\", \"tool_calls\": [], \"tool_call_id\": null, \"name\": null}\n{\"role\": \"user\", \"content\": \"contract-test 执行失败。现阶段没有豁免，也没有重跑成功记录；请保留失败状态，不要把执行过当作成功。\", \"tool_calls\": [], \"tool_call_id\": null, \"name\": null}\n{\"role\": \"assistant\", \"content\": \"当前发布决策：\\n\\n```json\\n{\\n  \\\"may_release\\\": false,\\n  \\\"pending\\\": [\\\"contract-test\\\"]\\n}\\n```\\n\\n状态已保留为：\\n- 构建：成功\\n- 单元测试：成功\\n- contract-test：失败\\n- 豁免：无\\n- 重跑成功记录：无\\n\\n因此不能发布；不会将“已执行”视为“成功”，也未写入或修改任何文件。\", \"tool_calls\": [], \"tool_call_id\": null, \"name\": null}\n",
+                "created_at": "2026-09-05T13:30:06+00:00"
+              },
+              "archive_indexed_chunks": 14,
+              "tool_artifacts": [
+                {
+                  "tool_call_id": "call_YuEtafvB0IJkOIKBX67TXUJJ",
+                  "tool_name": "search",
+                  "path": ".aster/context-artifacts/dialogue_test_compressed_release_gate-turn3/search-call_YuEtafvB0IJkOIKBX67TXUJJ-1c9854a33a8c.txt",
+                  "byte_size": 9,
+                  "sha256": "b335630551682c19a781afebcf4d07bf978fb1f8ac04c6bf87428ed5106870f5",
+                  "preview": "README.md",
+                  "created_at": "2026-09-05T13:30:06+00:00"
+                },
+                {
+                  "tool_call_id": "call_drrC1QKzHttUyxknGHEhrVKy",
+                  "tool_name": "grep",
+                  "path": ".aster/context-artifacts/dialogue_test_compressed_release_gate-turn3/grep-call_drrC1QKzHttUyxknGHEhrVKy-8852ed9824a0.txt",
+                  "byte_size": 81,
+                  "sha256": "cafc556d4d14dfc34e5c21ad8c0583efaac20efb6a7a6206e9005fc5c8a50164",
+                  "preview": "README.md:1: Current release state only exists in the conversation.\nREADME.md-2- ",
+                  "created_at": "2026-09-05T13:30:06+00:00"
+                },
+                {
+                  "tool_call_id": "call_bX2n61tS2JAvrHjrHKQHFtOo",
+                  "tool_name": "skill",
+                  "path": ".aster/context-artifacts/dialogue_test_compressed_release_gate-turn3/skill-call_bX2n61tS2JAvrHjrHKQHFtOo-fa7dabb22121.txt",
+                  "byte_size": 2,
+                  "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                  "preview": "[]",
+                  "created_at": "2026-09-05T13:30:06+00:00"
+                },
+                {
+                  "tool_call_id": "call_cvmS6QlAUPTaxsK0Gt7pUHIu",
+                  "tool_name": "read",
+                  "path": ".aster/context-artifacts/dialogue_test_compressed_release_gate-turn3/read-call_cvmS6QlAUPTaxsK0Gt7pUHIu-72e87a143589.txt",
+                  "byte_size": 55,
+                  "sha256": "b567cbe63ff0bb7190596137b14d540066db961ea9679105f95ad1e53e279c15",
+                  "preview": "Current release state only exists in the conversation.\n",
+                  "created_at": "2026-09-05T13:30:06+00:00"
+                }
+              ],
+              "semantic_tokens": 265,
+              "estimated_tokens_after": 8400,
+              "transcript_retained": true,
+              "stable_fact_ingest": {
+                "candidates": 0,
+                "remembered": 0,
+                "duplicates": 0,
+                "conflicts": 0,
+                "rejected": 0
+              },
+              "model_summary_error": "[MODEL_NETWORK_ERROR] ReadError: "
+            }
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "3f232be5eee79b6e38b4b1e8280a8326",
+          "event_id": "194e9d22-2c2b-43f9-a3bf-079e1d02d059",
+          "type": "compaction.completed",
+          "timestamp": "2026-09-05T13:31:29.648Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_release_gate-turn4",
+          "run_id": "f8037e5fedd041e6b9541cc5f1a31048",
+          "parent_event_id": null,
+          "data": {
+            "status": "completed",
+            "strategy": "model-summary",
+            "reason": "hard",
+            "tokens_before": 16709,
+            "tokens_after": 8067,
+            "tokens_saved": 8642,
+            "details": {
+              "version": 1,
+              "reason": "hard",
+              "strategy": "model-summary",
+              "compaction_strategy": "layered-current",
+              "layers_applied": [
+                "tool-result-artifact",
+                "old-result-reference",
+                "closed-history-archive",
+                "recent-original",
+                "model-summary"
+              ],
+              "archive": {
+                "tool_call_id": "compaction-e539602c0454",
+                "tool_name": "context-transcript",
+                "path": ".aster/context-artifacts/dialogue_test_compressed_release_gate-turn4/context-transcript-compaction-e539602c0454-cbbf8bb5e2ea.jsonl",
+                "byte_size": 16333,
+                "sha256": "4b694859c9e5ffc6479a9d0e4eb4ee7930167ac7ce1993d7abb05aa3d8652050",
+                "preview": "{\"role\": \"user\", \"content\": \"插入另一产品的运行登记，和我们发布无关：\\nOtherRelease-000: worker=Shift0; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=15\\nOtherRelease-001: worker=Shift1; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=16\\nOtherRelease-002: worker=Shift2; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=17\\nOtherRelease-003: worker=Shift3; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=18\\nOtherRelease-004: worker=Shift4; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=19\\nOtherRelease-005: worker=Shift5; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=20\\nOtherRelease-006: worker=Shift6; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=21\\nOtherRelease-007: worker=Shift7; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=22\\nOtherRelease-008: worker=Shift8; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=23\\nOtherRelease-009: worker=Shift9; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=24\\nOtherRelease-010: worker=Shift10; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=25\\nOtherRelease-011: worker=Shift11; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=26\\nOtherRelease-012: worker=Shift12; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=27\\nOtherRelease-013: worker=Shift13; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=28\\nOtherRelease-014: worker=Shift14; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batc\n... [artifact preview truncated] ...\note=unrelated dispatch archive, no change to active implementation; batch=122\\nOtherRelease-108: worker=Shift108; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=123\\nOtherRelease-109: worker=Shift109; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=124\\nOtherRelease-110: worker=Shift110; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=125\\nOtherRelease-111: worker=Shift111; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=126\\nOtherRelease-112: worker=Shift112; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=127\\nOtherRelease-113: worker=Shift113; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=128\\nOtherRelease-114: worker=Shift114; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=129\\nOtherRelease-115: worker=Shift115; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=130\\nOtherRelease-116: worker=Shift116; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=131\\nOtherRelease-117: worker=Shift117; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=132\\nOtherRelease-118: worker=Shift118; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=133\\nOtherRelease-119: worker=Shift119; region=auxiliary; note=unrelated dispatch archive, no change to active implementation; batch=134\", \"tool_calls\": [], \"tool_call_id\": null, \"name\": null}\n{\"role\": \"assistant\", \"content\": \"已识别为另一产品的运行登记，与本次发布无关，不纳入发布前置条件，也不改变当前状态。\\n\\n```json\\n{\\n  \\\"may_release\\\": false,\\n  \\\"pending\\\": [\\\"contract-test\\\"]\\n}\\n```\\n\\ncontract-test 仍为失败状态；无豁免、无成功重跑记录，不能发布。未写入或修改任何文件。\", \"tool_calls\": [], \"tool_call_id\": null, \"name\": null}\n",
+                "created_at": "2026-09-05T13:31:01+00:00"
+              },
+              "archive_indexed_chunks": 11,
+              "tool_artifacts": [],
+              "semantic_tokens": 3958,
+              "estimated_tokens_after": 8067,
+              "transcript_retained": true,
+              "stable_fact_ingest": {
+                "candidates": 0,
+                "remembered": 0,
+                "duplicates": 0,
+                "conflicts": 0,
+                "rejected": 0
+              }
+            }
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "2d96ded25b7a58c2ef14579b302e6bde",
+          "event_id": "da67c71a-8e79-4563-a505-56169c9413a2",
+          "type": "tool.call",
+          "timestamp": "2026-09-05T13:31:51.229Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_release_gate-turn5",
+          "run_id": "814cc4c7c8c849a8a2165114051e6b95",
+          "parent_event_id": null,
+          "data": {
+            "tool_call_id": "call_Qnt7wjGj03qa65sCyx1tWuwz",
+            "tool_name": "write",
+            "status": "success",
+            "started_at": "2026-09-05T13:31:51.214Z",
+            "completed_at": "2026-09-05T13:31:51.229Z",
+            "duration_ms": 14,
+            "arguments": {
+              "content": "{\n  \"may_release\": false,\n  \"pending\": [\"contract-test\"]\n}\n",
+              "path": "release-decision.json"
+            },
+            "result": "Successfully wrote 59 bytes to release-decision.json",
+            "error": null,
+            "cancellation_reason": null,
+            "details": {
+              "path": "D:\\MIniClaw\\.aster\\evals\\three-split-v2\\supplement\\cases\\dialogue_test_compressed_release_gate\\attempt-001\\workspace\\release-decision.json",
+              "bytes": 59
+            }
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "2d96ded25b7a58c2ef14579b302e6bde",
+          "event_id": "50bce288-4864-4bb2-90cf-83ecb1ecfa22",
+          "type": "tool.call",
+          "timestamp": "2026-09-05T13:31:59.303Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_release_gate-turn5",
+          "run_id": "814cc4c7c8c849a8a2165114051e6b95",
+          "parent_event_id": null,
+          "data": {
+            "tool_call_id": "call_s0cudBgEgfA8xg4n5u3L9BMA",
+            "tool_name": "bash",
+            "status": "error",
+            "started_at": "2026-09-05T13:31:58.380Z",
+            "completed_at": "2026-09-05T13:31:59.303Z",
+            "duration_ms": 922,
+            "arguments": {
+              "command": "test -f release-decision.json && python -c 'import json; p=\"release-decision.json\"; d=json.load(open(p)); assert type(d[\"may_release\"]) is bool; assert d[\"pending\"] == sorted(d[\"pending\"]); assert d == {\"may_release\": False, \"pending\": [\"contract-test\"]}; print(json.dumps(d, ensure_ascii=False))' && git status --short -- release-decision.json",
+              "goal_verification": true,
+              "timeout": 30
+            },
+            "result": null,
+            "error": "{\"may_release\": false, \"pending\": [\"contract-test\"]}\nfatal: not a git repository (or any parent up to mount point /)\nStopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).\n\n\nCommand exited with code 128",
+            "cancellation_reason": null,
+            "details": {
+              "exit_code": 128,
+              "runtime": "docker",
+              "image": "miniclaw-runtime:py313-bench",
+              "network": "none",
+              "container_name": "miniclaw-96eea1ecf6a1-c9ed0e",
+              "capture_truncated": false
+            }
+          }
+        },
+        {
+          "schema_version": 1,
+          "trace_id": "2d96ded25b7a58c2ef14579b302e6bde",
+          "event_id": "3f3bdb23-54e6-4d67-a1bb-bcef2b656e27",
+          "type": "tool.call",
+          "timestamp": "2026-09-05T13:32:06.719Z",
+          "channel_id": "eval",
+          "conversation_id": "dialogue_test_compressed_release_gate-turn5",
+          "run_id": "814cc4c7c8c849a8a2165114051e6b95",
+          "parent_event_id": null,
+          "data": {
+            "tool_call_id": "call_MTmfzAx9PiQkhDC6J5RxKwDG",
+            "tool_name": "bash",
+            "status": "success",
+            "started_at": "2026-09-05T13:32:05.258Z",
+            "completed_at": "2026-09-05T13:32:06.719Z",
+            "duration_ms": 1461,
+            "arguments": {
+              "command": "python -c 'import json; p=\"release-decision.json\"; d=json.load(open(p)); assert type(d[\"may_release\"]) is bool; assert d[\"pending\"] == sorted(d[\"pending\"]); assert d == {\"may_release\": False, \"pending\": [\"contract-test\"]}; print(json.dumps(d, ensure_ascii=False))'",
+              "goal_verification": true,
+              "timeout": 30
+            },
+            "result": "{\"may_release\": false, \"pending\": [\"contract-test\"]}\n",
+            "error": null,
+            "cancellation_reason": null,
+            "details": {
+              "exit_code": 0,
+              "runtime": "docker",
+              "image": "miniclaw-runtime:py313-bench",
+              "network": "none",
+              "container_name": "miniclaw-96eea1ecf6a1-ad51ea",
+              "capture_truncated": false
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "reviewed_result": {
+    "id": "dialogue_test_compressed_release_gate",
+    "category": "compression",
+    "raw_passed": false,
+    "passed": false,
+    "attempts": [
+      {
+        "passed": false,
+        "dimensions": {
+          "outcome": true,
+          "process": true,
+          "efficiency": true,
+          "safety": true,
+          "reliability": false
+        },
+        "infrastructure_or_terminal_model_error": true,
+        "reasons": [
+          {
+            "dimension": "reliability",
+            "type": "metric",
+            "detail": "model_errors=1; constraints={'name': 'model_errors', 'equals': 0}"
+          }
+        ],
+        "tokens": 96520,
+        "tool_calls": 7,
+        "model_errors": 1,
+        "compactions": 2
+      }
+    ]
+  },
+  "original_report": ".aster\\evals\\three-split-v2\\supplement\\cases\\dialogue_test_compressed_release_gate\\result.json"
+}

@@ -1,0 +1,33 @@
+{
+  "excluded_invalid_cases": {
+    "dialogue_recall_retracted_contact": "联系人为空没有明确 null/空字符串。",
+    "dialogue_complete_json_cli": "未明确 CLI 的输入参数是文件路径还是 JSON 字符串。",
+    "dialogue_complete_recursive_manifest": "未明确相对路径的参照目录。",
+    "fresh_test_feature_matrix": "enabled 状态未明确必须布尔值。",
+    "fresh_test_nested_contract": "required 状态未明确必须布尔值。",
+    "fresh_test_execution_boundary": "would_execute 可理解为脚本假设执行的命令列表。",
+    "fresh_test_stale_claim": "impact 字段没有明确整数类型。",
+    "fresh_test_markdown_index": "未明确 index.json 位于仓库根目录。",
+    "fresh_test_checksum_manifest": "未明确 manifest.json 位于仓库根目录及根 JSON 形状。"
+  },
+  "replacements": {
+    "retained": {
+      "dialogue_recall_retracted_contact": "dialogue_retained_delegation_expiry",
+      "dialogue_complete_json_cli": "dialogue_retained_file_cli_contract",
+      "dialogue_complete_recursive_manifest": "dialogue_retained_root_recursive_manifest"
+    },
+    "test": {
+      "fresh_test_feature_matrix": "dialogue_test_compressed_typed_parser",
+      "fresh_test_nested_contract": "dialogue_test_compressed_release_gate",
+      "fresh_test_execution_boundary": "dialogue_test_forbidden_script_execution",
+      "fresh_test_stale_claim": "dialogue_test_explicit_incident_evidence",
+      "fresh_test_markdown_index": "dialogue_test_root_markdown_index",
+      "fresh_test_checksum_manifest": "dialogue_test_root_checksum_manifest"
+    }
+  },
+  "policy": "Original frozen artifacts preserved. Reviewed release views are amended evaluations, not pristine unseen benchmarks.",
+  "release_hashes": {
+    "retained-release-v2.json": "6c40c4eb61f5fb744824747ad4bd273947c1e5950b48079f0516a0cef623319a",
+    "test-release-v2.json": "6aa0af5cd457cbdd24fc449514f1ba9a7f19a628aa17386d4a3511bb2144368b"
+  }
+}

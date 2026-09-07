@@ -1,0 +1,4 @@
+10:00 active version=2.4.1
+10:05 deploy started version=2.5.0
+10:06 healthcheck failed version=2.5.0
+10:07 rollback completed active=2.4.1

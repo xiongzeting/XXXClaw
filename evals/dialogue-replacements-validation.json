@@ -1,0 +1,268 @@
+{
+  "version": 1,
+  "name": "dialogue-replacement-validation",
+  "environment": {
+    "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+    "MINICLAW_WORKSPACE_MODE": "direct",
+    "MINICLAW_APPROVAL_POLICY": "allow",
+    "MINICLAW_GOAL_JUDGE_ENABLED": "false"
+  },
+  "cases": [
+    {
+      "id": "dialogue_chain_after_handover",
+      "category": "memory-multihop",
+      "capabilities": [
+        "user_dialogue",
+        "memory-multihop"
+      ],
+      "fixture": "fixtures/dialogue-campaign/chain_after_handover",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "记住关联：组件 render-core 属于包 ui-kit；ui-kit 属于团队 Canvas；Canvas 联系人 Rin。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "再记另一条：draw-core 属于 plot-kit；plot-kit 属于团队 Charts；Charts 联系人 Jan。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "ui-kit 已正式转交 Charts 团队，Canvas 仍由 Rin 联系，Charts 仍由 Jan 联系。请更新包归属。"
+        },
+        {
+          "id": "turn4",
+          "prompt": "现在 render-core 出问题应该联系哪支团队和谁？JSON：team、contact。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "team": "Charts",
+            "contact": "Jan"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "replaces_case": "memory_multihop_failure",
+        "replacement_reason": "Natural multi-turn task and stronger independent outcome oracle"
+      }
+    },
+    {
+      "id": "dialogue_preference_exception_scope",
+      "category": "memory-scope",
+      "capabilities": [
+        "user_dialogue",
+        "memory-scope"
+      ],
+      "fixture": "fixtures/dialogue-campaign/preference_exception_scope",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "记住：我的通用示例偏好 Python，但维护 Sol 项目时必须用 TypeScript，维护旧 Moon 项目时用 Java。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "Sol 项目改名为 Solstice，代码语言要求不变。请更新这个项目例外，通用偏好和 Moon 都不变。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "新开一个没有其他约定的练习项目，以及 Solstice 和 Moon，各用什么示例语言？JSON 字段 default、Solstice、Moon。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "default": "Python",
+            "Solstice": "TypeScript",
+            "Moon": "Java"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "replaces_case": "memory_preference_failure",
+        "replacement_reason": "Natural multi-turn task and stronger independent outcome oracle"
+      }
+    },
+    {
+      "id": "dialogue_rollback_after_verify_failure",
+      "category": "procedural-reasoning",
+      "capabilities": [
+        "user_dialogue",
+        "procedural-reasoning"
+      ],
+      "fixture": "fixtures/dialogue-campaign/rollback_after_verify_failure",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "按 runbook.md 和执行记录确定下一步，不要真的操作。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "JSON：next_step、may_resume。restore 执行结束并不等于恢复验收通过。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "next_step": "investigate_restore",
+            "may_resume": false
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "replaces_case": "procedure_sequence_failure",
+        "replacement_reason": "Natural multi-turn task and stronger independent outcome oracle"
+      }
+    },
+    {
+      "id": "dialogue_event_time_not_ingest",
+      "category": "temporal-evidence",
+      "capabilities": [
+        "user_dialogue",
+        "temporal-evidence"
+      ],
+      "fixture": "fixtures/dialogue-campaign/event_time_not_ingest",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "请看看 history.json，这些是线上配置变更记录，先理解时间字段。只读，不修改文件。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "提醒：effective_at 才是配置生效时间，ingested_at 只是采集时间；回补日志不能覆盖更晚的实际配置。现在生效的 region 和 retries 是什么？只给 JSON。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "region": "west",
+            "retries": 2
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "replaces_case": "dynamic_state_transition_failure",
+        "replacement_reason": "Natural multi-turn task and stronger independent outcome oracle"
+      }
+    },
+    {
+      "id": "dialogue_versioned_docs",
+      "category": "tool-evidence",
+      "capabilities": [
+        "user_dialogue",
+        "tool-evidence"
+      ],
+      "fixture": "fixtures/dialogue-campaign/versioned_docs",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "项目 lock.txt 确定了实际依赖版本。查 docs 下对应说明，确认 connect 的超时参数名。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "只按锁定版本回答，不按文档文件名里 latest 的字样选。JSON：version、timeout_parameter。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_regex",
+          "pattern": "\"version\"\\s*:\\s*\"(?:wire-client==)?1\\.8\""
+        },
+        {
+          "type": "final_json",
+          "fields": {
+            "timeout_parameter": "timeout_ms"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "replaces_case": "static_evidence_failure",
+        "replacement_reason": "Natural multi-turn task and stronger independent outcome oracle"
+      }
+    },
+    {
+      "id": "dialogue_conflicting_sources",
+      "category": "negative-evidence",
+      "capabilities": [
+        "user_dialogue",
+        "negative-evidence"
+      ],
+      "fixture": "fixtures/dialogue-campaign/conflicting_sources",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "config-a.md 和 config-b.md 是同时收到的两个配置说明，帮我核对。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "它们没有版本和时间，也没有权威优先级。现在能确定唯一的生产端口吗？输出 JSON：port，没有唯一答案就 null；conflict 为布尔值。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "port": null,
+            "conflict": true
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "replaces_case": "abstention_evidence_failure",
+        "replacement_reason": "Natural multi-turn task and stronger independent outcome oracle"
+      }
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+2026-07-04T09:00:31Z INFO api ok id=31
+2026-07-04T09:00:32Z INFO api ok id=32
+2026-07-04T09:00:33Z ERROR api unhandled TypeError in normalize_ledger_key id=33
+2026-07-04T09:00:34Z INFO api ok id=34

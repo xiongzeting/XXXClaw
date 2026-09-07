@@ -1,0 +1,29 @@
+{
+  "version": 6,
+  "main_combined": "boundary-campaign-v1.json",
+  "main": {
+    "development": "round2-development-current.json",
+    "test": "round2-test-current.json"
+  },
+  "returning_regression": "boundary-returning-regression-v1.json",
+  "returning_selection": "../.aster/evals/boundary-campaign-v1/returning-selection.json",
+  "returning_rule": "At least two distinct required failed dimensions in path-oracle-corrected prior scores; preserve original split and mark exposed regression.",
+  "new_case_count": 15,
+  "returning_case_count": 5,
+  "smoke": "smoke-basic-v3.json",
+  "historical_observed_failures": "hard-observed-failures-v2.json",
+  "original_portfolio": "active-eval-portfolio-v5.json",
+  "freeze": "boundary-freeze-v1.json",
+  "methodology": "boundary-v1说明.md",
+  "network_policy": "Bounded retry at interrupted request; preserve tools, raw errors and cumulative cost; evaluate recovered delivery separately from network interruptions.",
+  "exposure_policy": "New families preassigned before execution; after result review they are exposed material, not a fresh blind benchmark.",
+  "validation": "Partition migration only; original model scores unchanged; all cases exposed.",
+  "holdout_status": "deferred; no active retained suite",
+  "partition_policy": "current-round-partitions.json",
+  "current_counts": {
+    "development": 8,
+    "regression": 5,
+    "test": 7
+  },
+  "next_evaluation": "next-quality-limits-v1.json"
+}

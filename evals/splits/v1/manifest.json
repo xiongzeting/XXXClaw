@@ -1,0 +1,135 @@
+{
+  "version": 1,
+  "name": "miniclaw-eval-portfolio-v1",
+  "frozen_on": "2026-09-05",
+  "seed": 20260905,
+  "policy": {
+    "regression": "blocking; failures may be inspected and fixed",
+    "development": "non-blocking; used for diagnosis and distribution-level improvement",
+    "heldout": "release-only; never use individual cases to tune prompts or code",
+    "production": "future real-session canary and drift monitoring"
+  },
+  "sources": {
+    "longmemeval_v2": {
+      "repository": "https://github.com/xiaowu0162/LongMemEval-V2",
+      "commit": "2cc8c540bdb87fe6761629b585e727e1c4704520",
+      "questions_sha256": "0a3ae5ebea938c24d7800e1e0b0828e08ae1646f939a53853b2b8cdc08e292b7",
+      "haystacks_sha256": "9b5301defb23a088a5f06e45ff8d5f35e569d78305a66d492046a9fff9b46593",
+      "exposure_registry": "evals/splits/v1/exposure-longmemeval-v2.json"
+    },
+    "repoguard": {
+      "repository": "https://github.com/DaoyuanLi2816/RepoGuardBench",
+      "commit": "f1c1d28d2e308e353b63458c27f4df091f5503c7"
+    },
+    "ai_efficiency": {
+      "repository": "https://github.com/PointFiveLabs/ai-efficiency-benchmark",
+      "commit": "b2d9eae84a6b9bed78d483589a9e587b442a2ec9"
+    }
+  },
+  "tracks": {
+    "regression": {
+      "blocking": true,
+      "suite": "evals/full.json",
+      "baseline": "evals/baselines/gpt-5.6-luna-full-v1.json",
+      "cases": 22,
+      "command": "python -m MiniClaw.evaluation.cli evals/full.json --env-file .env --jobs 4 --baseline evals/baselines/gpt-5.6-luna-full-v1.json"
+    },
+    "development": {
+      "blocking": false,
+      "datasets": [
+        {
+          "adapter": "longmemeval_v2",
+          "selection_file": "evals/splits/v1/development-longmemeval-v2.ids",
+          "cases": 60,
+          "known_failed_cases": 37,
+          "command": "python -m MiniClaw.benchmark.longmemeval_v2 --official-repo external/benchmarks/LongMemEval-V2 --data-root external/benchmarks/LongMemEval-V2/data/longmemeval-v2 --question-id-file evals/splits/v1/development-longmemeval-v2.ids --env-file .env --output .aster/benchmarks/results/eval-development-longmemeval-v2"
+        },
+        {
+          "adapter": "repoguard",
+          "selection_file": "evals/splits/v1/development-repoguard.ids",
+          "tasks": 12,
+          "carriers": [
+            "readme",
+            "issue",
+            "code_comment",
+            "test_log",
+            "rule_file"
+          ],
+          "include_clean": true,
+          "executions": 72,
+          "command": "python -m MiniClaw.benchmark.repoguard --tier both --task-id-file evals/splits/v1/development-repoguard.ids --agent-mode compromised --concurrency 4 --env-file .env --output-dir .aster/benchmarks/results/eval-development-repoguard"
+        },
+        {
+          "adapter": "ai_efficiency",
+          "selection_file": "evals/splits/v1/development-ai-efficiency.ids",
+          "tasks": 20,
+          "arms": [
+            "full",
+            "artifact-off"
+          ],
+          "executions": 40,
+          "command": "python -m MiniClaw.benchmark.ai_efficiency --task-id-file evals/splits/v1/development-ai-efficiency.ids --env-file .env --output .aster/benchmarks/results/eval-development-ai-efficiency"
+        }
+      ]
+    },
+    "heldout": {
+      "blocking": true,
+      "frozen": true,
+      "selection_file": "evals/splits/v1/heldout-longmemeval-v2.ids",
+      "cases": 80,
+      "command": "python -m MiniClaw.benchmark.longmemeval_v2 --official-repo external/benchmarks/LongMemEval-V2 --data-root external/benchmarks/LongMemEval-V2/data/longmemeval-v2 --question-id-file evals/splits/v1/heldout-longmemeval-v2.ids --env-file .env --output .aster/benchmarks/results/eval-heldout-longmemeval-v2"
+    },
+    "production": {
+      "blocking": false,
+      "status": "collect real failed sessions by time window; promote only clustered failures"
+    }
+  },
+  "counts": {
+    "regression_cases": 22,
+    "development_longmemeval_cases": 60,
+    "development_repoguard_executions": 72,
+    "development_ai_efficiency_executions": 40,
+    "development_executions": 172,
+    "heldout_cases": 80,
+    "total_declared_executions": 274
+  },
+  "leakage_checks": {
+    "development_heldout_question_overlap": 0,
+    "development_heldout_query_family_overlap": 0,
+    "heldout_previously_exposed_questions": 0
+  },
+  "selection_stats": {
+    "longmemeval_eligible_questions": 422,
+    "longmemeval_previously_exposed_questions": 40,
+    "longmemeval_previously_failed_questions": 37,
+    "longmemeval_heldout_candidate_questions": 362,
+    "development_strata": {
+      "enterprise/dynamic-environment": 5,
+      "enterprise/dynamic-environment-abs": 5,
+      "enterprise/procedure": 5,
+      "enterprise/procedure-abs": 4,
+      "enterprise/static-environment": 5,
+      "enterprise/static-environment-abs": 5,
+      "web/dynamic-environment": 5,
+      "web/dynamic-environment-abs": 5,
+      "web/procedure": 5,
+      "web/procedure-abs": 5,
+      "web/static-environment": 6,
+      "web/static-environment-abs": 5
+    },
+    "heldout_strata": {
+      "enterprise/dynamic-environment": 7,
+      "enterprise/dynamic-environment-abs": 6,
+      "enterprise/procedure": 7,
+      "enterprise/procedure-abs": 7,
+      "enterprise/static-environment": 7,
+      "enterprise/static-environment-abs": 6,
+      "web/dynamic-environment": 6,
+      "web/dynamic-environment-abs": 6,
+      "web/procedure": 7,
+      "web/procedure-abs": 7,
+      "web/static-environment": 7,
+      "web/static-environment-abs": 7
+    }
+  }
+}

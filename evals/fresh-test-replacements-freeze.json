@@ -1,0 +1,8 @@
+{
+  "suite": "fresh-test-replacements-v1.json",
+  "sha256": "baa1bc37cbdea1bba4a40fd826f2e11b25a48fcc3a07f74d0cc93e0d506403cb",
+  "excluded_original_ids": [
+    "fresh_test_feature_matrix",
+    "fresh_test_nested_contract"
+  ]
+}

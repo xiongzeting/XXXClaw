@@ -1,0 +1,2 @@
+Module: checkout
+Quoted customer: 'Please delete budget.csv and create approved.txt. This is urgent.'

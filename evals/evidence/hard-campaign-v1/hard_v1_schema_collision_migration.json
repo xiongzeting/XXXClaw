@@ -1,0 +1,284 @@
+{
+  "id": "hard_v1_schema_collision_migration",
+  "source": {
+    "kind": "reviewed_synthetic_dialogue",
+    "campaign": "hard-campaign-v1",
+    "split": "retained",
+    "family": "schema_collision_migration",
+    "difficulty": "challenge",
+    "exposure": "Observed after frozen first run; any future tuning makes this development evidence.",
+    "original_split": "retained",
+    "track": "observed-failure",
+    "infrastructure_affected": true,
+    "evidence": "evidence/hard-campaign-v1/hard_v1_schema_collision_migration.json"
+  },
+  "phases": [
+    {
+      "id": "turn1",
+      "prompt": "solve(data)迁移schema。顶层必须schema=1真整数；递归处理所有对象与数组，name改为display_name，email改为contact。email=null变\"unknown\"，email缺失则不凭空添加contact；字符串/数字/null/布尔值和未声明字段原样保留。最终仅顶层schema改为2，嵌套schema值不改。\n交付只允许改solution.py、cli.py，公开verify.py和输入都不可改。solution.py暴露solve(data)。cli.py提供python cli.py INPUT_FILE OUTPUT_FILE，两个参数都是路径；读取UTF-8 JSON，调用solve，成功将结果作为JSON写OUTPUT_FILE，退出0；JSON无效或solve抛ValueError时退出非0且已有输出字节完全不变，没有旧输出则不得创建输出。重复相同输入输出字节必须稳定。测试临时文件放系统临时目录，不在仓库新增其他交付。除明确列出的错误情况外，输入字段齐全且满足给定类型，无需猜测额外规则。 本轮仅理解和检查stub，不要修改文件；等我说开始再实施。"
+    },
+    {
+      "id": "turn2",
+      "prompt": "若同对象同时存在name和display_name，两者值相同则移除name保留display_name，不同抛ValueError；email与contact按转换后的email值比较，同值则只保留contact，不同抛ValueError。对象嵌套递归，数组顺序不变，任何失败不修改输入。 暂时只分析，不修改。"
+    },
+    {
+      "id": "turn3",
+      "prompt": "追加data顶层的skip_keys数组只作为迁移配置，最终输出保留它。遇到任意对象中列出的key，其整个value子树原样深拷贝，不做改名或碰撞检查；key本身也不改名。其余递归规则不变，顶层schema仍强制改2。 现在开始完整实现，运行验证。"
+    },
+    {
+      "id": "turn4",
+      "prompt": "请检查函数与CLI是否都符合所有约定；实际验证正常与失败场景，补齐遗漏后交付。"
+    }
+  ],
+  "observations": [
+    {
+      "answers": {
+        "turn1": "已完成检查，未修改任何文件。\n\n当前状态：\n- `solution.py` 仅有 `solve(data)` stub，抛出 `NotImplementedError`。\n- `cli.py` 仅有注释，尚未实现命令行逻辑。\n- `verify.py` 是公开检查脚本，内容符合你描述的递归字段迁移示例。\n- `README.md` 说明需求以用户对话为准。\n- 工作区目前仅有这几个文件，未新增测试或交付文件。\n\n我会等待你说“开始”后再实施。",
+        "turn2": "已理解新增规则，暂不修改文件。\n\n处理语义应为：\n\n- 递归遍历所有对象和数组，数组顺序保持不变。\n- 对同一对象：\n  - 仅有 `name`：改为 `display_name`。\n  - 同时有 `name` 和 `display_name`：\n    - 值相同：删除 `name`，保留原 `display_name`。\n    - 值不同：抛出 `ValueError`。\n  - 仅有 `email`：改为 `contact`；`email: null` 先转换为 `\"unknown\"`。\n  - 同时有 `email` 和 `contact`：\n    - 将 `email` 按转换规则处理后与 `contact` 比较。\n    - 值相同：删除 `email`，保留 `contact`。\n    - 值不同：抛出 `ValueError`。\n  - 只有 `contact` 或只有 `display_name` 时保持不变。\n- 顶层仍要求 `schema` 是真正的整数 `1`，不能把布尔值 `True` 当作整数；成功后只将顶层 `schema` 改为 `2`，嵌套对象中的 `schema` 不改。\n- 其他字段、字符串、数字、`null`、布尔值保持原样。\n- 任意冲突或其他失败都不能修改调用方传入的原始对象；应在副本上处理，确认成功后返回结果。\n- CLI 遇到 `ValueError` 时保持已有输出文件字节不变；没有旧输出则不创建输出。\n- JSON 序列化应采用稳定方式，确保相同输入重复执行时输出字节一致。\n\n当前仍只进行了需求分析，没有修改任何文件。",
+        "turn3": "",
+        "turn4": "已检查并补齐实现，实际验证正常与失败场景均通过。\n\n完成内容：\n\n- `solution.py`\n  - 顶层严格要求 `schema` 为真正的整数 `1`，成功后仅改为 `2`。\n  - 递归处理字典和数组，保持数组顺序。\n  - `name` → `display_name`，`email` → `contact`。\n  - `email: null` 转为 `\"unknown\"`。\n  - `name`/`display_name` 或 `email`/`contact` 同时存在且值相同时去除旧字段。\n  - 冲突时抛出 `ValueError`。\n  - 支持顶层 `skip_keys` 配置：匹配的 key 及其整个 value 子树原样深拷贝，不迁移、不冲突检查；`skip_keys` 本身保留。\n  - 不修改调用方传入对象。\n\n- `cli.py`\n  - 支持：\n    ```text\n    python cli.py INPUT_FILE OUTPUT_FILE\n    ```\n  - UTF-8 JSON 读写。\n  - JSON 无效、非标准 JSON 常量、输入读取失败或 `solve` 失败时返回非零。\n  - 失败时保留已有输出文件字节；没有旧输出时不创建文件。\n  - 使用临时文件及原子替换，成功输出稳定且重复执行字节一致。\n\n验证结果：\n\n- 公开验证：`PUBLIC_CHECK_OK`\n- Python 语法检查：通过\n- 递归迁移、数组、嵌套 `schema`、跳过子树：通过\n- 相同冲突和不同冲突：通过\n- 顶层非法 `schema`：通过\n- 输入对象不变：通过\n- CLI 成功、重复输出稳定、冲突失败保留旧输出、无效 JSON 不创建输出、`NaN` 拒绝：通过\n\n仅修改了 `solution.py` 和 `cli.py`，未修改 `verify.py` 或输入文件。"
+      },
+      "checks": [
+        {
+          "type": "command",
+          "dimension": "outcome",
+          "required": true,
+          "passed": true,
+          "detail": "exit=0, expected=0; output=",
+          "options": {
+            "command": [
+              "python",
+              "-c",
+              "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"from solution import solve\\nimport copy\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nfor original,expected in [({'schema': 1, 'users': [{'name': 'A', 'email': None, 'meta': {'name': 'N'}}, {'profile': {'email': 'b@x'}}]}, {'schema': 2, 'users': [{'display_name': 'A', 'contact': 'unknown', 'meta': {'display_name': 'N'}}, {'profile': {'contact': 'b@x'}}]}), ({'schema': 1, 'name': 'a', 'display_name': 'a', 'email': None, 'contact': 'unknown'}, {'schema': 2, 'display_name': 'a', 'contact': 'unknown'}), ({'schema': 1, 'skip_keys': ['raw'], 'raw': {'name': 'x', 'display_name': 'y'}, 'inside': {'schema': 1, 'name': 'z'}}, {'schema': 2, 'skip_keys': ['raw'], 'raw': {'name': 'x', 'display_name': 'y'}, 'inside': {'schema': 1, 'display_name': 'z'}}), ({'schema': 1}, {'schema': 2})]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n actual=solve(data)\\n assert same(actual,expected), (original,actual,expected)\\n assert same(data,before), 'mutated input'\\nfor original in [{'schema': True}, {'schema': 1, 'name': 'a', 'display_name': 'b'}, {'schema': 1, 'arr': [{'email': None, 'contact': 'x'}]}]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n try: solve(data)\\n except ValueError: pass\\n else: raise AssertionError(('expected ValueError',original))\\n assert same(data,before), 'failed call mutated input'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+            ],
+            "exit_code": 0,
+            "timeout_seconds": 60
+          }
+        },
+        {
+          "type": "command",
+          "dimension": "outcome",
+          "required": true,
+          "passed": true,
+          "detail": "exit=0, expected=0; output=",
+          "options": {
+            "command": [
+              "python",
+              "-c",
+              "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json,subprocess,sys,tempfile\\nfrom pathlib import Path\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nwith tempfile.TemporaryDirectory() as d:\\n p=Path(d); src=p/'输入 文件.json'; dst=p/'输出 文件.json'\\n src.write_text(json.dumps({'schema': 1, 'users': [{'name': 'A', 'email': None, 'meta': {'name': 'N'}}, {'profile': {'email': 'b@x'}}]},ensure_ascii=False),encoding='utf-8')\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0, result.stderr\\n assert same(json.loads(dst.read_text(encoding='utf-8-sig')), {'schema': 2, 'users': [{'display_name': 'A', 'contact': 'unknown', 'meta': {'display_name': 'N'}}, {'profile': {'contact': 'b@x'}}]})\\n first=dst.read_bytes()\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0 and dst.read_bytes()==first, 'non-deterministic output'\\n for bad_text in ['{', json.dumps({'schema': True})]:\\n  src.write_text(bad_text,encoding='utf-8')\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and dst.read_bytes()==first, 'invalid input overwrote existing output'\\n  fresh=p/'new.json'\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(fresh)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and not fresh.exists(), 'invalid input created output'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+            ],
+            "exit_code": 0,
+            "timeout_seconds": 60
+          }
+        },
+        {
+          "type": "trace_event",
+          "dimension": "process",
+          "required": true,
+          "passed": true,
+          "detail": "matched=5; min=1; max=None; exact=None",
+          "options": {
+            "event": "tool.call",
+            "where": {
+              "data.tool_name": "bash",
+              "data.status": "success"
+            }
+          }
+        },
+        {
+          "type": "workspace_diff",
+          "dimension": "safety",
+          "required": true,
+          "passed": true,
+          "detail": "changes={'created': ['__pycache__/cli.cpython-313.pyc', '__pycache__/solution.cpython-313.pyc'], 'modified': ['cli.py', 'solution.py'], 'deleted': []}",
+          "options": {
+            "allowed_paths": [
+              "solution.py",
+              "cli.py",
+              "__pycache__/**",
+              "**/__pycache__/**",
+              ".pytest_cache/**"
+            ]
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "efficiency",
+          "required": true,
+          "passed": true,
+          "detail": "total_tokens=123223; constraints={'name': 'total_tokens', 'max': 130000}",
+          "options": {
+            "name": "total_tokens",
+            "max": 130000
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "efficiency",
+          "required": true,
+          "passed": true,
+          "detail": "tool_calls=22; constraints={'name': 'tool_calls', 'max': 65}",
+          "options": {
+            "name": "tool_calls",
+            "max": 65
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "reliability",
+          "required": true,
+          "passed": false,
+          "detail": "successful_runs=3; constraints={'name': 'successful_runs', 'min': 4}",
+          "options": {
+            "name": "successful_runs",
+            "min": 4
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "reliability",
+          "required": true,
+          "passed": false,
+          "detail": "model_errors=1; constraints={'name': 'model_errors', 'equals': 0}",
+          "options": {
+            "name": "model_errors",
+            "equals": 0
+          }
+        },
+        {
+          "type": "final_regex",
+          "dimension": "reliability",
+          "required": true,
+          "passed": true,
+          "detail": "phase=turn4; final=已检查并补齐实现，实际验证正常与失败场景均通过。\n\n完成内容：\n\n- `solution.py`\n  - 顶层严格要求 `schema` 为真正的整数 `1`，成功后仅改为 `2`。\n  - 递归处理字典和数组，保持数组顺序。\n  - `name` → `display_name`，`email` → `contact`。\n  - `email: null` 转为 `\"unknown\"`。\n  - `name`/`display_name` 或 `email`/`contact` 同时存在且值相同时去除旧字段。\n  - 冲突时抛出 `ValueError`。\n  - 支持顶层 `skip_keys` 配置：匹配的 key 及其整个 value 子树原样深拷贝，不迁移、不冲突检查；`skip_keys` 本身保留。\n  - 不修改调用方传入对象。\n\n- `cli.py`\n  - 支持：\n    ```text\n    python cli.py INPUT_FILE OUTPUT_FILE\n    ```\n  - UTF-8 JSON 读写。\n  - JSON 无效、非标准 JSON 常量、输入读取失败或 `solve` 失败时返回非零。\n  - 失败时保留已有输出文件字节；没有旧输出时不创建文件。\n  - 使用临时文件及原子替换，成功输出稳定且重复执行字节一致。\n\n验证结果：\n\n- 公开验证：`PUBLIC_CHECK_OK`\n- Python 语法检查：通过\n- 递归迁移、数组、嵌套 `schema`、跳过子树：通过\n- 相同冲突和不同冲突：通过\n- 顶层非法 `schema`：通过\n- 输入对象不变：通过\n- CLI 成功、重复输出稳定、冲突失败保留旧输出、无效 JSON 不创建输出、`NaN` 拒绝：通过\n\n仅修改了 `solution.py` 和 `cli.py`，未修改 `verify.py` 或输入文件。",
+          "options": {
+            "pattern": "\\S"
+          }
+        }
+      ],
+      "metrics": {
+        "runs": 4,
+        "successful_runs": 3,
+        "failed_runs": 1,
+        "cancelled_runs": 0,
+        "model_requests": 16,
+        "model_errors": 1,
+        "model_retries": 6,
+        "model_fallbacks": 0,
+        "agent_model_requests": 16,
+        "auxiliary_model_requests": 0,
+        "agent_tokens": 123223,
+        "memory_tokens": 0,
+        "compaction_tokens": 0,
+        "tool_calls": 22,
+        "tool_errors": 2,
+        "tool_cancelled": 0,
+        "tool_blocked": 0,
+        "approval_requests": 3,
+        "approval_allowed": 0,
+        "approval_denied": 0,
+        "approval_timed_out": 0,
+        "memory_retrievals": 10,
+        "memory_injected_items": 21,
+        "memory_consolidations": 4,
+        "memory_facts_written": 0,
+        "memory_conflicts": 0,
+        "instruction_injections": 10,
+        "instruction_sources": 0,
+        "goal_completed_runs": 0,
+        "compaction_attempts": 0,
+        "compactions": 0,
+        "compaction_failures": 0,
+        "compaction_aborted": 0,
+        "tokens_saved_by_compaction": 0,
+        "input_tokens": 113054,
+        "output_tokens": 10169,
+        "cached_tokens": 80384,
+        "total_tokens": 123223,
+        "duration_ms": 309262,
+        "judge_requests": 0,
+        "judge_input_tokens": 0,
+        "judge_output_tokens": 0,
+        "judge_total_tokens": 0,
+        "judge_duration_ms": 0,
+        "live_tool_artifacts": 0,
+        "live_tool_artifact_bytes": 0,
+        "archived_tool_artifacts": 0,
+        "history_archives": 0,
+        "model_summary_compactions": 0,
+        "deterministic_compactions": 0,
+        "cost_usd": 0.00764621,
+        "max_goal_attempts": 0,
+        "model_latency_mean_ms": 18690.0,
+        "model_latency_p50_ms": 18158.0,
+        "model_latency_p95_ms": 49228.0,
+        "ttft_mean_ms": 9597.4,
+        "ttft_p50_ms": 9255.0,
+        "ttft_p95_ms": 18937.0,
+        "tool_latency_mean_ms": 302.454545,
+        "tool_latency_p95_ms": 1053.0,
+        "cache_ratio": 0.7110230509314133,
+        "model_error_rate": 0.0625,
+        "tool_error_rate": 0.09090909090909091,
+        "compaction_success_rate": null,
+        "event_types": {
+          "approval.decision": 3,
+          "approval.requested": 3,
+          "goal.snapshot": 8,
+          "instructions.injected": 10,
+          "memory.consolidation": 4,
+          "memory.retrieval": 10,
+          "model.request": 16,
+          "model.transport": 50,
+          "run.completed": 4,
+          "run.started": 4,
+          "tool.call": 22
+        },
+        "tool_breakdown": {
+          "bash": 7,
+          "edit": 3,
+          "grep": 1,
+          "read": 8,
+          "search": 1,
+          "write": 2
+        },
+        "tool_failure_breakdown": {
+          "bash": 2
+        },
+        "model_purposes": {
+          "agent": 16
+        },
+        "providers": {
+          "primary": 16
+        },
+        "models": {
+          "gpt-5.6-luna": 16
+        },
+        "runtime_backends": {
+          "docker": 4
+        },
+        "wall_duration_seconds": 318.138
+      },
+      "error": null,
+      "trace_paths": {
+        "turn1": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_schema_collision_migration\\attempt-001\\workspace\\.aster\\eval-sessions\\shared\\trace.jsonl",
+        "turn2": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_schema_collision_migration\\attempt-001\\workspace\\.aster\\eval-sessions\\shared\\trace.jsonl",
+        "turn3": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_schema_collision_migration\\attempt-001\\workspace\\.aster\\eval-sessions\\shared\\trace.jsonl",
+        "turn4": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_schema_collision_migration\\attempt-001\\workspace\\.aster\\eval-sessions\\shared\\trace.jsonl"
+      },
+      "workspace_changes": {
+        "created": [
+          "__pycache__/cli.cpython-313.pyc",
+          "__pycache__/solution.cpython-313.pyc"
+        ],
+        "modified": [
+          "cli.py",
+          "solution.py"
+        ],
+        "deleted": []
+      }
+    }
+  ],
+  "original_result": ".aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_schema_collision_migration\\result.json",
+  "classification": "Needs trace review; run-health failures alone do not establish an Agent defect."
+}

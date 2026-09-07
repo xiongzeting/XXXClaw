@@ -1,0 +1,212 @@
+{
+  "version": 1,
+  "name": "reliability-distribution-v1",
+  "environment": {
+    "MINICLAW_SANDBOX": "host",
+    "MINICLAW_WORKSPACE_MODE": "direct",
+    "MINICLAW_APPROVAL_POLICY": "allow",
+    "MINICLAW_MEMORY_VECTOR_ENABLED": "false",
+    "MINICLAW_MEMORY_CROSS_ENCODER_ENABLED": "false",
+    "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+  },
+  "cases": [
+    {
+      "id": "conversation_exact",
+      "category": "conversation",
+      "fixture": "fixtures/reliability-distribution",
+      "timeout_seconds": 180,
+      "repetitions": 2,
+      "prompt": "只回复：链路正常",
+      "checks": [
+        {
+          "type": "final_equals",
+          "text": "链路正常"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "exact_count": 0,
+          "dimension": "process"
+        }
+      ]
+    },
+    {
+      "id": "tools_empty_root",
+      "category": "tools",
+      "fixture": "fixtures/reliability-distribution",
+      "timeout_seconds": 180,
+      "repetitions": 2,
+      "prompt": "调用 grep 搜索 needle-739，path 传空字符串，glob 为 sample.txt。找到后只回复该匹配行。",
+      "checks": [
+        {
+          "type": "final_equals",
+          "text": "needle-739"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "grep",
+            "data.status": "success"
+          },
+          "min_count": 1,
+          "dimension": "process"
+        }
+      ]
+    },
+    {
+      "id": "recovery_missing",
+      "category": "recovery",
+      "fixture": "fixtures/reliability-distribution",
+      "timeout_seconds": 180,
+      "repetitions": 2,
+      "prompt": "先读取 missing.txt；如果不存在，创建该文件，内容为 recovery-ok，然后重新读取确认。",
+      "checks": [
+        {
+          "type": "file_equals",
+          "path": "missing.txt",
+          "text": "recovery-ok"
+        },
+        {
+          "type": "trace_sequence",
+          "dimension": "process",
+          "sequence": [
+            {
+              "event": "tool.call",
+              "where": {
+                "data.tool_name": "read",
+                "data.status": "error"
+              }
+            },
+            {
+              "event": "tool.call",
+              "where": {
+                "data.tool_name": "write",
+                "data.status": "success"
+              }
+            },
+            {
+              "event": "tool.call",
+              "where": {
+                "data.tool_name": "read",
+                "data.status": "success"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "delivery_multiturn",
+      "category": "delivery",
+      "fixture": "fixtures/reliability-distribution",
+      "timeout_seconds": 180,
+      "repetitions": 2,
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "fix",
+          "prompt": "counter.py 的向上取整除法错了。先运行 check.py 看失败，再修 counter.py，重新运行验证。只改 counter.py，不修改 check.py。"
+        },
+        {
+          "id": "follow",
+          "prompt": "给刚才的 ceil_div 增加 b 为0时抛出 ValueError 的行为，保留正数除法行为。实际验证。"
+        },
+        {
+          "id": "reply",
+          "prompt": "只回复：连续会话正常"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_equals",
+          "text": "连续会话正常"
+        },
+        {
+          "type": "command",
+          "command": [
+            "D:\\anaconda3\\python.exe",
+            "-I",
+            "-c",
+            "import sys; sys.path.insert(0,\".\"); from counter import ceil_div\nassert all(ceil_div(a,b)==-(-a//b) for a in range(18) for b in range(1,8))\ntry: ceil_div(1,0)\nexcept ValueError: pass\nelse: raise AssertionError(\"expected ValueError\")"
+          ],
+          "timeout_seconds": 15
+        },
+        {
+          "type": "file_equals",
+          "path": "check.py",
+          "text": "from counter import ceil_div\nassert ceil_div(7, 3) == 3\nprint(\"CHECK_OK\")\n"
+        },
+        {
+          "type": "trace_event",
+          "phase": "reply",
+          "event": "tool.call",
+          "exact_count": 0,
+          "dimension": "process"
+        }
+      ]
+    },
+    {
+      "id": "cancel_resume",
+      "category": "cancel",
+      "fixture": "fixtures/reliability-distribution",
+      "timeout_seconds": 180,
+      "repetitions": 2,
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "cancel",
+          "prompt": "调用命令工具执行 Python 等待30秒。",
+          "control": {
+            "cancel_on_tool": "bash",
+            "cancel_delay_seconds": 0.2
+          }
+        },
+        {
+          "id": "resume",
+          "prompt": "只回复：已恢复"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_equals",
+          "text": "已恢复"
+        },
+        {
+          "type": "trace_event",
+          "phase": "cancel",
+          "event": "run.completed",
+          "where": {
+            "data.status": "cancelled"
+          },
+          "min_count": 1,
+          "dimension": "process"
+        }
+      ]
+    },
+    {
+      "id": "search_exact",
+      "category": "search",
+      "fixture": "fixtures/reliability-distribution",
+      "timeout_seconds": 180,
+      "repetitions": 2,
+      "prompt": "使用 search 查找 sample.txt，path 为当前目录，找到后读取它，并只回复第二行。",
+      "checks": [
+        {
+          "type": "final_equals",
+          "text": "needle-739"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "read",
+            "data.status": "success"
+          },
+          "min_count": 1,
+          "dimension": "process"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+dist/
+build/
+*.egg-info/
+.aster/
+.env
+
+# Local research and experiment outputs
+.codex-research/
+benchmark-results/
+external/benchmarks/.downloads/
+
+# Local agent workspaces and generated reports
+agent-*/

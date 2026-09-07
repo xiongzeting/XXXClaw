@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "name": "everyday-development-v1",
+  "cases": [
+    {
+      "id": "everyday_v1_csv_cli",
+      "category": "everyday-development",
+      "fixture": "fixtures/everyday-v1/csv_cli",
+      "phases": [
+        {
+          "id": "fix",
+          "prompt": "修复 reader.py 和 cli.py：read_names(text) 用 CSV 规则读取 name 列，支持带逗号的引号字段和 Unicode。命令行从 stdin 读取，成功仅在 stdout 输出 JSON 字符串数组；缺少 name 表头时退出码 2，错误写 stderr，stdout 为空。保留函数接口。"
+        }
+      ],
+      "source": {
+        "family": "csv_cli",
+        "split": "development",
+        "exposure": "exposed",
+        "difficulty": "everyday"
+      },
+      "checks": [
+        {
+          "type": "oracle",
+          "dimension": "outcome",
+          "script": "D:\\MIniClaw\\evals\\oracles\\everyday_development_v1.py",
+          "sha256": "412310ee055e4b553671129eee37c52160463a9c01482841343b34737b726f18",
+          "entry": "csv_cli",
+          "requirements": {
+            "quoted_unicode": "CSV quoting and Unicode names",
+            "cli_json": "stdin to JSON stdout",
+            "invalid_header": "missing name: exit 2, stderr only"
+          }
+        }
+      ],
+      "budgets": {
+        "max_total_tokens": 80000,
+        "max_tool_calls": 40
+      },
+      "timeout_seconds": 600
+    },
+    {
+      "id": "everyday_v1_config_merge",
+      "category": "everyday-development",
+      "fixture": "fixtures/everyday-v1/config_merge",
+      "phases": [
+        {
+          "id": "fix",
+          "prompt": "修复 settings.resolve(defaults, file_config, env)。优先级 env > file_config > defaults，不修改入参；APP_DEBUG 支持大小写无关 true/false，结果为 bool；APP_PORT 转成 1..65535 的 int；空环境字符串视为未设置；非法环境值抛 ValueError。保持 config_values.py 中的解析函数接口，修复跨文件调用。"
+        }
+      ],
+      "source": {
+        "family": "config_merge",
+        "split": "development",
+        "exposure": "exposed",
+        "difficulty": "everyday"
+      },
+      "checks": [
+        {
+          "type": "oracle",
+          "dimension": "outcome",
+          "script": "D:\\MIniClaw\\evals\\oracles\\everyday_development_v1.py",
+          "sha256": "412310ee055e4b553671129eee37c52160463a9c01482841343b34737b726f18",
+          "entry": "config_merge",
+          "requirements": {
+            "precedence_types": "precedence, typed values and no input mutation",
+            "empty_fallback": "empty environment falls back",
+            "reject_invalid": "invalid booleans and ports rejected"
+          }
+        }
+      ],
+      "budgets": {
+        "max_total_tokens": 80000,
+        "max_tool_calls": 40
+      },
+      "timeout_seconds": 600
+    },
+    {
+      "id": "everyday_v1_filtered_page",
+      "category": "everyday-development",
+      "fixture": "fixtures/everyday-v1/filtered_page",
+      "phases": [
+        {
+          "id": "fix",
+          "prompt": "修复 service.list_items(rows, active=None, offset=0, limit=20)：先按 active 过滤（None 不过滤），按 id 字符串升序，再分页；total 是过滤后的总数。返回 {total, items}，不得改变 rows 的顺序或内容。offset/limit 为非负整数，负数抛 ValueError；limit=0 返回空 items；越界页也为空。pagination.py 负责分页边界，修复两文件协作。"
+        }
+      ],
+      "source": {
+        "family": "filtered_page",
+        "split": "development",
+        "exposure": "exposed",
+        "difficulty": "everyday"
+      },
+      "checks": [
+        {
+          "type": "oracle",
+          "dimension": "outcome",
+          "script": "D:\\MIniClaw\\evals\\oracles\\everyday_development_v1.py",
+          "sha256": "412310ee055e4b553671129eee37c52160463a9c01482841343b34737b726f18",
+          "entry": "filtered_page",
+          "requirements": {
+            "filter_sort_page": "filter then sort then paginate, no mutation",
+            "bounds_total": "total before pagination and empty pages",
+            "reject_negative": "negative page arguments rejected"
+          }
+        }
+      ],
+      "budgets": {
+        "max_total_tokens": 80000,
+        "max_tool_calls": 40
+      },
+      "timeout_seconds": 600
+    }
+  ]
+}

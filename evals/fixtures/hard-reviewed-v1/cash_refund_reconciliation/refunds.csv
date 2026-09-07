@@ -1,0 +1,7 @@
+refund_id,order_id,cents,status
+R-1,O-1,200,completed
+R-2,O-2,100,rejected
+R-3,O-4,700,completed
+R-7,O-7,50,pending
+R-5,O-5,50,completed
+R-6,O-6,100,completed

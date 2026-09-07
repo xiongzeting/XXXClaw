@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "name": "retained-challenge-v5",
+  "oracle_version": "workspace-write-paths-v2.1",
+  "cases": [],
+  "partition_policy": "current-round-partitions-v1",
+  "status": "retired; cases moved to development/test; no new holdout"
+}

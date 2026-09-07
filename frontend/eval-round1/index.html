@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>MiniClaw · 第一轮、v1 重跑与新版 20 题</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="improvements.css">
+  <link rel="stylesheet" href="round2.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow"><span class="brand-mark">M</span> MINICLAW <span class="divider">/</span> EVALUATION REPORT <span class="edition">ROUND 01</span></div>
+    <div class="hero-grid"><div><h1>MiniClaw 第一轮 Eval<br>构成、结果与问题</h1><p>30 道多轮 Coding Agent 难题，覆盖记忆、工具、安全与交付。<br class="desktop">从五个维度拆开看，找到真正值得修改的地方。</p></div><div class="hero-score"><div>纠正误报后 · 综合通过</div><strong>15<span>/ 30</span></strong><p>50.0% <span>五维按本轮约定达标</span></p></div></div>
+    <div class="hero-meta"><span><i></i> 首轮已完成</span><span>gpt-5.6-luna</span><span>161 个对话回合</span><span>2 路并行 · 每题 1 次</span><span>路径误报已纠正 · 网络波动按通过计</span></div>
+  </header>
+  <nav class="section-nav" aria-label="报告章节"><a href="#overview">结果总览</a><a href="#composition">题集构成</a><a href="#dimensions">五维结果</a><a href="#efficiency">成本分析</a><a href="#findings">典型问题</a><a href="#cases">案例明细 <span>30</span></a><a href="#improvements">后续优化</a><a href="#eval-evolution">评测迭代</a></nav>
+  <main>
+    <section id="overview"><div class="section-heading"><div><div class="eyebrow muted">01 / OVERVIEW</div><h2>大部分题做对了，短板在交付过程</h2></div><span class="small-badge">纠错后 · 网络波动按通过</span></div>
+      <div id="kpis" class="grid kpis"></div>
+      <div class="insight"><span class="insight-icon">i</span><div><strong>综合未通过，不等于任务没做出来。</strong><p>结果验收通过 29 道，15 道按本轮约定通过五维验收。网络波动造成的可用性失败直接计通过，分母不变；结果、过程、效率、安全继续照常计分。不同维度的失败可能出现在同一道题上，不能相加成失败题数。</p></div></div>
+    </section>
+    <section id="composition"><div class="section-heading"><div><div class="eyebrow muted">02 / DATASET</div><h2>开发与测试，五种能力</h2><p class="lead">开发集 15 道、测试集 15 道；每集的每种能力各 3 道。原保留题已按固定规则分配。</p></div><span class="small-badge">30 道人工合成任务</span></div>
+      <div class="grid two"><article class="card"><div class="card-heading"><h3>题集分布</h3><span class="subtle">题数</span></div><div class="matrix-wrap"><table id="composition-table" class="matrix"></table></div><div class="mini-legend" id="category-legend"></div></article>
+      <article class="card"><div class="card-heading"><h3>每一层负责什么</h3><span class="subtle">按任务族预分层</span></div><div id="split-cards" class="split-list"></div><p class="footnote">两集均已曝光，后续复跑属于开发与内部测试。新的保留集等 MiniClaw / Codex 对比时再创建，目前不生成。</p></article></div>
+      <div id="ability-cards" class="grid abilities"></div>
+    </section>
+    <section id="dimensions"><div class="section-heading"><div><div class="eyebrow muted">03 / SCORECARD</div><h2>五维验收：分别回答五个问题</h2><p class="lead">按“这一维所有必选检查都通过”计数，五个维度各计 30 道；可用性中的网络波动按通过处理。</p></div></div>
+      <div class="grid two"><article class="card"><div class="card-heading"><h3>逐维通过情况</h3><span class="subtle">通过 / 全部</span></div><div id="dimension-bars"></div></article><article class="card"><div class="card-heading"><h3>各层表现</h3><span class="subtle">通过 / 本维计分题数</span></div><div class="matrix-wrap"><table id="split-results" class="matrix"></table></div><div class="note"><strong>怎样理解可用性？</strong><p>看任务能不能顺利跑完。6 道网络波动按通过处理，分母保持 30；合计 27 道通过，3 道因步数触顶未通过。原始网络错误保留供追溯。</p></div></article></div>
+    </section>
+    <div class="grid two observation-grid">
+      <article class="card observation-card"><div class="card-heading"><h3>过程补充 · 工具失败次数</h3><span class="observation-tag">本轮仅观察</span></div><div class="observation-value"><strong id="observed-tool-total"></strong><span>次失败调用 / 全部 30 道</span></div><p>逐题次数已加入下方案例表。失败调用用于观察操作是否顺畅，本轮不新增通过或失败。</p><div class="next-limit"><span>下一轮初始上限</span><strong>每题 ≤ 5 次</strong><small>采用 tool_errors；审批拒绝、用户取消不混作执行错误。初始阈值可调，尚未经新批次验证。</small></div></article>
+      <article class="card observation-card"><div class="card-heading"><h3>效率补充 · 单题耗时</h3><span class="observation-tag">本轮仅观察</span></div><div class="observation-value"><strong id="observed-time-max"></strong><span>本轮单题最长耗时</span></div><p>使用案例从开始到结束的实际耗时，包含模型、工具和等待。本轮展示原始记录，不追加时间判分。</p><div class="next-limit"><span>下一轮初始上限</span><strong>普通题 10 min · 压缩题 15 min</strong><small>受网络波动影响的耗时单独复核；正在执行的冻结批次仍用原规则，阈值从下一次启动生效。</small></div></article>
+    </div>
+    <section id="efficiency"><div class="section-heading"><div><div class="eyebrow muted">04 / EFFICIENCY</div><h2>压缩记忆能完成，但代价偏高</h2><p class="lead">6 道压缩题全部通过结果和机制检查，也全部超过预设 token 预算。</p></div></div>
+      <div class="grid two"><article class="card"><div class="card-heading"><h3>各能力的平均消耗</h3><span class="subtle">tokens / 题</span></div><div id="cost-bars"></div><p class="footnote">累计输入＋输出，包含已记录的辅助模型调用。预算是挑战阈值，超过阈值不直接证明架构有缺陷。</p></article><article class="card"><div class="card-heading"><h3>消耗最高的 5 道题</h3><span class="subtle">点击查看详情</span></div><div id="expensive-cases"></div><p class="footnote">此处只展示首轮数据；后续优化复测不混入本轮成绩。</p></article></div>
+      <div id="cost-metrics" class="grid four compact-kpis"></div>
+    </section>
+    <section id="findings"><div class="section-heading"><div><div class="eyebrow muted">05 / FINDINGS</div><h2>从失败记录中，看清修改方向</h2><p class="lead">下面是首轮证据支持的问题；部分机制后来已经修改，本页保留首轮视角。</p></div></div>
+      <div id="finding-cards" class="grid two"></div>
+    </section>
+    <section id="cases"><div class="section-heading"><div><div class="eyebrow muted">06 / CASE EXPLORER</div><h2>30 道题，逐题看结果</h2><p class="lead">筛选能力与失败维度，展开查看用户需求、实际回答和判分依据。</p></div><button class="button secondary" id="export-csv">导出当前筛选 CSV <span aria-hidden="true">↓</span></button></div>
+      <article class="card case-card"><div class="filters"><label class="search-field"><span class="sr-only">搜索案例</span><input id="search" type="search" placeholder="搜索题目名称、ID…"></label><label><span class="sr-only">分层</span><select id="split-filter"><option value="">全部分层</option><option value="development">开发集</option><option value="test">测试集</option></select></label><label><span class="sr-only">能力</span><select id="category-filter"><option value="">全部能力</option></select></label><label><span class="sr-only">通过状态</span><select id="status-filter"><option value="">全部状态</option><option value="passed">综合通过</option><option value="failed">仍有未通过项</option><option value="oracle">已纠正的纯误报</option><option value="network">网络波动按通过</option></select></label><label><span class="sr-only">未通过维度</span><select id="dimension-filter"><option value="">全部维度</option></select></label><button class="button ghost" id="reset">重置</button></div>
+      <div class="table-meta"><span id="result-count" aria-live="polite"></span><span>● 通过 <span class="fail-dot">●</span> 未通过 · 点题目查看明细</span></div><div class="table-scroll"><table class="case-table"><thead><tr><th>案例</th><th>分层 / 能力</th><th>结果</th><th>过程</th><th>效率</th><th>安全</th><th>可用性</th><th><button id="sort-tokens" aria-label="按 token 消耗降序排序">Tokens ↕</button></th><th><button id="sort-errors">工具失败 ↕</button><small class="column-note">本轮仅观察</small></th><th><button id="sort-time">单题耗时 ↕</button><small class="column-note">本轮仅观察</small></th><th>综合</th></tr></thead><tbody id="case-rows"></tbody></table></div><div id="empty-state" hidden>没有匹配的案例。试试减少筛选条件。</div></article>
+    </section>
+    <section id="improvements"><div class="section-heading"><div><div class="eyebrow muted">07 / ENGINEERING ITERATIONS</div><h2>首轮之后，四项重要优化</h2><p class="lead">来自《问题.md》。按原来、修改、原因与效果展示；后续复测独立记录，不并入两轮原始成绩。</p></div><span class="small-badge">原来 → 修改 → 实测</span></div>
+      <article class="card improvement"><div class="improvement-heading"><span class="improvement-number">01</span><div><h3>压缩与召回：减少反复读取同一份内容</h3><p>核心不是删掉记忆，而是让模型少读重复内容。</p></div><span class="improvement-badge">成本优化</span></div>
+        <div class="grid three improvement-grid"><div><h4>原来的做法</h4><p>旧历史刚压成摘要，又被记忆搜索自动塞回当前对话；摘要还可能再抄一份已保留的用户要求。每次请求都重复读，累计 token 很高。</p></div><div><h4>修改后的做法</h4><p>自动召回跳过本次会话的历史归档；摘要去重，只补充进展和约束。达到最低节省要求才采用压缩。原始记录仍保存，需要时可以主动回读。</p></div><div><h4>为什么这样改</h4><p>把厚资料做成一页笔记后，就不用每次再把整叠资料发一遍。总结本身也有成本，没变短就不反复总结。</p></div></div>
+        <div class="improvement-results"><div><h4>两道真实题的有效复测</h4><div class="table-scroll"><table class="comparison-table"><thead><tr><th>任务</th><th>修改前 tokens</th><th>修改后 tokens</th><th>变化</th><th>结果</th></tr></thead><tbody><tr><td>跨会话资产召回 <small>multi_hop_assets</small></td><td>272,432</td><td>94,457</td><td><span class="gain">↓ 约 65%</span></td><td>8/8 轮成功，各项验收通过</td></tr><tr><td>版本冲突求解 <small>version_resolution</small></td><td>553,471</td><td>255,445</td><td><span class="gain">↓ 约 54%</span></td><td>8/8 轮成功；成本仍超预算</td></tr></tbody></table></div></div><div class="result-aside"><span>工具调用次数</span><strong>35 → 10 <small>召回题</small></strong><strong>82 → 34 <small>压缩题</small></strong><span>版本题压缩次数 39 → 12</span></div></div>
+        <p class="footnote">相关代码测试 138 项通过。上述真实题各完成一次有效复测，版本间包含其他改动，并非严格单因素对照；不能把全部下降归功于一处修改。版本题仍比 240,000 tokens 预算高约 6.4%，未通过放宽阈值让它过关。</p>
+      </article>
+      <article class="card improvement"><div class="improvement-heading"><span class="improvement-number search-number">02</span><div><h3>文件搜索提速：知道路径，就按路径找</h3><p>对应《问题.md》“搜索太慢”：减少无关遍历与重复安全检查。</p></div><span class="improvement-badge search-badge">搜索优化</span></div>
+        <div class="grid three improvement-grid"><div><h4>原来的做法</h4><p>已经知道文件名和目录，也可能扫描整个项目；遍历无关文件时，仍逐个做昂贵的完整路径检查。依赖和项目越多，等待越长。</p></div><div><h4>修改后的做法</h4><p>完整路径直接检查；指定目录只查该目录；必须全局找时，先匹配文件名，再对匹配结果做完整安全检查。</p></div><div><h4>为什么这样改</h4><p>知道书架就不用翻完整个图书馆。优化无关文件的检查成本，受保护目录、链接和返回结果的安全检查仍保留。</p></div></div>
+        <div class="grid three search-results"><div><span>已知完整路径</span><strong>13 <small>ms</small></strong><p>直接定位目标文件</p></div><div><span>已知目录与文件类型</span><strong>16 <small>ms</small></strong><p>只搜索指定目录</p></div><div><span>全局搜索且无结果</span><strong>3.122 <small>s</small></strong><p>仍需遍历可搜索范围</p></div></div>
+        <p class="footnote">这些是已有前端实测中的单次工具耗时，不是整轮模型回复时间，也不是相同条件下的前后加速比。对应整轮回复约 25～30 秒；全局无结果依然最慢。验证同时检查直接路径不启动递归、指定目录不越出范围，以及受保护文件不会被返回。</p>
+      </article>
+    <div id="latest-improvements" aria-label="近期效率与 Goal 修改">
+      <article class="card improvement" id="efficiency-retest-update"><div class="improvement-heading"><span class="improvement-number">03</span><div><h3>第二轮效率修复：读过的内容少读，旧记录少重发</h3><p>2026-09-06 · 6 道已曝光原题，两路 Luna 各复测一次。</p></div><span class="improvement-badge">已完成实测</span></div>
+        <div class="grid three improvement-grid"><div><h4>原来的做法</h4><p>文件刚读完就可能变成简短引用，压缩后又重新读取；旧工具记录和完整工具说明重复发送，任务越长，累计 token 越高。</p></div><div><h4>修改后的做法</h4><p>新片段先完整使用一次，旧的相同读取去重；保留少量已读片段，文件内容改变就失效。按真实工具失败保留报错，完整工具说明只发一份，并检查压缩是否有收益。</p></div><div><h4>为什么这样改</h4><p>已经翻过的资料，内容没变就不必重新找；需要的原文仍可回读。优先减少重复工作，让模型把调用用在实施和有效验收上。</p></div></div>
+        <div class="grid three search-results"><div><span>6 题修改前总 tokens</span><strong>352.9 <small>万</small></strong><p>3,529,367 tokens</p></div><div><span>6 题修改后总 tokens</span><strong>173.0 <small>万</small></strong><p>1,730,372，减少 51.0%</p></div><div><span>仍超过 token 预算</span><strong>5 <small>/ 6 题</small></strong><p>配置迁移反增 28.2%</p></div></div>
+        <p class="footnote"><strong>实际效果：</strong>发票、脱敏、运费的 read 次数分别从 58→5、43→7、31→5；没有步数暂停。<strong>还有什么限制？</strong>结果全过 2/6，五维全过 0/6；单次复测且包含其他改动，不能归因于单一优化。本批未设置时间判错项。</p>
+        <p class="footnote"><strong>已定位、尚待修复：</strong>同题每轮更换会话 ID 导致历史重复召回；旧摘要与当前验收冲突；验证格式返工；许多小工具记录累计重发。摘要生成只占总 token 约 4.1%，下一步优先解决重复输入和无效回合。详见《Luna 效率复测结果与超预算根因》。</p>
+      </article>
+      <article class="card improvement" id="goal-completion-update"><div class="improvement-heading"><span class="improvement-number search-number">04</span><div><h3>Goal 按需开放：普通任务不再反复调用完成工具</h3><p>对应《问题.md》第 6 节：减少无效收尾，保留正常任务验收。</p></div><span class="improvement-badge search-badge">完成流程优化</span></div>
+        <div class="grid three improvement-grid"><div><h4>原来的做法</h4><p>普通任务也向模型提供 goal_complete。没有显式 Goal 时，模型仍可能反复调用，增加工具说明和收尾消耗。</p></div><div><h4>修改后的做法</h4><p>只有显式 Goal 处于执行或验收状态时才开放 goal_complete；其他状态从工具定义和系统工具列表移除，并禁止执行。普通任务通过验收后直接回复。</p></div><div><h4>为什么这样改</h4><p>需要目标监督时才走对应完成流程。普通任务不用多办一次“完成手续”，同时仍须检查交付结果，不能跳过验收。</p></div></div>
+        <p class="footnote"><strong>实际效果：</strong>看板第一阶段原题复测中，goal_complete 调用从 <strong>5 次→0 次</strong>，从触顶暂停变为正常收尾，独立功能检查 <strong>8/8 通过</strong>。离线检查确认工具随 Goal 状态开放。</p>
+        <p class="footnote"><strong>还有什么限制？</strong>这是一个阶段的观察，5→0 只统计该完成工具，不是全部工具调用；具体节省多少 token 尚未单独测量，也不代表全部长任务都已解决收尾问题。</p>
+      </article>
+    </div>
+    </section>
+    <section id="eval-evolution"><div class="section-heading"><div><div class="eyebrow muted">08 / EVAL EVOLUTION</div><h2>Eval 重大改动：从看回答，到能追责的验收</h2><p class="lead">只记录关键升级。已运行、已离线验证和下一轮待验证分开标注。</p></div></div>
+      <div class="grid two">
+        <article class="card evolution-card"><div class="card-heading"><h3><span>01</span>统一轨迹，真实执行任务</h3><span class="evolution-status">已用于真实评测</span></div><dl><dt>原来</dt><dd>只看最终回答或零散日志，无法知道模型实际改了什么，也容易漏掉摘要和验收模型的成本。</dd><dt>修改</dt><dd>模型请求、工具结果、审批、记忆、压缩统一进入 Trace；在独立工作区运行真实 Agent 和 Docker 命令，再检查产物。</dd><dt>意义</dt><dd>每个分数能追到实际动作，失败可沉淀为可重复运行的案例。</dd></dl></article>
+        <article class="card evolution-card"><div class="card-heading"><h3><span>02</span>五维拆分，三层分工</h3><span class="evolution-status">首轮已完成</span></div><dl><dt>原来</dt><dd>一个“通过率”混合了答错、太贵、越权和断网，简单题也容易把总分抬高。</dd><dt>修改</dt><dd>结果、过程、效率、安全、可用性分别验收；开发、保留、测试预先分层，简单 smoke、挑战题和历史回归分开。</dd><dt>意义</dt><dd>看清是能力还是执行成本出了问题；已曝光题继续用于回归，不冒充新的盲测。</dd></dl></article>
+        <article class="card evolution-card"><div class="card-heading"><h3><span>03</span>先修“阅卷老师”</h3><span class="evolution-status">Windows + Docker 已验证</span></div><dl><dt>原来</dt><dd>文件缺失、假布尔值可能被误判通过；Docker 与 Windows 路径没映射好，又把合法写入误判越界。</dd><dt>修改</dt><dd>先检查证据存在和类型，再按工作区统一路径。保留原分、复核标签和纠正分；用合格与违规样例校准检查程序。</dd><dt>意义</dt><dd>第一轮 4 道纯误报得到纠正；另两道的越权写入和异常遗漏仍有独立失败证据。</dd></dl></article>
+        <article class="card evolution-card"><div class="card-heading"><h3><span>04</span>冻结版本，把失败留作回归</h3><span class="evolution-status">已用于整批执行</span></div><dl><dt>原来</dt><dd>如果边跑边改题、改代码或调阈值，就难以解释两次分数为什么不同。</dd><dt>修改</dt><dd>执行前冻结源码、题目与输入，校验哈希；案例独立并行，整批结束再复核。旧难题按失败维度筛选回归，新旧分开统计。</dd><dt>意义</dt><dd>能还原某个版本到底跑了什么。下一批已准备 15 道新边界题和 5 道旧难题，未完成的成绩不先宣称通过。</dd></dl></article>
+        <article class="card evolution-card"><div class="card-heading"><h3><span>05</span>断网恢复，只重试断点</h3><span class="evolution-status">恢复机制已离线验证</span></div><dl><dt>原来</dt><dd>VPN 波动可能导致整题重跑，或最终做对了仍被旧网络错误拖成可用性失败。</dd><dt>修改</dt><dd>有限重试中断的模型请求，保留上下文、工具结果与剩余预算；原始错误和恢复关系单独记录。</dd><dt>意义</dt><dd>减少重复执行副作用。本页按用户约定把已确认的网络波动直接计通过；原始错误仍可追溯。</dd></dl></article>
+        <article class="card evolution-card"><div class="card-heading"><h3><span>06</span>加工具失败与时间门槛</h3><span class="evolution-status pending">下一次启动生效</span></div><dl><dt>原来</dt><dd>过程主要看工具和机制有没有用到，效率主要看 token；频繁出错和等待太久不够直观。</dd><dt>修改</dt><dd>本页先展示次数和耗时，不改判首轮。下一版新增：过程工具失败 ≤ 5 次；效率普通题 ≤ 600 秒，压缩题 ≤ 900 秒。</dd><dt>意义</dt><dd>让“会调用工具”进一步接受执行质量检查。20 题新套件已通过格式与维度归属验证，阈值合理性仍待实测。</dd></dl></article>
+      </div><p class="footnote">依据：《问题.md》第 1 节、《端到端 Eval》《Trace 与 Eval 数据闭环》及下一轮独立门槛配置。各阶段测试次数不相加，也不当作真实模型任务成功数。</p>
+    </section>
+    <section id="sources" class="source-section"><details class="card"><summary>数据来源与统计口径 <span>可追溯 · 本地离线展示</span></summary><div class="source-content"><p>展示同一批冻结轨迹：先纠正路径检查误报，再按用户明确约定，将 6 道网络波动造成的可用性失败直接计为通过，分母保持 30。综合通过 15/30、可用性 27/30 是该口径下的展示成绩；网络计通过不表示原运行从未中断。没有重跑或覆盖原始成绩。工具失败次数与单题耗时本轮只展示，不参与本轮判分。</p><p>安全通过表示本轮已有检查通过，覆盖成功 edit/write 目标、最终目录差异等；不能证明任意 bash 瞬时副作用或所有只读阶段都已被完整审计。</p><p>每题仅执行一次，不能用“稳定复现”“通用成功率”描述本轮成绩。耗时和 token 为原始运行记录，网络因素与能力问题须结合具体证据解释。</p><p>尾部优化与评测迭代来源：<code>docs/interview/问题.md</code> 第 1、4、5 节，<code>docs/notes/29.端到端Eval.md</code>、<code>docs/notes/7.Trace与Eval数据闭环.md</code>；补充验证记录在 <code>docs/压缩与召回成本修复.md</code> 与 <code>.aster/frontend-table-review/REPORT.md</code>。当前页面是原始评测与后续优化的分区展示。</p><div id="source-list"></div><button id="download-data" class="button secondary">下载页面数据 JSON ↓</button></div></details></section>
+    <section id="round2" aria-label="v1 重跑 20 题报告"></section>
+  </main>
+  <footer><div class="footer-brand">MINICLAW <span>Evaluation / Round 01 + v1 + v10</span></div><span>先有可信证据，再谈能力提升。</span></footer>
+</div>
+<dialog id="case-dialog" aria-labelledby="case-title"><div class="dialog-top"><span>案例明细 / 第一轮</span><button id="close-dialog" class="icon-button" aria-label="关闭案例明细">✕</button></div><div id="case-detail"></div></dialog>
+<script src="data.js"></script>
+<script src="round2-data.js"></script>
+<script src="round2.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
