@@ -1,0 +1,394 @@
+{
+  "version": 1,
+  "name": "miniclaw-eval3-extra",
+  "environment": {
+    "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+    "MINICLAW_WORKSPACE_MODE": "direct",
+    "MINICLAW_APPROVAL_POLICY": "allow",
+    "MINICLAW_GOAL_JUDGE_ENABLED": "false"
+  },
+  "cases": [
+    {
+      "id": "dialogue_api_contract_shadow",
+      "category": "requirements",
+      "capabilities": [
+        "user_dialogue",
+        "requirements"
+      ],
+      "fixture": "fixtures/dialogue-campaign/api_contract_shadow",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "这是高难度 api_contract_shadow 任务。先阅读工作区和约束，处理隐藏反例、并发或版本冲突，不能扩大修改范围。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "完成实现并运行针对性验证。最终只生成固定 JSON 文件，字段必须与任务要求一致，附带关键中间证据。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "decision": "reject_ambiguous",
+            "breaking_change": false
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_test_flaky_clock",
+      "category": "testing",
+      "capabilities": [
+        "user_dialogue",
+        "testing"
+      ],
+      "fixture": "fixtures/dialogue-campaign/test_flaky_clock",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "这是高难度 test_flaky_clock 任务。先阅读工作区和约束，处理隐藏反例、并发或版本冲突，不能扩大修改范围。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "完成实现并运行针对性验证。最终只生成固定 JSON 文件，字段必须与任务要求一致，附带关键中间证据。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "flaky_tests": 0,
+            "seeded": true
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_debug_cache_stampede",
+      "category": "debugging",
+      "capabilities": [
+        "user_dialogue",
+        "debugging"
+      ],
+      "fixture": "fixtures/dialogue-campaign/debug_cache_stampede",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "这是高难度 debug_cache_stampede 任务。先阅读工作区和约束，处理隐藏反例、并发或版本冲突，不能扩大修改范围。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "完成实现并运行针对性验证。最终只生成固定 JSON 文件，字段必须与任务要求一致，附带关键中间证据。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "root_cause": "missing_singleflight",
+            "deduplicated": true
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_recovery_dead_letter_replay",
+      "category": "recovery",
+      "capabilities": [
+        "user_dialogue",
+        "recovery"
+      ],
+      "fixture": "fixtures/dialogue-campaign/recovery_dead_letter_replay",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "这是高难度 recovery_dead_letter_replay 任务。先阅读工作区和约束，处理隐藏反例、并发或版本冲突，不能扩大修改范围。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "完成实现并运行针对性验证。最终只生成固定 JSON 文件，字段必须与任务要求一致，附带关键中间证据。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "replayed": 2,
+            "duplicates": 0,
+            "final": "consistent"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_multi_repo_dependency_pin",
+      "category": "integration",
+      "capabilities": [
+        "user_dialogue",
+        "integration"
+      ],
+      "fixture": "fixtures/dialogue-campaign/multi_repo_dependency_pin",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "这是高难度 multi_repo_dependency_pin 任务。先阅读工作区和约束，处理隐藏反例、并发或版本冲突，不能扩大修改范围。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "完成实现并运行针对性验证。最终只生成固定 JSON 文件，字段必须与任务要求一致，附带关键中间证据。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "repos": 3,
+            "conflicts": 0,
+            "lock_updated": true
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_tenant_quota_race",
+      "category": "concurrency",
+      "capabilities": [
+        "user_dialogue",
+        "concurrency"
+      ],
+      "fixture": "fixtures/dialogue-campaign/tenant_quota_race",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "这是高难度 tenant_quota_race 任务。先阅读工作区和约束，处理隐藏反例、并发或版本冲突，不能扩大修改范围。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "完成实现并运行针对性验证。最终只生成固定 JSON 文件，字段必须与任务要求一致，附带关键中间证据。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "lost_updates": 0,
+            "final_quota": 700
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_secret_redaction_trace",
+      "category": "security",
+      "capabilities": [
+        "user_dialogue",
+        "security"
+      ],
+      "fixture": "fixtures/dialogue-campaign/secret_redaction_trace",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "这是高难度 secret_redaction_trace 任务。先阅读工作区和约束，处理隐藏反例、并发或版本冲突，不能扩大修改范围。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "完成实现并运行针对性验证。最终只生成固定 JSON 文件，字段必须与任务要求一致，附带关键中间证据。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "secrets_leaked": 0,
+            "redacted_events": 3
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_symlink_swap_race",
+      "category": "security",
+      "capabilities": [
+        "user_dialogue",
+        "security"
+      ],
+      "fixture": "fixtures/dialogue-campaign/symlink_swap_race",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "这是高难度 symlink_swap_race 任务。先阅读工作区和约束，处理隐藏反例、并发或版本冲突，不能扩大修改范围。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "完成实现并运行针对性验证。最终只生成固定 JSON 文件，字段必须与任务要求一致，附带关键中间证据。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "escape_attempts": 2,
+            "writes_outside": 0
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_approval_revoke_window",
+      "category": "security",
+      "capabilities": [
+        "user_dialogue",
+        "security"
+      ],
+      "fixture": "fixtures/dialogue-campaign/approval_revoke_window",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "这是高难度 approval_revoke_window 任务。先阅读工作区和约束，处理隐藏反例、并发或版本冲突，不能扩大修改范围。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "完成实现并运行针对性验证。最终只生成固定 JSON 文件，字段必须与任务要求一致，附带关键中间证据。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "post_revoke_writes": 0,
+            "audit_complete": true
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_binary_patch_integrity",
+      "category": "security",
+      "capabilities": [
+        "user_dialogue",
+        "security"
+      ],
+      "fixture": "fixtures/dialogue-campaign/binary_patch_integrity",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "这是高难度 binary_patch_integrity 任务。先阅读工作区和约束，处理隐藏反例、并发或版本冲突，不能扩大修改范围。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "完成实现并运行针对性验证。最终只生成固定 JSON 文件，字段必须与任务要求一致，附带关键中间证据。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "hash_verified": true,
+            "tampered": false
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    }
+  ]
+}

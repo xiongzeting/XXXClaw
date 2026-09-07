@@ -1,0 +1,7 @@
+2026-07-03T00:00:00Z INFO gateway healthy request_id=r200000
+2026-07-03T01:06:40Z FATAL storage disk full error_code=E_DISK_FULL_9314 node=st-3
+2026-07-03T02:30:00Z WARN auth token refresh degraded request_id=rCORR777
+2026-07-03T03:20:00Z INFO scheduler recovered request_id=r210000
+2026-07-03T04:10:00Z FATAL auth cascade abort originating_request_id=rCORR777 error_code=E_TOKEN_CASCADE_2201
+2026-07-03T04:40:00Z ERROR scheduler worker killed reason=OOMKilled container=ingest-0
+2026-07-03T05:00:00Z INFO gateway healthy request_id=r220000

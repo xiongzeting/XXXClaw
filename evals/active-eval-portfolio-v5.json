@@ -1,0 +1,26 @@
+{
+  "version": 5,
+  "main_combined": "main-challenge-v5.json",
+  "main": {
+    "development": "round1-development-current.json",
+    "test": "round1-test-current.json"
+  },
+  "smoke": "smoke-basic-v3.json",
+  "observed_failures": "hard-observed-failures-v2.json",
+  "original_portfolio": "active-eval-portfolio-v4.json",
+  "score_revision": "evidence/path-oracle-v2.1/regrade.json",
+  "oracle_only_quarantine": [
+    "hard_v1_release_gate_dependency_closure",
+    "hard_v1_incident_evidence_dedup_attribution",
+    "hard_v1_permission_interval_intersection",
+    "hard_v1_inventory_location_isolation"
+  ],
+  "network_policy": "Retry only the interrupted request once after bounded transport retries; preserve original failures and cumulative costs. Score final delivery, non-network errors and unchanged task checks.",
+  "validation": "Partition migration only; original model scores unchanged; all cases exposed.",
+  "holdout_status": "deferred; no active retained suite",
+  "partition_policy": "current-round-partitions.json",
+  "current_counts": {
+    "development": 15,
+    "test": 15
+  }
+}

@@ -1,0 +1,82 @@
+name: MiniClaw Eval
+
+on:
+  push:
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "evals/**"
+      - "pyproject.toml"
+      - ".github/workflows/eval.yml"
+  pull_request:
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "evals/**"
+      - "pyproject.toml"
+      - ".github/workflows/eval.yml"
+  workflow_dispatch:
+    inputs:
+      live_regression:
+        description: "Run the paid 22-case model + Docker regression gate"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  offline-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install test dependencies
+        run: python -m pip install -e ".[feishu]" pytest
+      - name: Run the complete offline test suite
+        run: python -m pytest tests -q
+      - name: Verify the frozen portfolio manifest
+        run: >-
+          python -m MiniClaw.evaluation.splits validate
+          evals/splits/v1/manifest.json
+          --project-root .
+
+  live-regression:
+    if: github.event_name == 'workflow_dispatch' && inputs.live_regression
+    needs: offline-contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MINICLAW_PROVIDER: primary
+      MINICLAW_PRIMARY_API_KEY: ${{ secrets.MINICLAW_PRIMARY_API_KEY }}
+      MINICLAW_PRIMARY_BASE_URL: ${{ vars.MINICLAW_PRIMARY_BASE_URL || 'https://ai.zxcoding.top/v1' }}
+      MINICLAW_PRIMARY_MODEL: gpt-5.6-luna
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install MiniClaw with retrieval dependencies
+        run: python -m pip install -e ".[benchmark]"
+      - name: Build the restricted Bash runtime
+        run: docker build -f docker/runtime/Dockerfile -t miniclaw-runtime:py313-bench docker/runtime
+      - name: Run the blocking regression gate
+        run: >-
+          python -m MiniClaw.evaluation.cli
+          evals/full.json
+          --jobs 4
+          --baseline evals/baselines/gpt-5.6-luna-full-v1.json
+          --out .aster/evals/ci-full
+      - name: Upload Eval evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: miniclaw-eval-${{ github.sha }}
+          path: .aster/evals/ci-full
+          if-no-files-found: warn

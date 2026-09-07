@@ -1,0 +1,4 @@
+node,cause
+n1,OOM
+n8,DISK_FULL
+n9,OK

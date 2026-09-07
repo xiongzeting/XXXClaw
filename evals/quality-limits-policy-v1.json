@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "name": "quality-limits-policy-v1",
+  "status": "enabled-for-next-generated-run",
+  "purpose": "Initial, adjustable process and efficiency limits for the next boundary evaluation run.",
+  "source_suite": "evals/boundary-campaign-v1.json",
+  "limits": {
+    "process": {
+      "tool_errors": {
+        "max": 5,
+        "dimension": "process",
+        "rationale": "Bound repeated tool-call failures while retaining the existing process checks."
+      }
+    },
+    "efficiency": {
+      "wall_duration_seconds": {
+        "by_category": {
+          "default": 600,
+          "compression": 900
+        },
+        "dimension": "efficiency",
+        "rationale": "Bound wall-clock runtime with a larger initial allowance for compression cases."
+      }
+    }
+  },
+  "measurement_notes": [
+    "These are adjustable initial thresholds, not validated performance targets.",
+    "A network interruption or other availability event must be reviewed separately from capability; preserve original trace and error data.",
+    "This policy applies to a future generated suite and does not change the frozen source suite or any completed result."
+  ],
+  "observations": [
+    {
+      "name": "cache_hit_percent",
+      "unit": "%"
+    },
+    {
+      "name": "estimated_cost_usd",
+      "unit": "USD"
+    }
+  ],
+  "observation_policy": "Diagnostic only: no threshold, no contribution to five-dimensional scores. Missing usage/prices are null, never zero-cost. Cost uses configured rates, not provider invoice."
+}

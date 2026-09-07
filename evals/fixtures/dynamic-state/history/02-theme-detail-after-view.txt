@@ -1,0 +1,8 @@
+ACTION: The user clicked View for the selected theme entry.
+STATE: Theme detail page after the navigation completed.
+LEFT COLUMN ACCESSIBILITY TREE:
+- tab "Theme Information" selected=true
+- panel "Theme Information"
+RIGHT COLUMN:
+- button "Preview Theme"
+Conclusion from this state: the left column contains one tab.

@@ -1,0 +1,20 @@
+:is(#round2,#round3){border-top:1px solid var(--line);padding-top:40px;margin-top:48px}
+:is(#round2,#round3) .hero{border-radius:22px}
+:is(#round2,#round3) .hero h2{font-size:38px;line-height:1.25;color:inherit;letter-spacing:-1px}
+.round2-nav{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 30px}
+.round2-nav a{font-size:12px;color:#52678e;background:#fff;border:1px solid var(--line);padding:9px 14px;border-radius:8px;text-decoration:none}
+.round2-block{margin-top:34px;scroll-margin-top:90px}
+:is(#round2,#round3) .kpis{grid-template-columns:repeat(5,minmax(0,1fr))}
+:is(#round2,#round3) .section-heading{margin-bottom:20px}
+:is(#round2-empty,#round3-empty){text-align:center;padding:30px;color:var(--muted)}
+:is(#round2-detail,#round3-detail){padding:25px}
+:is(#round2,#round3) .review-note{display:block;font-size:10px;font-weight:400;color:#7a879b;margin-top:5px}
+:is(#round2,#round3) .round2-source-link{color:#536eaa;overflow-wrap:anywhere}
+:is(#round2,#round3) .round2-cost{margin-bottom:18px}
+:is(#round2,#round3) .round2-limit{font-size:12px;line-height:1.9;color:#66758c}
+@media(max-width:1000px){:is(#round2,#round3) .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){:is(#round2,#round3) .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}:is(#round2,#round3) .hero h2{font-size:29px}:is(#round2-detail,#round3-detail){padding:20px}.round2-nav{gap:7px}.round2-nav a{font-size:11px;padding:8px 11px}}
+
+:is(#round2,#round3) .review-note{max-width:380px;line-height:1.6} :is(#round2,#round3) .compact-kpis strong{overflow-wrap:anywhere;font-size:24px} :is(#round2-detail,#round3-detail) pre{white-space:pre-wrap;overflow-wrap:anywhere} :is(#round2-detail,#round3-detail) details{margin:12px 0}
+
+@media(min-width:1100px){:is(#round2,#round3) .filters{display:grid;grid-template-columns:minmax(220px,2fr) repeat(3,minmax(110px,1fr)) auto auto;align-items:center} :is(#round2,#round3) .filters .search-field{width:auto;grid-column:auto} :is(#round2,#round3) .filters select{width:100%}}

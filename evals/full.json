@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "name": "miniclaw-full",
+  "includes": ["smoke.json", "regression.json", "resilience.json"],
+  "coverage": {
+    "dimensions": ["outcome", "process", "efficiency", "safety", "reliability"],
+    "capabilities": [
+      "result_correctness",
+      "trace_process",
+      "goal_supervision",
+      "goal_restart_resume",
+      "real_verification",
+      "project_instructions",
+      "memory_write",
+      "memory_retrieval",
+      "memory_multihop",
+      "progressive_compaction",
+      "artifact_recovery",
+      "approval_deny",
+      "workspace_guard",
+      "workspace_escape",
+      "sensitive_data_protection",
+      "docker_execution",
+      "network_isolation",
+      "end_to_end_cancellation",
+      "model_retry",
+      "network_recovery",
+      "provider_fallback",
+      "approval_ask",
+      "approval_timeout",
+      "reliability_repeat",
+      "workspace_side_effects"
+    ]
+  }
+}

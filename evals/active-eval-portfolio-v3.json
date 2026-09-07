@@ -1,0 +1,44 @@
+{
+  "version": 3,
+  "main": {
+    "development": "development-challenge-v3.json",
+    "retained": "retained-challenge-v3.json",
+    "test": "test-challenge-v3.json"
+  },
+  "main_combined": "main-challenge-v3.json",
+  "main_case_count": 30,
+  "smoke": "smoke-basic-v3.json",
+  "legacy_baselines": [
+    "measured-development-v2.json",
+    "retained-release-v2.json",
+    "test-release-v2.json"
+  ],
+  "previous_regressions": [
+    "split-failures-v2.json",
+    "split-availability-diagnostics-v2.json"
+  ],
+  "new_failures_by_original_split": {
+    "development": "hard-failures-development-v1.json",
+    "retained": "hard-failures-retained-v1.json",
+    "test": "hard-failures-test-v1.json"
+  },
+  "policy": "Simple cases removed from active main coverage, not deleted; failures remain in their frozen assigned split.",
+  "post_run_oracle_quarantine": {
+    "check_invalid_cases": [
+      "hard_v1_release_gate_dependency_closure",
+      "hard_v1_tenant_event_reconciliation",
+      "hard_v1_incident_evidence_dedup_attribution",
+      "hard_v1_permission_interval_intersection",
+      "hard_v1_cash_refund_reconciliation",
+      "hard_v1_inventory_location_isolation"
+    ],
+    "oracle_only_failures": [
+      "hard_v1_release_gate_dependency_closure",
+      "hard_v1_incident_evidence_dedup_attribution",
+      "hard_v1_permission_interval_intersection",
+      "hard_v1_inventory_location_isolation"
+    ],
+    "evidence": "../.aster/evals/hard-campaign-v1/post-run-audit.json",
+    "policy": "Frozen suites preserve history. Exclude invalid path checks from capability claims; repair/version/self-test oracle before next run."
+  }
+}

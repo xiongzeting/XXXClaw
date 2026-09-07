@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "name": "main-challenge-v4",
+  "includes": [
+    "development-challenge-v4.json",
+    "retained-challenge-v4.json",
+    "test-challenge-v4.json"
+  ]
+}

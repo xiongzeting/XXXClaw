@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "name": "miniclaw-portfolio-v2",
+  "includes": [
+    "smoke.json",
+    "regression-v2.json",
+    "resilience.json",
+    "dialogue-failures.json"
+  ],
+  "coverage": {
+    "dimensions": [
+      "outcome",
+      "process",
+      "efficiency",
+      "safety",
+      "reliability"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "name": "dialogue-development-112",
+  "includes": [
+    "dialogue-memory-development.json",
+    "dialogue-product-development.json",
+    "dialogue-challenge-development.json",
+    "dialogue-long-history-development.json",
+    "dialogue-edges-development.json",
+    "dialogue-input-development.json",
+    "dialogue-router-development.json"
+  ]
+}

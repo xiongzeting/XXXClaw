@@ -1,0 +1,3 @@
+PAGE: ServiceNow Reports > View/Run
+Incident assignment links begin with: Incidents with hashtag #
+Inventory and order dashboard links begin with: Catalog with hashtag #

@@ -1,0 +1,6 @@
+e1 incident=INC-9 service=checkout level=ERROR evidence=true observed_at=2026-09-05T01:00Z source=service
+e2 incident=INC-9 service=checkout level=ERROR evidence=true observed_at=2026-09-05T02:00Z source=service
+e3 incident=INC-9 service=checkout level=ERROR evidence=true observed_at=2026-09-05T03:00Z source=service
+e4 incident=INC-9 service=checkout level=ERROR evidence=true observed_at=2026-09-05T04:00Z source=service
+e5 incident=INC-9 service=checkout level=ERROR evidence=true observed_at=2026-09-05T05:00Z source=service
+e6 incident=INC-9 service=checkout level=ERROR evidence=true observed_at=2026-09-05T06:00Z source=service

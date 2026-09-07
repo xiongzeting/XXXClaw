@@ -1,0 +1,192 @@
+{
+  "id": "dialogue_group_identity_timezone",
+  "category": "actor-isolation",
+  "source": {
+    "kind": "synthetic_user_dialogue",
+    "campaign": "dialogue-20260905",
+    "track": "failure-regression",
+    "origin": "hand-authored realistic scenario",
+    "oracle": "independent expected fields or isolated hidden tests",
+    "input_adapter": "feishu-router",
+    "actors": [
+      "Alice",
+      "Bob",
+      "Alice",
+      "Bob"
+    ],
+    "failure_family": "shared-thread-actor-binding",
+    "actor_policy": "Personal preferences follow inbound user_id, shared thread context is not private-user identity.",
+    "discovery_report": ".aster\\evals\\expansion-20260905\\router-discovery\\cases\\dialogue_group_identity_timezone\\result.json",
+    "confirmation_report": ".aster\\evals\\expansion-20260905\\router-confirmation\\cases\\dialogue_group_identity_timezone\\result.json",
+    "observed_attempts": 3,
+    "observed_failures": 3,
+    "failure_signature": "shared-thread-actor-binding",
+    "status": "known-failure-unfixed"
+  },
+  "user_dialogue": [
+    {
+      "id": "turn1",
+      "prompt": "我是 Alice，请记住我的日程时区是 Asia/Shanghai。这是我的个人偏好，不是群里所有人的约定。"
+    },
+    {
+      "id": "turn2",
+      "prompt": "我是 Bob，请记住我的日程时区是 Europe/London。我的偏好只属于我，不要覆盖 Alice 的记录。"
+    },
+    {
+      "id": "turn3",
+      "prompt": "按我之前明确告诉你的个人记录，我的日程时区是什么？只给 JSON：value。"
+    },
+    {
+      "id": "turn4",
+      "prompt": "也查一下我之前明确告诉你的个人记录，我的日程时区是什么？只给 JSON：value。"
+    }
+  ],
+  "expected_checks": [
+    {
+      "type": "final_json",
+      "phase": "turn3",
+      "fields": {
+        "value": "Asia/Shanghai"
+      },
+      "dimension": "outcome"
+    },
+    {
+      "type": "final_json",
+      "fields": {
+        "value": "Europe/London"
+      },
+      "dimension": "outcome"
+    }
+  ],
+  "observations": [
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:final_json:phase=turn3; final={\"value\":\"Europe/London\"}"
+      ],
+      "answers": {
+        "turn1": "已记住：你的个人日程时区是 **Asia/Shanghai**，仅适用于你本人，不代表群组或其他人的约定。",
+        "turn2": "已记住：你的个人日程时区是 **Europe/London**，仅属于 Bob，不会覆盖 Alice 的记录。",
+        "turn3": "{\"value\":\"Europe/London\"}",
+        "turn4": "{\"value\":\"Europe/London\"}"
+      },
+      "inbound_actor_and_memory_binding": [
+        {
+          "phase": "turn1",
+          "inbound_actor": "Alice",
+          "input": "我是 Alice，请记住我的日程时区是 Asia/Shanghai。这是我的个人偏好，不是群里所有人的约定。",
+          "output": "已记住：你的个人日程时区是 **Asia/Shanghai**，仅适用于你本人，不代表群组或其他人的约定。",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn2",
+          "inbound_actor": "Bob",
+          "input": "我是 Bob，请记住我的日程时区是 Europe/London。我的偏好只属于我，不要覆盖 Alice 的记录。",
+          "output": "已记住：你的个人日程时区是 **Europe/London**，仅属于 Bob，不会覆盖 Alice 的记录。",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn3",
+          "inbound_actor": "Alice",
+          "input": "按我之前明确告诉你的个人记录，我的日程时区是什么？只给 JSON：value。",
+          "output": "{\"value\":\"Europe/London\"}",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn4",
+          "inbound_actor": "Bob",
+          "input": "也查一下我之前明确告诉你的个人记录，我的日程时区是什么？只给 JSON：value。",
+          "output": "{\"value\":\"Europe/London\"}",
+          "bound_memory_user_scope": "feishu-Alice"
+        }
+      ],
+      "observed_files": {}
+    },
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:final_json:phase=turn3; final={\"value\":\"Europe/London\"}"
+      ],
+      "answers": {
+        "turn1": "已记住：Alice 的个人日程时区是 **Asia/Shanghai**，仅适用于你的个人偏好，不代表群组或其他人的约定。",
+        "turn2": "已记住：Bob 的个人日程时区是 **Europe/London**，仅属于 Bob，不会覆盖 Alice 的记录。",
+        "turn3": "{\"value\":\"Europe/London\"}",
+        "turn4": "{\"value\":\"Europe/London\"}"
+      },
+      "inbound_actor_and_memory_binding": [
+        {
+          "phase": "turn1",
+          "inbound_actor": "Alice",
+          "input": "我是 Alice，请记住我的日程时区是 Asia/Shanghai。这是我的个人偏好，不是群里所有人的约定。",
+          "output": "已记住：Alice 的个人日程时区是 **Asia/Shanghai**，仅适用于你的个人偏好，不代表群组或其他人的约定。",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn2",
+          "inbound_actor": "Bob",
+          "input": "我是 Bob，请记住我的日程时区是 Europe/London。我的偏好只属于我，不要覆盖 Alice 的记录。",
+          "output": "已记住：Bob 的个人日程时区是 **Europe/London**，仅属于 Bob，不会覆盖 Alice 的记录。",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn3",
+          "inbound_actor": "Alice",
+          "input": "按我之前明确告诉你的个人记录，我的日程时区是什么？只给 JSON：value。",
+          "output": "{\"value\":\"Europe/London\"}",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn4",
+          "inbound_actor": "Bob",
+          "input": "也查一下我之前明确告诉你的个人记录，我的日程时区是什么？只给 JSON：value。",
+          "output": "{\"value\":\"Europe/London\"}",
+          "bound_memory_user_scope": "feishu-Alice"
+        }
+      ],
+      "observed_files": {}
+    },
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:final_json:phase=turn3; final={\"value\":\"Europe/London\"}"
+      ],
+      "answers": {
+        "turn1": "已记住：你的个人日程时区是 **Asia/Shanghai**，仅适用于你本人，不代表群组或其他人的约定。",
+        "turn2": "已记住：你的个人日程时区是 **Europe/London**，仅适用于 Bob 本人，不会覆盖 Alice 的记录。",
+        "turn3": "{\"value\":\"Europe/London\"}",
+        "turn4": "{\"value\":\"Europe/London\"}"
+      },
+      "inbound_actor_and_memory_binding": [
+        {
+          "phase": "turn1",
+          "inbound_actor": "Alice",
+          "input": "我是 Alice，请记住我的日程时区是 Asia/Shanghai。这是我的个人偏好，不是群里所有人的约定。",
+          "output": "已记住：你的个人日程时区是 **Asia/Shanghai**，仅适用于你本人，不代表群组或其他人的约定。",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn2",
+          "inbound_actor": "Bob",
+          "input": "我是 Bob，请记住我的日程时区是 Europe/London。我的偏好只属于我，不要覆盖 Alice 的记录。",
+          "output": "已记住：你的个人日程时区是 **Europe/London**，仅适用于 Bob 本人，不会覆盖 Alice 的记录。",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn3",
+          "inbound_actor": "Alice",
+          "input": "按我之前明确告诉你的个人记录，我的日程时区是什么？只给 JSON：value。",
+          "output": "{\"value\":\"Europe/London\"}",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn4",
+          "inbound_actor": "Bob",
+          "input": "也查一下我之前明确告诉你的个人记录，我的日程时区是什么？只给 JSON：value。",
+          "output": "{\"value\":\"Europe/London\"}",
+          "bound_memory_user_scope": "feishu-Alice"
+        }
+      ],
+      "observed_files": {}
+    }
+  ]
+}

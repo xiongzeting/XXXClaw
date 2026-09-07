@@ -1,0 +1,1 @@
+[{"event_id": "e1", "status": "captured", "cents": 2000}, {"event_id": "e2", "status": "captured", "cents": 1800}, {"event_id": "e1", "status": "captured", "cents": 2000}, {"event_id": "e3", "status": "refunded", "cents": 400}, {"event_id": "e4", "status": "pending", "cents": 9000}]

@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "name": "retained-challenge-v3",
+  "coverage": {
+    "dimensions": [
+      "efficiency",
+      "outcome",
+      "process",
+      "reliability",
+      "safety"
+    ]
+  },
+  "exposure_policy": "Assigned before first execution; failures stay in original split. Inspected failures exported for development cannot later count as unseen.",
+  "cases": [],
+  "partition_policy": "current-round-partitions-v1",
+  "status": "retired; cases moved to development/test; no new holdout"
+}

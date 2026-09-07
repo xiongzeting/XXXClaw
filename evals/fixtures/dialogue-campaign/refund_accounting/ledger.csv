@@ -1,0 +1,6 @@
+id,kind,status,cents
+a,order,settled,1200
+b,order,settled,900
+c,order,pending,5000
+d,refund,completed,250
+e,refund,rejected,700

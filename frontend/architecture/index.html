@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="MiniClaw 项目总架构图查看器">
+  <title>MiniClaw Architecture Viewer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="architecture-app">
+    <header class="topbar">
+      <div class="brand-block">
+        <span class="brand-mark" aria-hidden="true">M</span>
+        <div>
+          <h1>MiniClaw 总架构</h1>
+          <p>交互式 SVG 系统地图 · Python Agent Runtime</p>
+        </div>
+      </div>
+      <div class="toolbar" aria-label="架构图控制栏">
+        <button type="button" id="zoom-out" aria-label="缩小">−</button>
+        <label class="zoom-control" for="zoom-range">
+          <span id="zoom-label">100%</span>
+          <input id="zoom-range" type="range" min="10" max="240" value="100" step="1">
+        </label>
+        <button type="button" id="zoom-in" aria-label="放大">＋</button>
+        <button type="button" id="fit-view">适应窗口</button>
+        <button type="button" id="actual-size">原始大小</button>
+        <button type="button" id="fullscreen">全屏</button>
+        <a class="download-link" href="miniclaw-architecture.svg" download>下载 SVG</a>
+      </div>
+    </header>
+
+    <section class="workspace-shell">
+      <aside class="module-index" aria-label="架构模块索引">
+        <div class="index-heading">
+          <strong>模块定位</strong>
+          <span>点击聚焦</span>
+        </div>
+        <nav id="module-navigation">
+          <button type="button" data-region="overview" class="active">
+            <span>00</span><strong>全局总览</strong><small>完整系统与主数据流</small>
+          </button>
+          <button type="button" data-region="platforms">
+            <span>01</span><strong>入口与平台</strong><small>CLI、飞书、审批路由</small>
+          </button>
+          <button type="button" data-region="assistant">
+            <span>02</span><strong>Assistant 组装</strong><small>产品组合根与监督循环</small>
+          </button>
+          <button type="button" data-region="agent-llm">
+            <span>03</span><strong>Agent 与 LLM</strong><small>SSE、取消、重试、降级</small>
+          </button>
+          <button type="button" data-region="tools-runtime">
+            <span>04</span><strong>Approval / Tools / Runtime</strong><small>审批、取消、进程与容器</small>
+          </button>
+          <button type="button" data-region="memory">
+            <span>05</span><strong>四层记忆</strong><small>检索、压缩、Artifact</small>
+          </button>
+          <button type="button" data-region="goal">
+            <span>06</span><strong>Goal 监督</strong><small>状态机、验证、Judge</small>
+          </button>
+          <button type="button" data-region="trace-eval">
+            <span>07</span><strong>Trace → Eval</strong><small>重放、聚类、Dashboard</small>
+          </button>
+          <button type="button" data-region="storage">
+            <span>08</span><strong>持久化结构</strong><small>.aster 与会话数据</small>
+          </button>
+        </nav>
+        <div class="shortcut-help">
+          <strong>快捷键</strong>
+          <p><kbd>+</kbd>/<kbd>−</kbd> 缩放 · <kbd>0</kbd> 适应 · <kbd>1</kbd> 100% · 方向键平移</p>
+        </div>
+      </aside>
+
+      <section class="viewer-column">
+        <div id="image-stage" class="image-stage" tabindex="0" aria-label="MiniClaw SVG 架构图，可拖拽和缩放">
+          <img id="architecture-image" src="miniclaw-architecture.svg" alt="MiniClaw 超详细系统架构图" draggable="false">
+          <div class="stage-hint" id="stage-hint">滚轮缩放 · 按住拖拽</div>
+          <div id="minimap" class="minimap" aria-label="架构图缩略导航">
+            <img src="miniclaw-architecture.svg" alt="" aria-hidden="true">
+            <div id="minimap-window"></div>
+          </div>
+        </div>
+        <footer class="statusbar" aria-live="polite">
+          <div>
+            <strong id="region-title">全局总览</strong>
+            <span id="region-description">完整系统、控制流、数据流、安全边界与持久化关系</span>
+          </div>
+          <div class="status-values">
+            <span id="viewport-status">3200 × 2400</span>
+            <span id="position-status">x 0 · y 0</span>
+          </div>
+        </footer>
+      </section>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

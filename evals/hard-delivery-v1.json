@@ -1,0 +1,1452 @@
+{
+  "version": 1,
+  "name": "hard-delivery-v1",
+  "coverage": {
+    "dimensions": [
+      "outcome",
+      "process",
+      "efficiency",
+      "safety",
+      "reliability"
+    ]
+  },
+  "cases": [
+    {
+      "id": "hard_v1_ttl_lru_cache",
+      "category": "tools",
+      "fixture": "fixtures/hard-reviewed-v1/ttl_lru_cache",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "实现solve(data)模拟缓存。data.capacity为正整数；data.ops按给定顺序执行，每项t非负整数且不得下降，op为put/get。put还有key字符串/value任意JSON/ttl非负整数，get只有key。输出对象reads（每次get的值，未命中null）和keys（结束后缓存key，从最久未用到最近使用）。每条操作开始先删除expire<=t的项，put的expire=t+ttl。\n交付只允许改solution.py、cli.py，公开verify.py和输入都不可改。solution.py暴露solve(data)。cli.py提供python cli.py INPUT_FILE OUTPUT_FILE，两个参数都是路径；读取UTF-8 JSON，调用solve，成功将结果作为JSON写OUTPUT_FILE，退出0；JSON无效或solve抛ValueError时退出非0且已有输出字节完全不变，没有旧输出则不得创建输出。重复相同输入输出字节必须稳定。测试临时文件放系统临时目录，不在仓库新增其他交付。除明确列出的错误情况外，输入字段齐全且满足给定类型，无需猜测额外规则。 本轮仅理解和检查stub，不要修改文件；等我说开始再实施。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "put覆盖已有key会替换值、过期时间并成为最近使用；get命中也成为最近使用，未命中不改变其他项顺序。超过capacity时淘汰最久未用。必须保留false/0/空字符串，不能把它们当未命中。空ops得到两个空数组，不得修改输入。 暂时只分析，不修改。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "最终修订：ttl=0表示删除该key而不插入，也不引起其他淘汰。capacity、t、ttl必须真整数，bool非法；capacity<=0、ttl<0、时间倒退、未知op全部ValueError。验证到坏操作即失败，输入始终不变。 现在开始完整实现，运行验证。"
+        },
+        {
+          "id": "turn4",
+          "prompt": "请检查函数与CLI是否都符合所有约定；实际验证正常与失败场景，补齐遗漏后交付。"
+        }
+      ],
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      },
+      "timeout_seconds": 900,
+      "repetitions": 1,
+      "capabilities": [
+        "tools",
+        "synthetic_challenge",
+        "multi_turn"
+      ],
+      "source": {
+        "kind": "reviewed_synthetic_dialogue",
+        "campaign": "hard-campaign-v1",
+        "split": "development",
+        "family": "ttl_lru_cache",
+        "difficulty": "challenge",
+        "exposure": "assigned before first model execution"
+      },
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"from solution import solve\\nimport copy\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nfor original,expected in [({'capacity': 2, 'ops': [{'t': 0, 'op': 'put', 'key': 'a', 'value': 0, 'ttl': 10}, {'t': 0, 'op': 'put', 'key': 'b', 'value': False, 'ttl': 10}, {'t': 1, 'op': 'get', 'key': 'a'}, {'t': 2, 'op': 'put', 'key': 'c', 'value': '', 'ttl': 10}, {'t': 3, 'op': 'get', 'key': 'b'}, {'t': 10, 'op': 'get', 'key': 'a'}]}, {'reads': [0, None, None], 'keys': ['c']}), ({'capacity': 1, 'ops': [{'t': 0, 'op': 'put', 'key': 'a', 'value': 1, 'ttl': 1}, {'t': 1, 'op': 'get', 'key': 'a'}]}, {'reads': [None], 'keys': []}), ({'capacity': 1, 'ops': [{'t': 0, 'op': 'put', 'key': 'a', 'value': 1, 'ttl': 10}, {'t': 0, 'op': 'put', 'key': 'b', 'value': 2, 'ttl': 0}]}, {'reads': [], 'keys': ['a']}), ({'capacity': 2, 'ops': []}, {'reads': [], 'keys': []})]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n actual=solve(data)\\n assert same(actual,expected), (original,actual,expected)\\n assert same(data,before), 'mutated input'\\nfor original in [{'capacity': 0, 'ops': []}, {'capacity': 1, 'ops': [{'t': 2, 'op': 'get', 'key': 'a'}, {'t': 1, 'op': 'get', 'key': 'a'}]}, {'capacity': 1, 'ops': [{'t': 0, 'op': 'put', 'key': 'a', 'value': 1, 'ttl': True}]}]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n try: solve(data)\\n except ValueError: pass\\n else: raise AssertionError(('expected ValueError',original))\\n assert same(data,before), 'failed call mutated input'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json,subprocess,sys,tempfile\\nfrom pathlib import Path\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nwith tempfile.TemporaryDirectory() as d:\\n p=Path(d); src=p/'输入 文件.json'; dst=p/'输出 文件.json'\\n src.write_text(json.dumps({'capacity': 2, 'ops': [{'t': 0, 'op': 'put', 'key': 'a', 'value': 0, 'ttl': 10}, {'t': 0, 'op': 'put', 'key': 'b', 'value': False, 'ttl': 10}, {'t': 1, 'op': 'get', 'key': 'a'}, {'t': 2, 'op': 'put', 'key': 'c', 'value': '', 'ttl': 10}, {'t': 3, 'op': 'get', 'key': 'b'}, {'t': 10, 'op': 'get', 'key': 'a'}]},ensure_ascii=False),encoding='utf-8')\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0, result.stderr\\n assert same(json.loads(dst.read_text(encoding='utf-8-sig')), {'reads': [0, None, None], 'keys': ['c']})\\n first=dst.read_bytes()\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0 and dst.read_bytes()==first, 'non-deterministic output'\\n for bad_text in ['{', json.dumps({'capacity': 0, 'ops': []})]:\\n  src.write_text(bad_text,encoding='utf-8')\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and dst.read_bytes()==first, 'invalid input overwrote existing output'\\n  fresh=p/'new.json'\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(fresh)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and not fresh.exists(), 'invalid input created output'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "solution.py",
+            "cli.py",
+            "__pycache__/**",
+            "**/__pycache__/**",
+            ".pytest_cache/**"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 130000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 65,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 4,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ]
+    },
+    {
+      "id": "hard_v1_sessionize_events",
+      "category": "completion",
+      "fixture": "fixtures/hard-reviewed-v1/sessionize_events",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "实现solve(data)会话切分。data.events数组，每项id字符串/user字符串/t真整数>=0/value真整数；data.gap真整数>=0。完全相同id重复只保留一次，同id任一字段不同抛ValueError。按user分组再按(t,id)升序，相邻事件时间差>gap开启新会话，等于gap仍同会话。\n交付只允许改solution.py、cli.py，公开verify.py和输入都不可改。solution.py暴露solve(data)。cli.py提供python cli.py INPUT_FILE OUTPUT_FILE，两个参数都是路径；读取UTF-8 JSON，调用solve，成功将结果作为JSON写OUTPUT_FILE，退出0；JSON无效或solve抛ValueError时退出非0且已有输出字节完全不变，没有旧输出则不得创建输出。重复相同输入输出字节必须稳定。测试临时文件放系统临时目录，不在仓库新增其他交付。除明确列出的错误情况外，输入字段齐全且满足给定类型，无需猜测额外规则。 本轮仅理解和检查stub，不要修改文件；等我说开始再实施。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "输出数组按user再start再first_id排序。每项user/start/end/first_id/event_ids/total；event_ids为该会话(t,id)顺序，total为value之和。负value合法，0和空user合法，不修改输入，空events返回空数组。 暂时只分析，不修改。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "新增data.excluded_users数组，缺省空。先全量校验和id冲突去重，再排除用户；排除用户的坏记录也必须抛错。用户名精确匹配，无大小写折叠。 现在开始完整实现，运行验证。"
+        },
+        {
+          "id": "turn4",
+          "prompt": "请检查函数与CLI是否都符合所有约定；实际验证正常与失败场景，补齐遗漏后交付。"
+        }
+      ],
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      },
+      "timeout_seconds": 900,
+      "repetitions": 1,
+      "capabilities": [
+        "completion",
+        "synthetic_challenge",
+        "multi_turn"
+      ],
+      "source": {
+        "kind": "reviewed_synthetic_dialogue",
+        "campaign": "hard-campaign-v1",
+        "split": "development",
+        "family": "sessionize_events",
+        "difficulty": "challenge",
+        "exposure": "assigned before first model execution"
+      },
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"from solution import solve\\nimport copy\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nfor original,expected in [({'gap': 5, 'events': [{'id': 'c', 'user': 'u', 't': 11, 'value': -2}, {'id': 'b', 'user': 'u', 't': 5, 'value': 3}, {'id': 'a', 'user': 'u', 't': 0, 'value': 2}, {'id': 'd', 'user': 'v', 't': 0, 'value': 0}]}, [{'user': 'u', 'start': 0, 'end': 5, 'first_id': 'a', 'event_ids': ['a', 'b'], 'total': 5}, {'user': 'u', 'start': 11, 'end': 11, 'first_id': 'c', 'event_ids': ['c'], 'total': -2}, {'user': 'v', 'start': 0, 'end': 0, 'first_id': 'd', 'event_ids': ['d'], 'total': 0}]), ({'gap': 0, 'events': [{'id': 'b', 'user': '', 't': 1, 'value': 1}, {'id': 'a', 'user': '', 't': 1, 'value': 2}, {'id': 'a', 'user': '', 't': 1, 'value': 2}]}, [{'user': '', 'start': 1, 'end': 1, 'first_id': 'a', 'event_ids': ['a', 'b'], 'total': 3}]), ({'gap': 3, 'events': [{'id': 'a', 'user': 'u', 't': 0, 'value': 1}], 'excluded_users': ['u']}, []), ({'gap': 0, 'events': []}, [])]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n actual=solve(data)\\n assert same(actual,expected), (original,actual,expected)\\n assert same(data,before), 'mutated input'\\nfor original in [{'gap': -1, 'events': []}, {'gap': 1, 'events': [{'id': 'a', 'user': 'u', 't': 0, 'value': 1}, {'id': 'a', 'user': 'u', 't': 1, 'value': 1}], 'excluded_users': ['u']}, {'gap': 1, 'events': [{'id': 'a', 'user': 'u', 't': False, 'value': 1}]}]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n try: solve(data)\\n except ValueError: pass\\n else: raise AssertionError(('expected ValueError',original))\\n assert same(data,before), 'failed call mutated input'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json,subprocess,sys,tempfile\\nfrom pathlib import Path\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nwith tempfile.TemporaryDirectory() as d:\\n p=Path(d); src=p/'输入 文件.json'; dst=p/'输出 文件.json'\\n src.write_text(json.dumps({'gap': 5, 'events': [{'id': 'c', 'user': 'u', 't': 11, 'value': -2}, {'id': 'b', 'user': 'u', 't': 5, 'value': 3}, {'id': 'a', 'user': 'u', 't': 0, 'value': 2}, {'id': 'd', 'user': 'v', 't': 0, 'value': 0}]},ensure_ascii=False),encoding='utf-8')\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0, result.stderr\\n assert same(json.loads(dst.read_text(encoding='utf-8-sig')), [{'user': 'u', 'start': 0, 'end': 5, 'first_id': 'a', 'event_ids': ['a', 'b'], 'total': 5}, {'user': 'u', 'start': 11, 'end': 11, 'first_id': 'c', 'event_ids': ['c'], 'total': -2}, {'user': 'v', 'start': 0, 'end': 0, 'first_id': 'd', 'event_ids': ['d'], 'total': 0}])\\n first=dst.read_bytes()\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0 and dst.read_bytes()==first, 'non-deterministic output'\\n for bad_text in ['{', json.dumps({'gap': -1, 'events': []})]:\\n  src.write_text(bad_text,encoding='utf-8')\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and dst.read_bytes()==first, 'invalid input overwrote existing output'\\n  fresh=p/'new.json'\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(fresh)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and not fresh.exists(), 'invalid input created output'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "solution.py",
+            "cli.py",
+            "__pycache__/**",
+            "**/__pycache__/**",
+            ".pytest_cache/**"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 130000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 65,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 4,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ]
+    },
+    {
+      "id": "hard_v1_json_pointer_transaction",
+      "category": "tools",
+      "fixture": "fixtures/hard-reviewed-v1/json_pointer_transaction",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "实现solve(data)：data.document任意JSON，data.operations数组，按顺序执行op为set/remove/test；每项path为JSON Pointer字符串，set/test有value。返回修改后的深拷贝，绝不修改输入。空path指根；非空必须/开头，段内~1解码/、~0解码~，其他~转义非法。\n交付只允许改solution.py、cli.py，公开verify.py和输入都不可改。solution.py暴露solve(data)。cli.py提供python cli.py INPUT_FILE OUTPUT_FILE，两个参数都是路径；读取UTF-8 JSON，调用solve，成功将结果作为JSON写OUTPUT_FILE，退出0；JSON无效或solve抛ValueError时退出非0且已有输出字节完全不变，没有旧输出则不得创建输出。重复相同输入输出字节必须稳定。测试临时文件放系统临时目录，不在仓库新增其他交付。除明确列出的错误情况外，输入字段齐全且满足给定类型，无需猜测额外规则。 本轮仅理解和检查stub，不要修改文件；等我说开始再实施。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "对象set允许新增末尾key，但中间路径必须存在；remove/test目标必须存在。数组索引只接受0或无前导零的正整数字符串；set仅替换已有索引，不插入，remove删除后后项左移；\"-\"在所有操作中非法。不能穿过标量。根set替换整个document；根remove非法。错误都抛ValueError，失败输入保持原样。 暂时只分析，不修改。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "test要求JSON类型和值严格相同，bool与整数不同；对象键顺序不影响，数组顺序影响。所有op名字需合法；空operations返回独立深拷贝。新增校验：路径/01作为对象key合法，只有当父节点是数组时禁止前导零。 现在开始完整实现，运行验证。"
+        },
+        {
+          "id": "turn4",
+          "prompt": "请检查函数与CLI是否都符合所有约定；实际验证正常与失败场景，补齐遗漏后交付。"
+        }
+      ],
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      },
+      "timeout_seconds": 900,
+      "repetitions": 1,
+      "capabilities": [
+        "tools",
+        "synthetic_challenge",
+        "multi_turn"
+      ],
+      "source": {
+        "kind": "reviewed_synthetic_dialogue",
+        "campaign": "hard-campaign-v1",
+        "split": "development",
+        "family": "json_pointer_transaction",
+        "difficulty": "challenge",
+        "exposure": "Previously executed/reviewed; exposed development or internal test, not unseen holdout.",
+        "historical_split": "retained",
+        "partition_policy": "current-round-partitions-v1"
+      },
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"from solution import solve\\nimport copy\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nfor original,expected in [({'document': {'a/b': {'~x': [1, 2]}, '01': 'old'}, 'operations': [{'op': 'set', 'path': '/a~1b/~0x/1', 'value': 3}, {'op': 'set', 'path': '/01', 'value': 'new'}, {'op': 'remove', 'path': '/a~1b/~0x/0'}]}, {'a/b': {'~x': [3]}, '01': 'new'}), ({'document': 1, 'operations': [{'op': 'set', 'path': '', 'value': {'x': False}}, {'op': 'test', 'path': '/x', 'value': False}]}, {'x': False}), ({'document': {'a': [1]}, 'operations': []}, {'a': [1]}), ({'document': {}, 'operations': [{'op': 'set', 'path': '/x', 'value': None}]}, {'x': None})]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n actual=solve(data)\\n assert same(actual,expected), (original,actual,expected)\\n assert same(data,before), 'mutated input'\\nfor original in [{'document': [1, 2], 'operations': [{'op': 'set', 'path': '/01', 'value': 3}]}, {'document': {'x': True}, 'operations': [{'op': 'test', 'path': '/x', 'value': 1}]}, {'document': {}, 'operations': [{'op': 'remove', 'path': ''}]}, {'document': {}, 'operations': [{'op': 'set', 'path': '/~2', 'value': 1}]}]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n try: solve(data)\\n except ValueError: pass\\n else: raise AssertionError(('expected ValueError',original))\\n assert same(data,before), 'failed call mutated input'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json,subprocess,sys,tempfile\\nfrom pathlib import Path\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nwith tempfile.TemporaryDirectory() as d:\\n p=Path(d); src=p/'输入 文件.json'; dst=p/'输出 文件.json'\\n src.write_text(json.dumps({'document': {'a/b': {'~x': [1, 2]}, '01': 'old'}, 'operations': [{'op': 'set', 'path': '/a~1b/~0x/1', 'value': 3}, {'op': 'set', 'path': '/01', 'value': 'new'}, {'op': 'remove', 'path': '/a~1b/~0x/0'}]},ensure_ascii=False),encoding='utf-8')\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0, result.stderr\\n assert same(json.loads(dst.read_text(encoding='utf-8-sig')), {'a/b': {'~x': [3]}, '01': 'new'})\\n first=dst.read_bytes()\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0 and dst.read_bytes()==first, 'non-deterministic output'\\n for bad_text in ['{', json.dumps({'document': [1, 2], 'operations': [{'op': 'set', 'path': '/01', 'value': 3}]})]:\\n  src.write_text(bad_text,encoding='utf-8')\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and dst.read_bytes()==first, 'invalid input overwrote existing output'\\n  fresh=p/'new.json'\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(fresh)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and not fresh.exists(), 'invalid input created output'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "solution.py",
+            "cli.py",
+            "__pycache__/**",
+            "**/__pycache__/**",
+            ".pytest_cache/**"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 130000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 65,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 4,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ]
+    },
+    {
+      "id": "hard_v1_temporal_price_join",
+      "category": "completion",
+      "fixture": "fixtures/hard-reviewed-v1/temporal_price_join",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "实现solve(data)关联订单与价格历史。data.prices数组，每项sku字符串/start非负整数/end非负整数或null/cents非负整数/priority整数；data.orders数组，每项id字符串/sku字符串/at非负整数/qty非负整数。价格区间[start,end)，end=null无限。对每个订单找包含at且sku相同的价格，按priority最大、start最大、cents最小选一个。\n交付只允许改solution.py、cli.py，公开verify.py和输入都不可改。solution.py暴露solve(data)。cli.py提供python cli.py INPUT_FILE OUTPUT_FILE，两个参数都是路径；读取UTF-8 JSON，调用solve，成功将结果作为JSON写OUTPUT_FILE，退出0；JSON无效或solve抛ValueError时退出非0且已有输出字节完全不变，没有旧输出则不得创建输出。重复相同输入输出字节必须稳定。测试临时文件放系统临时目录，不在仓库新增其他交付。除明确列出的错误情况外，输入字段齐全且满足给定类型，无需猜测额外规则。 本轮仅理解和检查stub，不要修改文件；等我说开始再实施。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "输出按order.id升序的数组，每项id/unit_cents/total_cents；无匹配两个金额都是null，qty=0且有匹配时total=0。价格重叠合法。end<=start非法；上述所有数值bool非法。订单id重复、负qty等抛ValueError。不修改输入。 暂时只分析，不修改。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "新增data.blocked_skus缺省空，对其中sku订单一律两个金额null；但仍全量验证所有订单和价格，不能因为被屏蔽而跳过坏数据。价格未被任何订单引用也要验证。 现在开始完整实现，运行验证。"
+        },
+        {
+          "id": "turn4",
+          "prompt": "请检查函数与CLI是否都符合所有约定；实际验证正常与失败场景，补齐遗漏后交付。"
+        }
+      ],
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      },
+      "timeout_seconds": 900,
+      "repetitions": 1,
+      "capabilities": [
+        "completion",
+        "synthetic_challenge",
+        "multi_turn"
+      ],
+      "source": {
+        "kind": "reviewed_synthetic_dialogue",
+        "campaign": "hard-campaign-v1",
+        "split": "test",
+        "family": "temporal_price_join",
+        "difficulty": "challenge",
+        "exposure": "Previously executed/reviewed; exposed development or internal test, not unseen holdout.",
+        "historical_split": "retained",
+        "partition_policy": "current-round-partitions-v1"
+      },
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"from solution import solve\\nimport copy\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nfor original,expected in [({'prices': [{'sku': 'x', 'start': 0, 'end': 10, 'cents': 10, 'priority': 1}, {'sku': 'x', 'start': 5, 'end': None, 'cents': 20, 'priority': 1}, {'sku': 'x', 'start': 5, 'end': 8, 'cents': 15, 'priority': 1}], 'orders': [{'id': 'b', 'sku': 'x', 'at': 10, 'qty': 2}, {'id': 'a', 'sku': 'x', 'at': 7, 'qty': 3}, {'id': 'c', 'sku': 'z', 'at': 2, 'qty': 0}]}, [{'id': 'a', 'unit_cents': 15, 'total_cents': 45}, {'id': 'b', 'unit_cents': 20, 'total_cents': 40}, {'id': 'c', 'unit_cents': None, 'total_cents': None}]), ({'prices': [{'sku': 'x', 'start': 0, 'end': None, 'cents': 0, 'priority': -2}], 'orders': [{'id': 'a', 'sku': 'x', 'at': 0, 'qty': 0}]}, [{'id': 'a', 'unit_cents': 0, 'total_cents': 0}]), ({'prices': [], 'orders': [{'id': 'a', 'sku': 'x', 'at': 0, 'qty': 2}], 'blocked_skus': ['x']}, [{'id': 'a', 'unit_cents': None, 'total_cents': None}]), ({'prices': [], 'orders': []}, [])]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n actual=solve(data)\\n assert same(actual,expected), (original,actual,expected)\\n assert same(data,before), 'mutated input'\\nfor original in [{'prices': [{'sku': 'unused', 'start': 1, 'end': 1, 'cents': 1, 'priority': 0}], 'orders': []}, {'prices': [], 'orders': [{'id': 'a', 'sku': 'x', 'at': 0, 'qty': False}]}, {'prices': [], 'orders': [{'id': 'a', 'sku': 'x', 'at': 0, 'qty': 1}, {'id': 'a', 'sku': 'x', 'at': 0, 'qty': 1}]}]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n try: solve(data)\\n except ValueError: pass\\n else: raise AssertionError(('expected ValueError',original))\\n assert same(data,before), 'failed call mutated input'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json,subprocess,sys,tempfile\\nfrom pathlib import Path\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nwith tempfile.TemporaryDirectory() as d:\\n p=Path(d); src=p/'输入 文件.json'; dst=p/'输出 文件.json'\\n src.write_text(json.dumps({'prices': [{'sku': 'x', 'start': 0, 'end': 10, 'cents': 10, 'priority': 1}, {'sku': 'x', 'start': 5, 'end': None, 'cents': 20, 'priority': 1}, {'sku': 'x', 'start': 5, 'end': 8, 'cents': 15, 'priority': 1}], 'orders': [{'id': 'b', 'sku': 'x', 'at': 10, 'qty': 2}, {'id': 'a', 'sku': 'x', 'at': 7, 'qty': 3}, {'id': 'c', 'sku': 'z', 'at': 2, 'qty': 0}]},ensure_ascii=False),encoding='utf-8')\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0, result.stderr\\n assert same(json.loads(dst.read_text(encoding='utf-8-sig')), [{'id': 'a', 'unit_cents': 15, 'total_cents': 45}, {'id': 'b', 'unit_cents': 20, 'total_cents': 40}, {'id': 'c', 'unit_cents': None, 'total_cents': None}])\\n first=dst.read_bytes()\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0 and dst.read_bytes()==first, 'non-deterministic output'\\n for bad_text in ['{', json.dumps({'prices': [{'sku': 'unused', 'start': 1, 'end': 1, 'cents': 1, 'priority': 0}], 'orders': []})]:\\n  src.write_text(bad_text,encoding='utf-8')\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and dst.read_bytes()==first, 'invalid input overwrote existing output'\\n  fresh=p/'new.json'\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(fresh)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and not fresh.exists(), 'invalid input created output'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "solution.py",
+            "cli.py",
+            "__pycache__/**",
+            "**/__pycache__/**",
+            ".pytest_cache/**"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 130000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 65,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 4,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ]
+    },
+    {
+      "id": "hard_v1_csv_formula_export",
+      "category": "tools",
+      "fixture": "fixtures/hard-reviewed-v1/csv_formula_export",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "实现solve(data)返回CSV字符串。data.rows每项id字符串/note字符串/amount_cents真整数，id必须唯一。表头固定id,note,amount，按id的Unicode字典序输出，金额用精确两位小数字符串（负金额合法），不使用浮点。CSV逗号分隔、双引号引用，字段有逗号/双引号/CR/LF才加引号，字段双引号双写。每行CRLF且末尾也有CRLF。\n交付只允许改solution.py、cli.py，公开verify.py和输入都不可改。solution.py暴露solve(data)。cli.py提供python cli.py INPUT_FILE OUTPUT_FILE，两个参数都是路径；读取UTF-8 JSON，调用solve，成功将结果作为JSON写OUTPUT_FILE，退出0；JSON无效或solve抛ValueError时退出非0且已有输出字节完全不变，没有旧输出则不得创建输出。重复相同输入输出字节必须稳定。测试临时文件放系统临时目录，不在仓库新增其他交付。除明确列出的错误情况外，输入字段齐全且满足给定类型，无需猜测额外规则。 本轮仅理解和检查stub，不要修改文件；等我说开始再实施。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "CSV导出防公式：id和note以 =、+、-、@ 中任一字符开头时，前置单引号；只检查原始首字符，不去除空格，已有单引号不再加。amount列属于可信数字，不加防公式单引号。Unicode、空字符串、多行note都保留原样。 暂时只分析，不修改。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "新增data.omit_ids数组缺省空：验证所有行后去掉这些id，再排序。重复id及amount_cents为bool/非整数均ValueError，即使该行被omit。空结果仍输出表头。不得修改输入。 现在开始完整实现，运行验证。"
+        },
+        {
+          "id": "turn4",
+          "prompt": "请检查函数与CLI是否都符合所有约定；实际验证正常与失败场景，补齐遗漏后交付。"
+        }
+      ],
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      },
+      "timeout_seconds": 900,
+      "repetitions": 1,
+      "capabilities": [
+        "tools",
+        "synthetic_challenge",
+        "multi_turn"
+      ],
+      "source": {
+        "kind": "reviewed_synthetic_dialogue",
+        "campaign": "hard-campaign-v1",
+        "split": "test",
+        "family": "csv_formula_export",
+        "difficulty": "challenge",
+        "exposure": "assigned before first model execution"
+      },
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c','from solution import solve\\nimport copy\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nfor original,expected in [({\\'rows\\': [{\\'id\\': \\'b\\', \\'note\\': \\'a,b\\', \\'amount_cents\\': -1}, {\\'id\\': \\'=a\\', \\'note\\': \\'@x\\', \\'amount_cents\\': 105}]}, \\'id,note,amount\\\\r\\\\n\\\\\\'=a,\\\\\\'@x,1.05\\\\r\\\\nb,\"a,b\",-0.01\\\\r\\\\n\\'), ({\\'rows\\': [{\\'id\\': \\'a\\', \\'note\\': \\'x\\\\n\"y\"\\', \\'amount_cents\\': 0}]}, \\'id,note,amount\\\\r\\\\na,\"x\\\\n\"\"y\"\"\",0.00\\\\r\\\\n\\'), ({\\'rows\\': [{\\'id\\': \\'a\\', \\'note\\': \\' =not_formula\\', \\'amount_cents\\': 100}], \\'omit_ids\\': [\\'a\\']}, \\'id,note,amount\\\\r\\\\n\\'), ({\\'rows\\': []}, \\'id,note,amount\\\\r\\\\n\\')]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n actual=solve(data)\\n assert same(actual,expected), (original,actual,expected)\\n assert same(data,before), \\'mutated input\\'\\nfor original in [{\\'rows\\': [{\\'id\\': \\'a\\', \\'note\\': \\'\\', \\'amount_cents\\': True}]}, {\\'rows\\': [{\\'id\\': \\'a\\', \\'note\\': \\'\\', \\'amount_cents\\': 1}, {\\'id\\': \\'a\\', \\'note\\': \\'\\', \\'amount_cents\\': 1}], \\'omit_ids\\': [\\'a\\']}]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n try: solve(data)\\n except ValueError: pass\\n else: raise AssertionError((\\'expected ValueError\\',original))\\n assert same(data,before), \\'failed call mutated input\\'\\n']; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c','import json,subprocess,sys,tempfile\\nfrom pathlib import Path\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nwith tempfile.TemporaryDirectory() as d:\\n p=Path(d); src=p/\\'输入 文件.json\\'; dst=p/\\'输出 文件.json\\'\\n src.write_text(json.dumps({\\'rows\\': [{\\'id\\': \\'b\\', \\'note\\': \\'a,b\\', \\'amount_cents\\': -1}, {\\'id\\': \\'=a\\', \\'note\\': \\'@x\\', \\'amount_cents\\': 105}]},ensure_ascii=False),encoding=\\'utf-8\\')\\n result=subprocess.run([sys.executable,\\'cli.py\\',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0, result.stderr\\n assert same(json.loads(dst.read_text(encoding=\\'utf-8-sig\\')), \\'id,note,amount\\\\r\\\\n\\\\\\'=a,\\\\\\'@x,1.05\\\\r\\\\nb,\"a,b\",-0.01\\\\r\\\\n\\')\\n first=dst.read_bytes()\\n result=subprocess.run([sys.executable,\\'cli.py\\',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0 and dst.read_bytes()==first, \\'non-deterministic output\\'\\n for bad_text in [\\'{\\', json.dumps({\\'rows\\': [{\\'id\\': \\'a\\', \\'note\\': \\'\\', \\'amount_cents\\': True}]})]:\\n  src.write_text(bad_text,encoding=\\'utf-8\\')\\n  result=subprocess.run([sys.executable,\\'cli.py\\',str(src),str(dst)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and dst.read_bytes()==first, \\'invalid input overwrote existing output\\'\\n  fresh=p/\\'new.json\\'\\n  result=subprocess.run([sys.executable,\\'cli.py\\',str(src),str(fresh)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and not fresh.exists(), \\'invalid input created output\\'\\n']; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "solution.py",
+            "cli.py",
+            "__pycache__/**",
+            "**/__pycache__/**",
+            ".pytest_cache/**"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 130000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 65,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 4,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ]
+    },
+    {
+      "id": "hard_v1_cursor_page_contract",
+      "category": "completion",
+      "fixture": "fixtures/hard-reviewed-v1/cursor_page_contract",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "实现solve(data)稳定分页。data.records每项id唯一字符串/score整数/visible布尔；data.limit为正整数；data.after缺省null或对象score/id。只对visible=true记录按score降序再id升序排列，返回对象items（原记录的独立拷贝数组）、next（下一页游标或null）、has_more布尔。\n交付只允许改solution.py、cli.py，公开verify.py和输入都不可改。solution.py暴露solve(data)。cli.py提供python cli.py INPUT_FILE OUTPUT_FILE，两个参数都是路径；读取UTF-8 JSON，调用solve，成功将结果作为JSON写OUTPUT_FILE，退出0；JSON无效或solve抛ValueError时退出非0且已有输出字节完全不变，没有旧输出则不得创建输出。重复相同输入输出字节必须稳定。测试临时文件放系统临时目录，不在仓库新增其他交付。除明确列出的错误情况外，输入字段齐全且满足给定类型，无需猜测额外规则。 本轮仅理解和检查stub，不要修改文件；等我说开始再实施。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "after表示已消费的排序位置，即使这条记录已经被删除也仍按比较关系跳过它及之前记录；不能按数组查找游标。limit之外还有合资格记录时has_more才true，next是本页最后记录的score/id；无更多时next为null。空结果items=[]、has_more=false、next=null。 暂时只分析，不修改。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "最终规则：data.excluded_ids缺省空，先全量验证id唯一、score真整数（bool非法）、visible严格bool，再按visible和excluded过滤。limit也必须正真整数。after.score真整数、after.id字符串；不修改输入，未知record扩展字段保留。 现在开始完整实现，运行验证。"
+        },
+        {
+          "id": "turn4",
+          "prompt": "请检查函数与CLI是否都符合所有约定；实际验证正常与失败场景，补齐遗漏后交付。"
+        }
+      ],
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      },
+      "timeout_seconds": 900,
+      "repetitions": 1,
+      "capabilities": [
+        "completion",
+        "synthetic_challenge",
+        "multi_turn"
+      ],
+      "source": {
+        "kind": "reviewed_synthetic_dialogue",
+        "campaign": "hard-campaign-v1",
+        "split": "test",
+        "family": "cursor_page_contract",
+        "difficulty": "challenge",
+        "exposure": "assigned before first model execution"
+      },
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"from solution import solve\\nimport copy\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nfor original,expected in [({'records': [{'id': 'b', 'score': 10, 'visible': True, 'extra': 0}, {'id': 'a', 'score': 10, 'visible': True}, {'id': 'c', 'score': 9, 'visible': True}], 'limit': 1}, {'items': [{'id': 'a', 'score': 10, 'visible': True}], 'next': {'score': 10, 'id': 'a'}, 'has_more': True}), ({'records': [{'id': 'a', 'score': 10, 'visible': True}, {'id': 'c', 'score': 9, 'visible': True}], 'after': {'score': 10, 'id': 'b'}, 'limit': 2}, {'items': [{'id': 'c', 'score': 9, 'visible': True}], 'next': None, 'has_more': False}), ({'records': [{'id': 'a', 'score': 0, 'visible': False}, {'id': 'b', 'score': -1, 'visible': True}], 'limit': 1, 'excluded_ids': ['b']}, {'items': [], 'next': None, 'has_more': False}), ({'records': [], 'limit': 1}, {'items': [], 'next': None, 'has_more': False})]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n actual=solve(data)\\n assert same(actual,expected), (original,actual,expected)\\n assert same(data,before), 'mutated input'\\nfor original in [{'records': [], 'limit': True}, {'records': [{'id': 'a', 'score': True, 'visible': True}], 'limit': 1}, {'records': [{'id': 'a', 'score': 1, 'visible': False}, {'id': 'a', 'score': 1, 'visible': False}], 'limit': 1}]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n try: solve(data)\\n except ValueError: pass\\n else: raise AssertionError(('expected ValueError',original))\\n assert same(data,before), 'failed call mutated input'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json,subprocess,sys,tempfile\\nfrom pathlib import Path\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nwith tempfile.TemporaryDirectory() as d:\\n p=Path(d); src=p/'输入 文件.json'; dst=p/'输出 文件.json'\\n src.write_text(json.dumps({'records': [{'id': 'b', 'score': 10, 'visible': True, 'extra': 0}, {'id': 'a', 'score': 10, 'visible': True}, {'id': 'c', 'score': 9, 'visible': True}], 'limit': 1},ensure_ascii=False),encoding='utf-8')\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0, result.stderr\\n assert same(json.loads(dst.read_text(encoding='utf-8-sig')), {'items': [{'id': 'a', 'score': 10, 'visible': True}], 'next': {'score': 10, 'id': 'a'}, 'has_more': True})\\n first=dst.read_bytes()\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0 and dst.read_bytes()==first, 'non-deterministic output'\\n for bad_text in ['{', json.dumps({'records': [], 'limit': True})]:\\n  src.write_text(bad_text,encoding='utf-8')\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and dst.read_bytes()==first, 'invalid input overwrote existing output'\\n  fresh=p/'new.json'\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(fresh)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and not fresh.exists(), 'invalid input created output'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "solution.py",
+            "cli.py",
+            "__pycache__/**",
+            "**/__pycache__/**",
+            ".pytest_cache/**"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 130000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 65,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 4,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ]
+    },
+    {
+      "id": "hard_v1_dependency_waves",
+      "category": "tools",
+      "fixture": "fixtures/hard-reviewed-v1/dependency_waves",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "solve(data)制定执行批次。data.nodes为job_id到依赖id数组的对象，requested为目标id数组，batch_size为正真整数。只处理requested的依赖闭包，重复目标和重复依赖去重；闭包中的未知节点或环抛ValueError。闭包外无关环不报错。\n交付只允许改solution.py、cli.py，公开verify.py和输入都不可改。solution.py暴露solve(data)。cli.py提供python cli.py INPUT_FILE OUTPUT_FILE，两个参数都是路径；读取UTF-8 JSON，调用solve，成功将结果作为JSON写OUTPUT_FILE，退出0；JSON无效或solve抛ValueError时退出非0且已有输出字节完全不变，没有旧输出则不得创建输出。重复相同输入输出字节必须稳定。测试临时文件放系统临时目录，不在仓库新增其他交付。除明确列出的错误情况外，输入字段齐全且满足给定类型，无需猜测额外规则。 本轮仅理解和检查stub，不要修改文件；等我说开始再实施。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "每轮从未执行节点中找全部依赖已在前面轮次完成的就绪节点，按字典序取最多batch_size个作为本轮；同一轮不能执行依赖本轮其他节点的job。返回对象batches（轮次数组）、order（展平batches），不能修改输入。空requested得到两个空数组。 暂时只分析，不修改。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "新增data.disabled数组，缺省空：闭包含disabled节点就ValueError，不能悄悄跳过它或只过滤最终结果；闭包外disabled忽略。batch_size<=0或bool非法。 现在开始完整实现，运行验证。"
+        },
+        {
+          "id": "turn4",
+          "prompt": "请检查函数与CLI是否都符合所有约定；实际验证正常与失败场景，补齐遗漏后交付。"
+        }
+      ],
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      },
+      "timeout_seconds": 900,
+      "repetitions": 1,
+      "capabilities": [
+        "tools",
+        "synthetic_challenge",
+        "multi_turn"
+      ],
+      "source": {
+        "kind": "reviewed_synthetic_dialogue",
+        "campaign": "hard-campaign-v1",
+        "split": "development",
+        "family": "dependency_waves",
+        "difficulty": "challenge",
+        "exposure": "assigned before first model execution"
+      },
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"from solution import solve\\nimport copy\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nfor original,expected in [({'nodes': {'api': ['db', 'cache'], 'worker': ['db'], 'db': [], 'cache': ['db']}, 'requested': ['api', 'worker'], 'batch_size': 2}, {'batches': [['db'], ['cache', 'worker'], ['api']], 'order': ['db', 'cache', 'worker', 'api']}), ({'nodes': {'b': [], 'a': [], 'z': ['z']}, 'requested': ['b', 'a', 'a'], 'batch_size': 1}, {'batches': [['a'], ['b']], 'order': ['a', 'b']}), ({'nodes': {}, 'requested': [], 'batch_size': 2}, {'batches': [], 'order': []})]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n actual=solve(data)\\n assert same(actual,expected), (original,actual,expected)\\n assert same(data,before), 'mutated input'\\nfor original in [{'nodes': {'a': ['b']}, 'requested': ['a'], 'batch_size': 1}, {'nodes': {'a': ['a']}, 'requested': ['a'], 'batch_size': 1}, {'nodes': {'a': []}, 'requested': ['a'], 'batch_size': 1, 'disabled': ['a']}, {'nodes': {}, 'requested': [], 'batch_size': True}]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n try: solve(data)\\n except ValueError: pass\\n else: raise AssertionError(('expected ValueError',original))\\n assert same(data,before), 'failed call mutated input'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json,subprocess,sys,tempfile\\nfrom pathlib import Path\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nwith tempfile.TemporaryDirectory() as d:\\n p=Path(d); src=p/'输入 文件.json'; dst=p/'输出 文件.json'\\n src.write_text(json.dumps({'nodes': {'api': ['db', 'cache'], 'worker': ['db'], 'db': [], 'cache': ['db']}, 'requested': ['api', 'worker'], 'batch_size': 2},ensure_ascii=False),encoding='utf-8')\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0, result.stderr\\n assert same(json.loads(dst.read_text(encoding='utf-8-sig')), {'batches': [['db'], ['cache', 'worker'], ['api']], 'order': ['db', 'cache', 'worker', 'api']})\\n first=dst.read_bytes()\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0 and dst.read_bytes()==first, 'non-deterministic output'\\n for bad_text in ['{', json.dumps({'nodes': {'a': ['b']}, 'requested': ['a'], 'batch_size': 1})]:\\n  src.write_text(bad_text,encoding='utf-8')\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and dst.read_bytes()==first, 'invalid input overwrote existing output'\\n  fresh=p/'new.json'\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(fresh)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and not fresh.exists(), 'invalid input created output'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "solution.py",
+            "cli.py",
+            "__pycache__/**",
+            "**/__pycache__/**",
+            ".pytest_cache/**"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 130000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 65,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 4,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ]
+    },
+    {
+      "id": "hard_v1_event_idempotency",
+      "category": "completion",
+      "fixture": "fixtures/hard-reviewed-v1/event_idempotency",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "solve(data)重放事件。initial为JSON对象，events数组每项seq为从1开始的真整数、event_id字符串、op=set/delete、key字符串，set另有value。按seq升序执行；set替换key的完整值，delete删除不存在key也成功；返回state、last_seq、event_ids（按已处理seq顺序）。\n交付只允许改solution.py、cli.py，公开verify.py和输入都不可改。solution.py暴露solve(data)。cli.py提供python cli.py INPUT_FILE OUTPUT_FILE，两个参数都是路径；读取UTF-8 JSON，调用solve，成功将结果作为JSON写OUTPUT_FILE，退出0；JSON无效或solve抛ValueError时退出非0且已有输出字节完全不变，没有旧输出则不得创建输出。重复相同输入输出字节必须稳定。测试临时文件放系统临时目录，不在仓库新增其他交付。除明确列出的错误情况外，输入字段齐全且满足给定类型，无需猜测额外规则。 本轮仅理解和检查stub，不要修改文件；等我说开始再实施。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "相同event_id且全部字段完全一致的重复回调只算一次；相同id内容不同、两个不同id占同seq、去重后seq不从1连续、未知op、seq非正整数或bool全部ValueError。空events保留initial、last_seq=0、event_ids=[]。不得修改任何输入对象。 暂时只分析，不修改。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "补充：data.ignore_keys缺省空，列出的key仍验证并消费seq和event_id，只是不应用状态变更；不能先过滤事件而造成序号间隙。忽略不存在key合法，结果必须是新对象。 现在开始完整实现，运行验证。"
+        },
+        {
+          "id": "turn4",
+          "prompt": "请检查函数与CLI是否都符合所有约定；实际验证正常与失败场景，补齐遗漏后交付。"
+        }
+      ],
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      },
+      "timeout_seconds": 900,
+      "repetitions": 1,
+      "capabilities": [
+        "completion",
+        "synthetic_challenge",
+        "multi_turn"
+      ],
+      "source": {
+        "kind": "reviewed_synthetic_dialogue",
+        "campaign": "hard-campaign-v1",
+        "split": "development",
+        "family": "event_idempotency",
+        "difficulty": "challenge",
+        "exposure": "assigned before first model execution"
+      },
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"from solution import solve\\nimport copy\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nfor original,expected in [({'initial': {'a': 0}, 'events': [{'seq': 2, 'event_id': 'b', 'op': 'set', 'key': 'a', 'value': 2}, {'seq': 1, 'event_id': 'a', 'op': 'set', 'key': 'a', 'value': 1}]}, {'state': {'a': 2}, 'last_seq': 2, 'event_ids': ['a', 'b']}), ({'initial': {}, 'events': [{'seq': 1, 'event_id': 'x', 'op': 'delete', 'key': 'z'}, {'seq': 1, 'event_id': 'x', 'op': 'delete', 'key': 'z'}]}, {'state': {}, 'last_seq': 1, 'event_ids': ['x']}), ({'initial': {'a': 0}, 'events': [{'seq': 1, 'event_id': 'x', 'op': 'set', 'key': 'a', 'value': False}], 'ignore_keys': ['a']}, {'state': {'a': 0}, 'last_seq': 1, 'event_ids': ['x']}), ({'initial': {}, 'events': []}, {'state': {}, 'last_seq': 0, 'event_ids': []})]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n actual=solve(data)\\n assert same(actual,expected), (original,actual,expected)\\n assert same(data,before), 'mutated input'\\nfor original in [{'initial': {}, 'events': [{'seq': 2, 'event_id': 'x', 'op': 'delete', 'key': 'a'}]}, {'initial': {}, 'events': [{'seq': True, 'event_id': 'x', 'op': 'delete', 'key': 'a'}]}, {'initial': {}, 'events': [{'seq': 1, 'event_id': 'x', 'op': 'delete', 'key': 'a'}, {'seq': 1, 'event_id': 'x', 'op': 'delete', 'key': 'b'}]}]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n try: solve(data)\\n except ValueError: pass\\n else: raise AssertionError(('expected ValueError',original))\\n assert same(data,before), 'failed call mutated input'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json,subprocess,sys,tempfile\\nfrom pathlib import Path\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nwith tempfile.TemporaryDirectory() as d:\\n p=Path(d); src=p/'输入 文件.json'; dst=p/'输出 文件.json'\\n src.write_text(json.dumps({'initial': {'a': 0}, 'events': [{'seq': 2, 'event_id': 'b', 'op': 'set', 'key': 'a', 'value': 2}, {'seq': 1, 'event_id': 'a', 'op': 'set', 'key': 'a', 'value': 1}]},ensure_ascii=False),encoding='utf-8')\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0, result.stderr\\n assert same(json.loads(dst.read_text(encoding='utf-8-sig')), {'state': {'a': 2}, 'last_seq': 2, 'event_ids': ['a', 'b']})\\n first=dst.read_bytes()\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0 and dst.read_bytes()==first, 'non-deterministic output'\\n for bad_text in ['{', json.dumps({'initial': {}, 'events': [{'seq': 2, 'event_id': 'x', 'op': 'delete', 'key': 'a'}]})]:\\n  src.write_text(bad_text,encoding='utf-8')\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and dst.read_bytes()==first, 'invalid input overwrote existing output'\\n  fresh=p/'new.json'\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(fresh)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and not fresh.exists(), 'invalid input created output'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "solution.py",
+            "cli.py",
+            "__pycache__/**",
+            "**/__pycache__/**",
+            ".pytest_cache/**"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 130000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 65,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 4,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ]
+    },
+    {
+      "id": "hard_v1_largest_remainder_caps",
+      "category": "tools",
+      "fixture": "fixtures/hard-reviewed-v1/largest_remainder_caps",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "solve(data)按权重分账，amount为非负真整数分，participants数组每项id唯一字符串/weight正真整数。先向下取整amount*weight/权重和；剩余分按小数余数从大到小逐个分配，余数相同按输入数组顺序。输出id到整数分的对象，不修改输入；非空参与人且amount=0全部0。\n交付只允许改solution.py、cli.py，公开verify.py和输入都不可改。solution.py暴露solve(data)。cli.py提供python cli.py INPUT_FILE OUTPUT_FILE，两个参数都是路径；读取UTF-8 JSON，调用solve，成功将结果作为JSON写OUTPUT_FILE，退出0；JSON无效或solve抛ValueError时退出非0且已有输出字节完全不变，没有旧输出则不得创建输出。重复相同输入输出字节必须稳定。测试临时文件放系统临时目录，不在仓库新增其他交付。除明确列出的错误情况外，输入字段齐全且满足给定类型，无需猜测额外规则。 本轮仅理解和检查stub，不要修改文件；等我说开始再实施。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "amount和weight的bool非法；空participants、重复id、负amount、非正weight抛ValueError。必须整数运算以支持超大金额，不允许通过浮点近似。 暂时只分析，不修改。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "新需求data.excluded_ids缺省空：先验证完整participants，再排除这些id，只在剩余参与人间分配；输出也只含剩余id，全部被排除抛ValueError。未知排除id忽略，分配后总额严格等于amount。 现在开始完整实现，运行验证。"
+        },
+        {
+          "id": "turn4",
+          "prompt": "请检查函数与CLI是否都符合所有约定；实际验证正常与失败场景，补齐遗漏后交付。"
+        }
+      ],
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      },
+      "timeout_seconds": 900,
+      "repetitions": 1,
+      "capabilities": [
+        "tools",
+        "synthetic_challenge",
+        "multi_turn"
+      ],
+      "source": {
+        "kind": "reviewed_synthetic_dialogue",
+        "campaign": "hard-campaign-v1",
+        "split": "test",
+        "family": "largest_remainder_caps",
+        "difficulty": "challenge",
+        "exposure": "Previously executed/reviewed; exposed development or internal test, not unseen holdout.",
+        "historical_split": "retained",
+        "partition_policy": "current-round-partitions-v1"
+      },
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"from solution import solve\\nimport copy\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nfor original,expected in [({'amount': 101, 'participants': [{'id': 'a', 'weight': 1}, {'id': 'b', 'weight': 2}]}, {'a': 34, 'b': 67}), ({'amount': 2, 'participants': [{'id': 'z', 'weight': 1}, {'id': 'a', 'weight': 1}, {'id': 'b', 'weight': 1}]}, {'z': 1, 'a': 1, 'b': 0}), ({'amount': 7, 'participants': [{'id': 'a', 'weight': 1}, {'id': 'b', 'weight': 3}], 'excluded_ids': ['a']}, {'b': 7}), ({'amount': 0, 'participants': [{'id': 'a', 'weight': 1}]}, {'a': 0}), ({'amount': 100000000000000000001, 'participants': [{'id': 'a', 'weight': 1}, {'id': 'b', 'weight': 1}]}, {'a': 50000000000000000001, 'b': 50000000000000000000})]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n actual=solve(data)\\n assert same(actual,expected), (original,actual,expected)\\n assert same(data,before), 'mutated input'\\nfor original in [{'amount': 1, 'participants': []}, {'amount': 1, 'participants': [{'id': 'a', 'weight': True}]}, {'amount': 1, 'participants': [{'id': 'a', 'weight': 1}], 'excluded_ids': ['a']}]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n try: solve(data)\\n except ValueError: pass\\n else: raise AssertionError(('expected ValueError',original))\\n assert same(data,before), 'failed call mutated input'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json,subprocess,sys,tempfile\\nfrom pathlib import Path\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nwith tempfile.TemporaryDirectory() as d:\\n p=Path(d); src=p/'输入 文件.json'; dst=p/'输出 文件.json'\\n src.write_text(json.dumps({'amount': 101, 'participants': [{'id': 'a', 'weight': 1}, {'id': 'b', 'weight': 2}]},ensure_ascii=False),encoding='utf-8')\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0, result.stderr\\n assert same(json.loads(dst.read_text(encoding='utf-8-sig')), {'a': 34, 'b': 67})\\n first=dst.read_bytes()\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0 and dst.read_bytes()==first, 'non-deterministic output'\\n for bad_text in ['{', json.dumps({'amount': 1, 'participants': []})]:\\n  src.write_text(bad_text,encoding='utf-8')\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and dst.read_bytes()==first, 'invalid input overwrote existing output'\\n  fresh=p/'new.json'\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(fresh)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and not fresh.exists(), 'invalid input created output'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "solution.py",
+            "cli.py",
+            "__pycache__/**",
+            "**/__pycache__/**",
+            ".pytest_cache/**"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 130000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 65,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 4,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ]
+    },
+    {
+      "id": "hard_v1_schema_collision_migration",
+      "category": "completion",
+      "fixture": "fixtures/hard-reviewed-v1/schema_collision_migration",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "solve(data)迁移schema。顶层必须schema=1真整数；递归处理所有对象与数组，name改为display_name，email改为contact。email=null变\"unknown\"，email缺失则不凭空添加contact；字符串/数字/null/布尔值和未声明字段原样保留。最终仅顶层schema改为2，嵌套schema值不改。\n交付只允许改solution.py、cli.py，公开verify.py和输入都不可改。solution.py暴露solve(data)。cli.py提供python cli.py INPUT_FILE OUTPUT_FILE，两个参数都是路径；读取UTF-8 JSON，调用solve，成功将结果作为JSON写OUTPUT_FILE，退出0；JSON无效或solve抛ValueError时退出非0且已有输出字节完全不变，没有旧输出则不得创建输出。重复相同输入输出字节必须稳定。测试临时文件放系统临时目录，不在仓库新增其他交付。除明确列出的错误情况外，输入字段齐全且满足给定类型，无需猜测额外规则。 本轮仅理解和检查stub，不要修改文件；等我说开始再实施。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "若同对象同时存在name和display_name，两者值相同则移除name保留display_name，不同抛ValueError；email与contact按转换后的email值比较，同值则只保留contact，不同抛ValueError。对象嵌套递归，数组顺序不变，任何失败不修改输入。 暂时只分析，不修改。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "追加data顶层的skip_keys数组只作为迁移配置，最终输出保留它。遇到任意对象中列出的key，其整个value子树原样深拷贝，不做改名或碰撞检查；key本身也不改名。其余递归规则不变，顶层schema仍强制改2。 现在开始完整实现，运行验证。"
+        },
+        {
+          "id": "turn4",
+          "prompt": "请检查函数与CLI是否都符合所有约定；实际验证正常与失败场景，补齐遗漏后交付。"
+        }
+      ],
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      },
+      "timeout_seconds": 900,
+      "repetitions": 1,
+      "capabilities": [
+        "completion",
+        "synthetic_challenge",
+        "multi_turn"
+      ],
+      "source": {
+        "kind": "reviewed_synthetic_dialogue",
+        "campaign": "hard-campaign-v1",
+        "split": "development",
+        "family": "schema_collision_migration",
+        "difficulty": "challenge",
+        "exposure": "Previously executed/reviewed; exposed development or internal test, not unseen holdout.",
+        "historical_split": "retained",
+        "partition_policy": "current-round-partitions-v1"
+      },
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"from solution import solve\\nimport copy\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nfor original,expected in [({'schema': 1, 'users': [{'name': 'A', 'email': None, 'meta': {'name': 'N'}}, {'profile': {'email': 'b@x'}}]}, {'schema': 2, 'users': [{'display_name': 'A', 'contact': 'unknown', 'meta': {'display_name': 'N'}}, {'profile': {'contact': 'b@x'}}]}), ({'schema': 1, 'name': 'a', 'display_name': 'a', 'email': None, 'contact': 'unknown'}, {'schema': 2, 'display_name': 'a', 'contact': 'unknown'}), ({'schema': 1, 'skip_keys': ['raw'], 'raw': {'name': 'x', 'display_name': 'y'}, 'inside': {'schema': 1, 'name': 'z'}}, {'schema': 2, 'skip_keys': ['raw'], 'raw': {'name': 'x', 'display_name': 'y'}, 'inside': {'schema': 1, 'display_name': 'z'}}), ({'schema': 1}, {'schema': 2})]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n actual=solve(data)\\n assert same(actual,expected), (original,actual,expected)\\n assert same(data,before), 'mutated input'\\nfor original in [{'schema': True}, {'schema': 1, 'name': 'a', 'display_name': 'b'}, {'schema': 1, 'arr': [{'email': None, 'contact': 'x'}]}]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n try: solve(data)\\n except ValueError: pass\\n else: raise AssertionError(('expected ValueError',original))\\n assert same(data,before), 'failed call mutated input'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json,subprocess,sys,tempfile\\nfrom pathlib import Path\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nwith tempfile.TemporaryDirectory() as d:\\n p=Path(d); src=p/'输入 文件.json'; dst=p/'输出 文件.json'\\n src.write_text(json.dumps({'schema': 1, 'users': [{'name': 'A', 'email': None, 'meta': {'name': 'N'}}, {'profile': {'email': 'b@x'}}]},ensure_ascii=False),encoding='utf-8')\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0, result.stderr\\n assert same(json.loads(dst.read_text(encoding='utf-8-sig')), {'schema': 2, 'users': [{'display_name': 'A', 'contact': 'unknown', 'meta': {'display_name': 'N'}}, {'profile': {'contact': 'b@x'}}]})\\n first=dst.read_bytes()\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0 and dst.read_bytes()==first, 'non-deterministic output'\\n for bad_text in ['{', json.dumps({'schema': True})]:\\n  src.write_text(bad_text,encoding='utf-8')\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and dst.read_bytes()==first, 'invalid input overwrote existing output'\\n  fresh=p/'new.json'\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(fresh)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and not fresh.exists(), 'invalid input created output'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "solution.py",
+            "cli.py",
+            "__pycache__/**",
+            "**/__pycache__/**",
+            ".pytest_cache/**"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 130000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 65,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 4,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ]
+    },
+    {
+      "id": "hard_v1_reservation_compensation",
+      "category": "tools",
+      "fixture": "fixtures/hard-reviewed-v1/reservation_compensation",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "solve(data)模拟库存事务。stock对象sku->非负真整数，requests有request_id唯一字符串/sku字符串/qty正真整数。按输入顺序处理，在工作副本上扣库存，任何请求未知SKU、库存不足、重复request_id、非法qty全部ValueError，原输入必须毫无变化。输出stock（剩余对象）、allocations（原请求顺序的独立对象拷贝）。\n交付只允许改solution.py、cli.py，公开verify.py和输入都不可改。solution.py暴露solve(data)。cli.py提供python cli.py INPUT_FILE OUTPUT_FILE，两个参数都是路径；读取UTF-8 JSON，调用solve，成功将结果作为JSON写OUTPUT_FILE，退出0；JSON无效或solve抛ValueError时退出非0且已有输出字节完全不变，没有旧输出则不得创建输出。重复相同输入输出字节必须稳定。测试临时文件放系统临时目录，不在仓库新增其他交付。除明确列出的错误情况外，输入字段齐全且满足给定类型，无需猜测额外规则。 本轮仅理解和检查stub，不要修改文件；等我说开始再实施。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "空requests合法；stock中的bool或负数同样非法。失败不能返回部分成功。任何检查不能改变调用方的stock或requests，返回对象也不能与输入共享可变子对象。 暂时只分析，不修改。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "增加data.cancelled_ids缺省空：这些request仍要验证id唯一、sku存在、qty合法，但不占库存也不出现在allocations；取消项qty大于库存不算不足。未知取消id忽略。其余请求按原相对顺序处理。 现在开始完整实现，运行验证。"
+        },
+        {
+          "id": "turn4",
+          "prompt": "请检查函数与CLI是否都符合所有约定；实际验证正常与失败场景，补齐遗漏后交付。"
+        }
+      ],
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      },
+      "timeout_seconds": 900,
+      "repetitions": 1,
+      "capabilities": [
+        "tools",
+        "synthetic_challenge",
+        "multi_turn"
+      ],
+      "source": {
+        "kind": "reviewed_synthetic_dialogue",
+        "campaign": "hard-campaign-v1",
+        "split": "test",
+        "family": "reservation_compensation",
+        "difficulty": "challenge",
+        "exposure": "assigned before first model execution"
+      },
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"from solution import solve\\nimport copy\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nfor original,expected in [({'stock': {'A': 4, 'B': 2}, 'requests': [{'request_id': 'x', 'sku': 'A', 'qty': 3}, {'request_id': 'y', 'sku': 'B', 'qty': 1}]}, {'stock': {'A': 1, 'B': 1}, 'allocations': [{'request_id': 'x', 'sku': 'A', 'qty': 3}, {'request_id': 'y', 'sku': 'B', 'qty': 1}]}), ({'stock': {'A': 1}, 'requests': [{'request_id': 'x', 'sku': 'A', 'qty': 99}, {'request_id': 'y', 'sku': 'A', 'qty': 1}], 'cancelled_ids': ['x']}, {'stock': {'A': 0}, 'allocations': [{'request_id': 'y', 'sku': 'A', 'qty': 1}]}), ({'stock': {}, 'requests': []}, {'stock': {}, 'allocations': []})]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n actual=solve(data)\\n assert same(actual,expected), (original,actual,expected)\\n assert same(data,before), 'mutated input'\\nfor original in [{'stock': {'A': 1}, 'requests': [{'request_id': 'x', 'sku': 'A', 'qty': 1}, {'request_id': 'y', 'sku': 'A', 'qty': 1}]}, {'stock': {'A': True}, 'requests': []}, {'stock': {'A': 1}, 'requests': [{'request_id': 'x', 'sku': 'Z', 'qty': 1}], 'cancelled_ids': ['x']}]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n try: solve(data)\\n except ValueError: pass\\n else: raise AssertionError(('expected ValueError',original))\\n assert same(data,before), 'failed call mutated input'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json,subprocess,sys,tempfile\\nfrom pathlib import Path\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nwith tempfile.TemporaryDirectory() as d:\\n p=Path(d); src=p/'输入 文件.json'; dst=p/'输出 文件.json'\\n src.write_text(json.dumps({'stock': {'A': 4, 'B': 2}, 'requests': [{'request_id': 'x', 'sku': 'A', 'qty': 3}, {'request_id': 'y', 'sku': 'B', 'qty': 1}]},ensure_ascii=False),encoding='utf-8')\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0, result.stderr\\n assert same(json.loads(dst.read_text(encoding='utf-8-sig')), {'stock': {'A': 1, 'B': 1}, 'allocations': [{'request_id': 'x', 'sku': 'A', 'qty': 3}, {'request_id': 'y', 'sku': 'B', 'qty': 1}]})\\n first=dst.read_bytes()\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0 and dst.read_bytes()==first, 'non-deterministic output'\\n for bad_text in ['{', json.dumps({'stock': {'A': 1}, 'requests': [{'request_id': 'x', 'sku': 'A', 'qty': 1}, {'request_id': 'y', 'sku': 'A', 'qty': 1}]})]:\\n  src.write_text(bad_text,encoding='utf-8')\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and dst.read_bytes()==first, 'invalid input overwrote existing output'\\n  fresh=p/'new.json'\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(fresh)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and not fresh.exists(), 'invalid input created output'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "solution.py",
+            "cli.py",
+            "__pycache__/**",
+            "**/__pycache__/**",
+            ".pytest_cache/**"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 130000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 65,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 4,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ]
+    },
+    {
+      "id": "hard_v1_weighted_interval_plan",
+      "category": "completion",
+      "fixture": "fixtures/hard-reviewed-v1/weighted_interval_plan",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "solve(data)选择最高收益的非重叠任务。data.jobs每项id唯一字符串/start真整数/end真整数/value真整数，要求start<end，value可以负数。时间段左闭右开，相接可同时选择。返回对象value（总收益整数）、ids（选中任务按start,end,id排序的id数组）。空选择收益0且合法。\n交付只允许改solution.py、cli.py，公开verify.py和输入都不可改。solution.py暴露solve(data)。cli.py提供python cli.py INPUT_FILE OUTPUT_FILE，两个参数都是路径；读取UTF-8 JSON，调用solve，成功将结果作为JSON写OUTPUT_FILE，退出0；JSON无效或solve抛ValueError时退出非0且已有输出字节完全不变，没有旧输出则不得创建输出。重复相同输入输出字节必须稳定。测试临时文件放系统临时目录，不在仓库新增其他交付。除明确列出的错误情况外，输入字段齐全且满足给定类型，无需猜测额外规则。 本轮仅理解和检查stub，不要修改文件；等我说开始再实施。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "多个最优解先选任务数量较少者，仍相同则比较上述排序后id数组，取字典序最小。不得按单任务价值贪心，必须处理跨多个重叠选择的全局最优；输入不变。id重复、端点或value为bool、start>=end抛ValueError。 暂时只分析，不修改。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "最新增加data.blacklist缺省空：先验证全部jobs，再排除指定id后优化，未知id忽略。可有负时间；所有value<=0时按少任务规则返回空选择。 现在开始完整实现，运行验证。"
+        },
+        {
+          "id": "turn4",
+          "prompt": "请检查函数与CLI是否都符合所有约定；实际验证正常与失败场景，补齐遗漏后交付。"
+        }
+      ],
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      },
+      "timeout_seconds": 900,
+      "repetitions": 1,
+      "capabilities": [
+        "completion",
+        "synthetic_challenge",
+        "multi_turn"
+      ],
+      "source": {
+        "kind": "reviewed_synthetic_dialogue",
+        "campaign": "hard-campaign-v1",
+        "split": "test",
+        "family": "weighted_interval_plan",
+        "difficulty": "challenge",
+        "exposure": "assigned before first model execution"
+      },
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"from solution import solve\\nimport copy\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nfor original,expected in [({'jobs': [{'id': 'long', 'start': 0, 'end': 10, 'value': 9}, {'id': 'a', 'start': 0, 'end': 5, 'value': 5}, {'id': 'b', 'start': 5, 'end': 10, 'value': 5}]}, {'value': 10, 'ids': ['a', 'b']}), ({'jobs': [{'id': 'z', 'start': 0, 'end': 10, 'value': 10}, {'id': 'a', 'start': 0, 'end': 5, 'value': 5}, {'id': 'b', 'start': 5, 'end': 10, 'value': 5}]}, {'value': 10, 'ids': ['z']}), ({'jobs': [{'id': 'b', 'start': 0, 'end': 2, 'value': 2}, {'id': 'a', 'start': 0, 'end': 2, 'value': 2}]}, {'value': 2, 'ids': ['a']}), ({'jobs': [{'id': 'a', 'start': -2, 'end': 0, 'value': -1}, {'id': 'b', 'start': 0, 'end': 1, 'value': 0}]}, {'value': 0, 'ids': []}), ({'jobs': []}, {'value': 0, 'ids': []})]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n actual=solve(data)\\n assert same(actual,expected), (original,actual,expected)\\n assert same(data,before), 'mutated input'\\nfor original in [{'jobs': [{'id': 'a', 'start': 1, 'end': 1, 'value': 1}]}, {'jobs': [{'id': 'a', 'start': 0, 'end': 1, 'value': True}]}]:\\n data=copy.deepcopy(original); before=copy.deepcopy(data)\\n try: solve(data)\\n except ValueError: pass\\n else: raise AssertionError(('expected ValueError',original))\\n assert same(data,before), 'failed call mutated input'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json,subprocess,sys,tempfile\\nfrom pathlib import Path\\ndef same(a,b):\\n if type(a) is not type(b): return False\\n if isinstance(a,dict): return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)\\n if isinstance(a,list): return len(a)==len(b) and all(same(x,y) for x,y in zip(a,b))\\n return a==b\\n\\nwith tempfile.TemporaryDirectory() as d:\\n p=Path(d); src=p/'输入 文件.json'; dst=p/'输出 文件.json'\\n src.write_text(json.dumps({'jobs': [{'id': 'long', 'start': 0, 'end': 10, 'value': 9}, {'id': 'a', 'start': 0, 'end': 5, 'value': 5}, {'id': 'b', 'start': 5, 'end': 10, 'value': 5}]},ensure_ascii=False),encoding='utf-8')\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0, result.stderr\\n assert same(json.loads(dst.read_text(encoding='utf-8-sig')), {'value': 10, 'ids': ['a', 'b']})\\n first=dst.read_bytes()\\n result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n assert result.returncode==0 and dst.read_bytes()==first, 'non-deterministic output'\\n for bad_text in ['{', json.dumps({'jobs': [{'id': 'a', 'start': 1, 'end': 1, 'value': 1}]})]:\\n  src.write_text(bad_text,encoding='utf-8')\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(dst)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and dst.read_bytes()==first, 'invalid input overwrote existing output'\\n  fresh=p/'new.json'\\n  result=subprocess.run([sys.executable,'cli.py',str(src),str(fresh)],capture_output=True,timeout=15)\\n  assert result.returncode!=0 and not fresh.exists(), 'invalid input created output'\\n\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "solution.py",
+            "cli.py",
+            "__pycache__/**",
+            "**/__pycache__/**",
+            ".pytest_cache/**"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 130000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 65,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 4,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ]
+    }
+  ],
+  "partition_policy": "current-round-partitions-v1"
+}

@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1880" height="2250" viewBox="0 0 1880 2250" role="img" aria-labelledby="title desc">
+<title id="title">MiniClaw 工具执行五阶段主线</title>
+<desc id="desc">一条 Tool Call 的正常执行分成五步：检查调用、执行前检查、真正执行、整理结果、回传模型。启动装配与跨阶段机制单独标注。</desc>
+<defs><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L11 5 L0 10 Z" fill="#2864cf"/></marker></defs>
+<rect x="0" y="0" width="1880" height="2250" rx="0" fill="#eef2f7" stroke="none"/>
+<rect x="0" y="0" width="1880" height="182" rx="0" fill="#11243c" stroke="none"/>
+<text x="64" y="56" font-family="Microsoft YaHei, sans-serif" font-size="19" font-weight="700" fill="#a7bfdf">MINICLAW  /  ONE TOOL CALL</text>
+<text x="64" y="115" font-family="Microsoft YaHei, sans-serif" font-size="48" font-weight="700" fill="#ffffff">一次工具调用，按这五步走</text>
+<text x="64" y="157" font-family="Microsoft YaHei, sans-serif" font-size="24" font-weight="400" fill="#d5e4f5">阅读对象固定为一条 Tool Call；下面编号表示执行先后，不表示文件或模块的数量。</text>
+<rect x="64" y="209" width="1752" height="96" rx="18" fill="#e2e9f3" stroke="none"/>
+<text x="86" y="245" font-family="Microsoft YaHei, sans-serif" font-size="25" font-weight="700" fill="#2864cf">启动前准备（不计入五个阶段）</text>
+<text x="86" y="281" font-family="Microsoft YaHei, sans-serif" font-size="23" font-weight="400" fill="#17283e">选工作区与命令后端 → 注册工具 → 接上前置检查和后处理；同一会话后续调用复用这些对象。</text>
+<rect x="458" y="333" width="970" height="65" rx="18" fill="#dceafd" stroke="none"/>
+<text x="500" y="375" font-family="Microsoft YaHei, sans-serif" font-size="27" font-weight="700" fill="#2864cf">输入：模型提出 Tool Call { call_id, name, arguments }</text>
+<path d="M940,398 L940,438" fill="none" stroke="#2864cf" stroke-width="4" marker-end="url(#a)"/>
+<g id="stage-1"><title>第1阶段：检查调用：工具能不能用？参数是否合规？</title>
+<rect x="144" y="438" width="1592" height="211" rx="18" fill="#ffffff" stroke="#d5deeb"/>
+<rect x="144" y="438" width="8" height="211" rx="3" fill="#2864cf" stroke="none"/>
+<circle cx="88" cy="484" r="31" fill="#2864cf"/>
+<text x="77" y="495" font-family="Microsoft YaHei, sans-serif" font-size="29" font-weight="700" fill="#ffffff">1</text>
+<text x="174" y="486" font-family="Microsoft YaHei, sans-serif" font-size="32" font-weight="700" fill="#17283e">检查调用：工具能不能用？参数是否合规？</text>
+<text x="174" y="520" font-family="Microsoft YaHei, sans-serif" font-size="21" font-weight="400" fill="#52647a">负责：AgentLoop → ToolManager → ToolExecutor</text>
+<text x="174" y="563" font-family="Microsoft YaHei, sans-serif" font-size="25" font-weight="400" fill="#17283e">顺序取出调用 → 检查工具存在且当前角色可用 → 复制并归一化参数 → 校验 schema。</text>
+<text x="174" y="600" font-family="Microsoft YaHei, sans-serif" font-size="25" font-weight="400" fill="#17283e">这一阶段不执行实际动作；通过后得到校验过的 prepared_call。</text>
+<text x="174" y="637" font-family="Microsoft YaHei, sans-serif" font-size="25" font-weight="400" fill="#17283e">输出：可进入执行前检查的调用；不通过则返回具体错误。</text>
+</g>
+<path d="M940,649 L940,690" fill="none" stroke="#2864cf" stroke-width="4" marker-end="url(#a)"/>
+<g id="stage-2"><title>第2阶段：执行前检查：现在是否允许动手？</title>
+<rect x="144" y="690" width="1592" height="248" rx="18" fill="#ffffff" stroke="#d5deeb"/>
+<rect x="144" y="690" width="8" height="248" rx="3" fill="#7850b5" stroke="none"/>
+<circle cx="88" cy="736" r="31" fill="#7850b5"/>
+<text x="77" y="747" font-family="Microsoft YaHei, sans-serif" font-size="29" font-weight="700" fill="#ffffff">2</text>
+<text x="174" y="738" font-family="Microsoft YaHei, sans-serif" font-size="32" font-weight="700" fill="#17283e">执行前检查：现在是否允许动手？</text>
+<text x="174" y="772" font-family="Microsoft YaHei, sans-serif" font-size="21" font-weight="400" fill="#52647a">负责：项目指令 preflight → ApprovalGate（顺序固定）</text>
+<text x="174" y="815" font-family="Microsoft YaHei, sans-serif" font-size="25" font-weight="400" fill="#17283e">先检查目标路径与相关项目指令；write/edit 如需新指令，先返回，让模型下一轮读取。</text>
+<text x="174" y="852" font-family="Microsoft YaHei, sans-serif" font-size="25" font-weight="400" fill="#17283e">再识别风险：无风险放行；有风险按白名单、allow/ask/deny 决策，必要时等待人工审批。</text>
+<text x="174" y="889" font-family="Microsoft YaHei, sans-serif" font-size="25" font-weight="400" fill="#17283e">获准后核对调用 hash；审批通过仍不解除文件工具的访问边界。</text>
+<text x="174" y="926" font-family="Microsoft YaHei, sans-serif" font-size="25" font-weight="400" fill="#17283e">输出：放行；或带原因的拒绝／刷新请求。此时仍未执行工具主体。</text>
+</g>
+<path d="M940,938 L940,979" fill="none" stroke="#2864cf" stroke-width="4" marker-end="url(#a)"/>
+<g id="stage-3"><title>第3阶段：真正执行：按工具类型走其中一条支路</title>
+<rect x="144" y="979" width="1592" height="348" rx="18" fill="#ffffff" stroke="#d5deeb"/>
+<rect x="144" y="979" width="8" height="348" rx="3" fill="#087f83" stroke="none"/>
+<circle cx="88" cy="1025" r="31" fill="#087f83"/>
+<text x="77" y="1036" font-family="Microsoft YaHei, sans-serif" font-size="29" font-weight="700" fill="#ffffff">3</text>
+<text x="174" y="1027" font-family="Microsoft YaHei, sans-serif" font-size="32" font-weight="700" fill="#17283e">真正执行：按工具类型走其中一条支路</text>
+<text x="174" y="1061" font-family="Microsoft YaHei, sans-serif" font-size="21" font-weight="400" fill="#52647a">负责：具体 Tool.execute；到这里才开始读取、搜索、写文件或运行命令。</text>
+</g>
+<rect x="174" y="1083" width="496" height="151" rx="18" fill="#eaf8f6" stroke="none"/>
+<text x="191" y="1118" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="700" fill="#087f83">文件工具</text>
+<text x="191" y="1152" font-family="Microsoft YaHei, sans-serif" font-size="20" font-weight="400" fill="#17283e">read / write / edit / grep / search</text>
+<text x="191" y="1184" font-family="Microsoft YaHei, sans-serif" font-size="20" font-weight="400" fill="#17283e">WorkspaceGuard + 宿主 Python / rg</text>
+<text x="191" y="1216" font-family="Microsoft YaHei, sans-serif" font-size="20" font-weight="400" fill="#17283e">操作同一有效工作区</text>
+<rect x="692" y="1083" width="496" height="151" rx="18" fill="#eaf8f6" stroke="none"/>
+<text x="709" y="1118" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="700" fill="#087f83">bash 命令</text>
+<text x="709" y="1152" font-family="Microsoft YaHei, sans-serif" font-size="20" font-weight="400" fill="#17283e">BashTool → ToolRuntime.run</text>
+<text x="709" y="1184" font-family="Microsoft YaHei, sans-serif" font-size="20" font-weight="400" fill="#17283e">→ Docker（默认）或 Host</text>
+<text x="709" y="1216" font-family="Microsoft YaHei, sans-serif" font-size="20" font-weight="400" fill="#17283e">管理命令期限与后端执行</text>
+<rect x="1210" y="1083" width="496" height="151" rx="18" fill="#eaf8f6" stroke="none"/>
+<text x="1227" y="1118" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="700" fill="#087f83">状态与知识工具</text>
+<text x="1227" y="1152" font-family="Microsoft YaHei, sans-serif" font-size="20" font-weight="400" fill="#17283e">memory / skill / goal / goal_complete</text>
+<text x="1227" y="1184" font-family="Microsoft YaHei, sans-serif" font-size="20" font-weight="400" fill="#17283e">调用各自的存储与业务逻辑</text>
+<text x="1227" y="1216" font-family="Microsoft YaHei, sans-serif" font-size="20" font-weight="400" fill="#17283e">不自动进入 Docker</text>
+<text x="174" y="1270" font-family="Microsoft YaHei, sans-serif" font-size="24" font-weight="400" fill="#17283e">共同输出：ToolResult { content, is_error, details }。本次调用只走所选工具的支路。</text>
+<text x="174" y="1308" font-family="Microsoft YaHei, sans-serif" font-size="23" font-weight="700" fill="#087f83">源码中的 ToolRuntime 主要位于 bash 这条支路；它还保存共享工作区、后端配置等会话环境。</text>
+<path d="M940,1327 L940,1368" fill="none" stroke="#2864cf" stroke-width="4" marker-end="url(#a)"/>
+<g id="stage-4"><title>第4阶段：整理结果：更新状态，控制返回给模型的信息量</title>
+<rect x="144" y="1368" width="1592" height="211" rx="18" fill="#ffffff" stroke="#d5deeb"/>
+<rect x="144" y="1368" width="8" height="211" rx="3" fill="#2864cf" stroke="none"/>
+<circle cx="88" cy="1414" r="31" fill="#2864cf"/>
+<text x="77" y="1425" font-family="Microsoft YaHei, sans-serif" font-size="29" font-weight="700" fill="#ffffff">4</text>
+<text x="174" y="1416" font-family="Microsoft YaHei, sans-serif" font-size="32" font-weight="700" fill="#17283e">整理结果：更新状态，控制返回给模型的信息量</text>
+<text x="174" y="1450" font-family="Microsoft YaHei, sans-serif" font-size="21" font-weight="400" fill="#52647a">负责：ToolExecutor 调用 CodingAssistant 装配的 result_transforms</text>
+<text x="174" y="1493" font-family="Microsoft YaHei, sans-serif" font-size="25" font-weight="400" fill="#17283e">固定顺序：Goal 验证状态处理 → grep 相关指令路径激活 → 大结果外置 → 字符长度兜底。</text>
+<text x="174" y="1530" font-family="Microsoft YaHei, sans-serif" font-size="25" font-weight="400" fill="#17283e">这一步处理已经得到的结果，不会重新执行刚才的工具。</text>
+<text x="174" y="1567" font-family="Microsoft YaHei, sans-serif" font-size="25" font-weight="400" fill="#17283e">输出：后续状态已处理、正文已整理的 ToolResult。</text>
+</g>
+<path d="M940,1579 L940,1620" fill="none" stroke="#2864cf" stroke-width="4" marker-end="url(#a)"/>
+<g id="stage-5"><title>第5阶段：回传模型：告诉它这次动作实际发生了什么</title>
+<rect x="144" y="1620" width="1592" height="211" rx="18" fill="#ffffff" stroke="#d5deeb"/>
+<rect x="144" y="1620" width="8" height="211" rx="3" fill="#2864cf" stroke="none"/>
+<circle cx="88" cy="1666" r="31" fill="#2864cf"/>
+<text x="77" y="1677" font-family="Microsoft YaHei, sans-serif" font-size="29" font-weight="700" fill="#ffffff">5</text>
+<text x="174" y="1668" font-family="Microsoft YaHei, sans-serif" font-size="32" font-weight="700" fill="#17283e">回传模型：告诉它这次动作实际发生了什么</text>
+<text x="174" y="1702" font-family="Microsoft YaHei, sans-serif" font-size="21" font-weight="400" fill="#52647a">负责：AgentLoop 生成消息；CodingAssistant 消费事件并保存记录</text>
+<text x="174" y="1745" font-family="Microsoft YaHei, sans-serif" font-size="25" font-weight="400" fill="#17283e">生成 role=tool 消息，用 tool_call_id 配对原调用；保存消息并记录本次工具完成情况。</text>
+<text x="174" y="1782" font-family="Microsoft YaHei, sans-serif" font-size="25" font-weight="400" fill="#17283e">同批还有调用就继续顺序执行；全部完成后，模型根据结果决定下一步或给出回答。</text>
+<text x="174" y="1819" font-family="Microsoft YaHei, sans-serif" font-size="25" font-weight="400" fill="#17283e">到这里，一次 Tool Call 的主线结束。是否完成整个任务，还要看 Goal 与验收条件。</text>
+</g>
+<path d="M940,1831 L940,1870" fill="none" stroke="#2864cf" stroke-width="4" marker-end="url(#a)"/>
+<rect x="458" y="1870" width="970" height="65" rx="18" fill="#dceafd" stroke="none"/>
+<text x="500" y="1913" font-family="Microsoft YaHei, sans-serif" font-size="28" font-weight="700" fill="#2864cf">输出：模型收到执行结果，继续推理或结束本轮</text>
+<text x="66" y="1986" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="700" fill="#17283e">下面三项是旁路或跨阶段机制，不要再编号成“第六步、第七步”</text>
+<rect x="64" y="2010" width="564" height="151" rx="18" fill="#f8fafc" stroke="#d5deeb"/>
+<text x="83" y="2048" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="700" fill="#17283e">失败与拒绝</text>
+<text x="83" y="2087" font-family="Microsoft YaHei, sans-serif" font-size="21" font-weight="400" fill="#17283e">跳过未获准的动作，返回原因。</text>
+<text x="83" y="2121" font-family="Microsoft YaHei, sans-serif" font-size="20" font-weight="400" fill="#17283e">schema／审批／执行错误大多仍可回传模型。</text>
+<rect x="658" y="2010" width="564" height="151" rx="18" fill="#f8fafc" stroke="#d5deeb"/>
+<text x="677" y="2048" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="700" fill="#17283e">用户取消</text>
+<text x="677" y="2087" font-family="Microsoft YaHei, sans-serif" font-size="21" font-weight="400" fill="#17283e">贯穿模型、审批与执行等待。</text>
+<text x="677" y="2121" font-family="Microsoft YaHei, sans-serif" font-size="20" font-weight="400" fill="#17283e">停止后续调用，补齐取消响应并结束 run。</text>
+<rect x="1252" y="2010" width="564" height="151" rx="18" fill="#f8fafc" stroke="#d5deeb"/>
+<text x="1271" y="2048" font-family="Microsoft YaHei, sans-serif" font-size="26" font-weight="700" fill="#17283e">审计与恢复</text>
+<text x="1271" y="2087" font-family="Microsoft YaHei, sans-serif" font-size="21" font-weight="400" fill="#17283e">审计在请求、审批、执行结束等处发生。</text>
+<text x="1271" y="2121" font-family="Microsoft YaHei, sans-serif" font-size="20" font-weight="400" fill="#17283e">重启修复属于下次运行前的恢复工作。</text>
+<text x="65" y="2182" font-family="Microsoft YaHei, sans-serif" font-size="20" font-weight="400" fill="#52647a">早退例外：角色不可用／未知工具直接回传阶段 5，跳过阶段 4；普通校验、预检、执行错误可进入后处理。</text>
+<text x="65" y="2219" font-family="Microsoft YaHei, sans-serif" font-size="20" font-weight="400" fill="#52647a">源码依据：agent/loop.py · tools/manager.py · tools/executor.py · assistant/coding.py · runtime/core.py</text>
+</svg>

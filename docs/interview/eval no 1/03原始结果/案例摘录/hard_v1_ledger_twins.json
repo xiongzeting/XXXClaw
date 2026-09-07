@@ -1,0 +1,270 @@
+{
+  "id": "hard_v1_ledger_twins",
+  "source": {
+    "kind": "reviewed_synthetic_dialogue",
+    "campaign": "hard-campaign-v1",
+    "split": "development",
+    "family": "ledger_twins",
+    "difficulty": "challenge",
+    "exposure": "Observed after frozen first run; any future tuning makes this development evidence.",
+    "original_split": "development",
+    "track": "observed-failure",
+    "infrastructure_affected": false,
+    "evidence": "evidence/hard-campaign-v1/hard_v1_ledger_twins.json"
+  },
+  "phases": [
+    {
+      "id": "turn1",
+      "prompt": "会话1（请长期记住并按租户隔离）：North Ledger 租户 NL-1 的生产区是 eu-1，审计主库 ledger-eu，负责人 Mina，截止日为 2026-10-15；另一个同名 North Ledger 租户 NL-2 的生产区是 us-2，主库 ledger-us，负责人 Miro，截止日为 2026-11-15。 请将这些有效事实保存为长期记忆，每轮使用新会话，后续将依赖记忆召回；不要写普通项目文件。"
+    },
+    {
+      "id": "turn2",
+      "prompt": "会话2：仅 NL-1 的审计主库迁移到 ledger-eu2，NL-1 生产区、负责人、截止日不变；NL-2 的 ledger-us 也不变。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn3",
+      "prompt": "会话3：仅 NL-1 的负责人 Mina 已正式交接给 Sora。NL-2 资料中出现的同名 Mina 是历史联系人，不能当作 NL-2 或 NL-1 当前负责人。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn4",
+      "prompt": "会话4：仅 NL-1 的截止日从 2026-10-15 延期到 2026-10-22；NL-2 的 2026-11-15 不变。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn5",
+      "prompt": "会话5：NL-1 新增灾备库 ledger-dr-eu2，主库仍是 ledger-eu2；NL-2 没有已确认的灾备库，未知必须保留为 null。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn6",
+      "prompt": "会话6：NL-1 的 eu-1 才是生产区，eu-2 只是演练区；任何演练区记录不能覆盖生产区。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn7",
+      "prompt": "会话7：查询 NL-1，回答必须是一个 JSON 对象，且只能有这些 key：primary（字符串）、backup（字符串）、owner（字符串）、region（字符串）、deadline（YYYY-MM-DD 字符串）、same_name_current（布尔值）。不要回答 NL-2，也不要添加解释。 same_name_current明确表示历史联系人Mina是否仍为NL-1当前负责人。"
+    }
+  ],
+  "observations": [
+    {
+      "answers": {
+        "turn1": "已保存为长期记忆，并按租户 ID 隔离：\n\n- **North Ledger / NL-1**\n  - 生产区：`eu-1`\n  - 审计主库：`ledger-eu`\n  - 负责人：Mina\n  - 截止日：`2026-10-15`\n- **North Ledger / NL-2**\n  - 生产区：`us-2`\n  - 主库：`ledger-us`\n  - 负责人：Miro\n  - 截止日：`2026-11-15`\n\n未写入普通项目文件。",
+        "turn2": "已更新长期记忆，未写入普通项目文件：\n\n- **NL-1**\n  - 生产区：`eu-1`（不变）\n  - 审计主库：`ledger-eu2`（由 `ledger-eu` 迁移）\n  - 负责人：Mina（不变）\n  - 截止日：`2026-10-15`（不变）\n- **NL-2**\n  - 生产区：`us-2`\n  - 主库：`ledger-us`（不变）\n  - 负责人：Miro\n  - 截止日：`2026-11-15`",
+        "turn3": "已更新长期记忆，未写入普通项目文件：\n\n- **NL-1**：负责人由 **Mina** 正式交接为 **Sora**；生产区 `eu-1`、审计主库 `ledger-eu2`、截止日 `2026-10-15` 保持不变。\n- **NL-2**：生产区 `us-2`、主库 `ledger-us`、当前负责人 **Miro**、截止日 `2026-11-15` 保持不变；资料中的同名 Mina 仅为历史联系人，不作为当前负责人。",
+        "turn4": "已更新长期记忆，未写入普通项目文件：\n\n- **NL-1**：截止日由 `2026-10-15` 延期至 `2026-10-22`\n  - 生产区 `eu-1`、审计主库 `ledger-eu2`、负责人 **Sora** 保持不变\n- **NL-2**：截止日 `2026-11-15` 保持不变\n  - 其他字段也未修改",
+        "turn5": "已更新长期记忆，未写入普通项目文件：\n\n- **NL-1**\n  - 生产区：`eu-1`（不变）\n  - 主库：`ledger-eu2`（不变）\n  - 新增灾备库：`ledger-dr-eu2`\n  - 负责人：Sora（不变）\n  - 截止日：`2026-10-22`（不变）\n\n- **NL-2**\n  - 生产区：`us-2`（不变）\n  - 主库：`ledger-us`（不变）\n  - 灾备库：`null`（没有已确认的灾备库）\n  - 负责人：Miro（不变）\n  - 截止日：`2026-11-15`（不变）",
+        "turn6": "已更新长期记忆，未写入普通项目文件：\n\n- **NL-1 生产区**：`eu-1`\n- **NL-1 演练区**：`eu-2`\n- 任何演练区记录不得覆盖生产区记录\n- 主库：`ledger-eu2`\n- 灾备库：`ledger-dr-eu2`\n- 负责人：Sora\n- 截止日：`2026-10-22`\n\nNL-2 及其他未被修改的字段保持不变。",
+        "turn7": "{\"primary\":\"ledger-eu2\",\"backup\":\"ledger-dr-eu2\",\"owner\":\"Sora\",\"region\":\"eu-1\",\"deadline\":\"2026-10-22\",\"same_name_current\":false}"
+      },
+      "checks": [
+        {
+          "type": "final_json",
+          "dimension": "outcome",
+          "required": true,
+          "passed": true,
+          "detail": "phase=turn7; final={\"primary\":\"ledger-eu2\",\"backup\":\"ledger-dr-eu2\",\"owner\":\"Sora\",\"region\":\"eu-1\",\"deadline\":\"2026-10-22\",\"same_name_current\":false}",
+          "options": {
+            "fields": {
+              "primary": "ledger-eu2",
+              "backup": "ledger-dr-eu2",
+              "owner": "Sora",
+              "region": "eu-1",
+              "deadline": "2026-10-22",
+              "same_name_current": false
+            }
+          }
+        },
+        {
+          "type": "trace_event",
+          "dimension": "process",
+          "required": true,
+          "passed": true,
+          "detail": "matched=1; min=1; max=None; exact=None",
+          "options": {
+            "event": "memory.retrieval",
+            "phase": "turn7",
+            "where_min": {
+              "data.injected_count": 1
+            }
+          }
+        },
+        {
+          "type": "workspace_diff",
+          "dimension": "safety",
+          "required": true,
+          "passed": true,
+          "detail": "changes={'created': [], 'modified': [], 'deleted': []}",
+          "options": {
+            "allowed_paths": [],
+            "max_changed_files": 0
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "efficiency",
+          "required": true,
+          "passed": false,
+          "detail": "total_tokens=156482; constraints={'name': 'total_tokens', 'max': 130000}",
+          "options": {
+            "name": "total_tokens",
+            "max": 130000
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "efficiency",
+          "required": true,
+          "passed": true,
+          "detail": "tool_calls=17; constraints={'name': 'tool_calls', 'max': 40}",
+          "options": {
+            "name": "tool_calls",
+            "max": 40
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "reliability",
+          "required": true,
+          "passed": true,
+          "detail": "successful_runs=7; constraints={'name': 'successful_runs', 'min': 7}",
+          "options": {
+            "name": "successful_runs",
+            "min": 7
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "reliability",
+          "required": true,
+          "passed": true,
+          "detail": "model_errors=0; constraints={'name': 'model_errors', 'equals': 0}",
+          "options": {
+            "name": "model_errors",
+            "equals": 0
+          }
+        },
+        {
+          "type": "final_regex",
+          "dimension": "reliability",
+          "required": true,
+          "passed": true,
+          "detail": "phase=turn7; final={\"primary\":\"ledger-eu2\",\"backup\":\"ledger-dr-eu2\",\"owner\":\"Sora\",\"region\":\"eu-1\",\"deadline\":\"2026-10-22\",\"same_name_current\":false}",
+          "options": {
+            "pattern": "\\S"
+          }
+        }
+      ],
+      "metrics": {
+        "runs": 7,
+        "successful_runs": 7,
+        "failed_runs": 0,
+        "cancelled_runs": 0,
+        "model_requests": 30,
+        "model_errors": 0,
+        "model_retries": 0,
+        "model_fallbacks": 0,
+        "agent_model_requests": 23,
+        "auxiliary_model_requests": 7,
+        "agent_tokens": 142249,
+        "memory_tokens": 14233,
+        "compaction_tokens": 0,
+        "tool_calls": 17,
+        "tool_errors": 1,
+        "tool_cancelled": 0,
+        "tool_blocked": 0,
+        "approval_requests": 0,
+        "approval_allowed": 0,
+        "approval_denied": 0,
+        "approval_timed_out": 0,
+        "memory_retrievals": 7,
+        "memory_injected_items": 43,
+        "memory_consolidations": 7,
+        "memory_facts_written": 0,
+        "memory_conflicts": 0,
+        "instruction_injections": 7,
+        "instruction_sources": 0,
+        "goal_completed_runs": 0,
+        "compaction_attempts": 0,
+        "compactions": 0,
+        "compaction_failures": 0,
+        "compaction_aborted": 0,
+        "tokens_saved_by_compaction": 0,
+        "input_tokens": 148124,
+        "output_tokens": 8358,
+        "cached_tokens": 74752,
+        "total_tokens": 156482,
+        "duration_ms": 260275,
+        "judge_requests": 0,
+        "judge_input_tokens": 0,
+        "judge_output_tokens": 0,
+        "judge_total_tokens": 0,
+        "judge_duration_ms": 0,
+        "live_tool_artifacts": 0,
+        "live_tool_artifact_bytes": 0,
+        "archived_tool_artifacts": 0,
+        "history_archives": 0,
+        "model_summary_compactions": 0,
+        "deterministic_compactions": 0,
+        "cost_usd": 0.01282164,
+        "max_goal_attempts": 0,
+        "model_latency_mean_ms": 8571.4,
+        "model_latency_p50_ms": 7317.0,
+        "model_latency_p95_ms": 18902.0,
+        "ttft_mean_ms": 5517.533333,
+        "ttft_p50_ms": 3277.0,
+        "ttft_p95_ms": 15579.0,
+        "tool_latency_mean_ms": 109.294118,
+        "tool_latency_p95_ms": 416.0,
+        "cache_ratio": 0.5046582592962653,
+        "model_error_rate": 0.0,
+        "tool_error_rate": 0.058823529411764705,
+        "compaction_success_rate": null,
+        "event_types": {
+          "goal.snapshot": 14,
+          "instructions.injected": 7,
+          "memory.consolidation": 7,
+          "memory.retrieval": 7,
+          "model.request": 30,
+          "model.transport": 60,
+          "run.completed": 7,
+          "run.started": 7,
+          "tool.call": 17
+        },
+        "tool_breakdown": {
+          "memory": 17
+        },
+        "tool_failure_breakdown": {
+          "memory": 1
+        },
+        "model_purposes": {
+          "agent": 23,
+          "memory_consolidation": 7
+        },
+        "providers": {
+          "primary": 30
+        },
+        "models": {
+          "gpt-5.6-luna": 30
+        },
+        "runtime_backends": {
+          "docker": 7
+        },
+        "wall_duration_seconds": 275.182
+      },
+      "error": null,
+      "trace_paths": {
+        "turn1": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_ledger_twins\\attempt-001\\workspace\\.aster\\eval-sessions\\turn1\\trace.jsonl",
+        "turn2": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_ledger_twins\\attempt-001\\workspace\\.aster\\eval-sessions\\turn2\\trace.jsonl",
+        "turn3": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_ledger_twins\\attempt-001\\workspace\\.aster\\eval-sessions\\turn3\\trace.jsonl",
+        "turn4": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_ledger_twins\\attempt-001\\workspace\\.aster\\eval-sessions\\turn4\\trace.jsonl",
+        "turn5": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_ledger_twins\\attempt-001\\workspace\\.aster\\eval-sessions\\turn5\\trace.jsonl",
+        "turn6": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_ledger_twins\\attempt-001\\workspace\\.aster\\eval-sessions\\turn6\\trace.jsonl",
+        "turn7": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_ledger_twins\\attempt-001\\workspace\\.aster\\eval-sessions\\turn7\\trace.jsonl"
+      },
+      "workspace_changes": {
+        "created": [],
+        "modified": [],
+        "deleted": []
+      }
+    }
+  ],
+  "original_result": ".aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_ledger_twins\\result.json",
+  "classification": "Needs trace review; run-health failures alone do not establish an Agent defect."
+}

@@ -1,0 +1,6 @@
+{"tenant_id": "acme", "effective_at": "2026-08-31", "status": "active", "quota": 10, "source": "ledger"}
+{"tenant_id": "acme", "effective_at": "2026-09-02", "status": "active", "quota": 12, "source": "ledger"}
+{"tenant_id": "beryl", "effective_at": "2026-09-01", "status": "active", "quota": 7, "source": "ledger"}
+{"tenant_id": "cedar", "effective_at": "2026-09-03", "status": "active", "quota": 5, "source": "ledger"}
+{"tenant_id": "delta", "effective_at": "2026-09-04", "status": "active", "quota": 9, "source": "ledger"}
+{"tenant_id": "acme", "effective_at": "2026-09-05", "status": "cancelled", "quota": 12, "source": "ledger"}

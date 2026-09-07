@@ -1,0 +1,55 @@
+{
+  "reviewed_at": "2026-09-06T05:51:14.504437+00:00",
+  "authorization": "User explicitly asked to inspect second-round status while the batch was running.",
+  "cases": [
+    {
+      "id": "boundary_v1_config_migration_cli_contract",
+      "review_label": "oracle_contract_mismatch",
+      "reason": "Public contract does not specify private save argument order or require pathlib.Path.replace instead of os.replace. Original failure is not evidence of broken public CLI or atomic output.",
+      "diagnostic_changes": [
+        [
+          "with patch('pathlib.Path.replace'",
+          "with patch('package.storage.os.replace'"
+        ],
+        [
+          "save(o, {'should_not_commit':True})",
+          "save({'should_not_commit':True}, o)"
+        ]
+      ],
+      "diagnostic_exit_code": 0,
+      "output": "CHECK_OK\nmigration failed: service cannot contain endpoint together with host/port\n",
+      "score_changed": false,
+      "limitation": "Post-hoc diagnostic only; passing does not establish all task requirements or license changing raw score to passed."
+    },
+    {
+      "id": "boundary_v1_idempotent_charge_recovery",
+      "review_label": "oracle_contract_mismatch",
+      "reason": "Existing receipt in fixture has order_id and cents only; prompt says return original result. Hidden oracle additionally demands status=charged, which was not specified.",
+      "diagnostic_changes": [
+        [
+          "charge_mod.charge({},'old',90)=={'order_id':'old','cents':90,'status':'charged'}",
+          "charge_mod.charge({},'old',90)=={'order_id':'old','cents':90}"
+        ]
+      ],
+      "diagnostic_exit_code": 0,
+      "output": "CHECK_OK\n",
+      "score_changed": false,
+      "limitation": "Post-hoc diagnostic only; passing does not establish all task requirements or license changing raw score to passed."
+    },
+    {
+      "id": "boundary_v1_queue_rebuild_and_reconcile",
+      "review_label": "oracle_contract_mismatch",
+      "reason": "Prompt names state.json and ordered tasks but does not specify an active wrapper key. An ordered JSON array is a plausible implementation; hidden exact wrapper check over-constrains output.",
+      "diagnostic_changes": [
+        [
+          "json.loads(s.read_text())=={'active':['b']}",
+          "json.loads(s.read_text())==['b']"
+        ]
+      ],
+      "diagnostic_exit_code": 0,
+      "output": "CHECK_OK\nerror: sequence gap\n",
+      "score_changed": false,
+      "limitation": "Post-hoc diagnostic only; passing does not establish all task requirements or license changing raw score to passed."
+    }
+  ]
+}

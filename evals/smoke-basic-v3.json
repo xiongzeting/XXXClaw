@@ -1,0 +1,3155 @@
+{
+  "version": 1,
+  "name": "smoke-basic-v3",
+  "cases": [
+    {
+      "id": "dialogue_cap_recall_alias",
+      "category": "recall",
+      "capabilities": [
+        "cross_session_recall",
+        "natural_dialogue",
+        "independent_outcome"
+      ],
+      "fixture": "fixtures/dialogue-campaign/cap_recall_alias",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "记住：内部项目代号 OPAL-72，业务同事把它叫“夜班结算”；值班手册是 ops/night/triage.md。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "另外项目 OPAL-73 是“白班结算”，手册 ops/day/triage.md，别混淆。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "我负责夜间对账的那个结算项目，需要看哪个手册？只给 JSON：runbook。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "trace_event",
+          "phase": "turn3",
+          "event": "memory.retrieval",
+          "where_min": {
+            "data.injected_count": 1
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [],
+          "dimension": "safety",
+          "max_changed_files": 0
+        },
+        {
+          "type": "final_json",
+          "fields": {
+            "runbook": "ops/night/triage.md"
+          },
+          "dimension": "outcome"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 100000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 35,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "agent_model_requests",
+          "max": 45,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 3,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 720,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "capabilities-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "split": "development",
+        "exposure": "previously executed; excluded from active challenge coverage",
+        "efficiency_policy": "Fixed generous release ceiling, not a measured speedup claim",
+        "prior_suite": "measured-development-v2.json"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "true"
+      },
+      "repetitions": 1
+    },
+    {
+      "id": "dialogue_cap_recall_numerical_similarity",
+      "category": "recall",
+      "capabilities": [
+        "cross_session_recall",
+        "natural_dialogue",
+        "independent_outcome"
+      ],
+      "fixture": "fixtures/dialogue-campaign/cap_recall_numerical_similarity",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "记住 Mira 的 EU 生产队列上限为 3072，US 生产上限为 4096。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "更正：Mira EU 生产上限现在为 3584；EU 测试环境是 256；US 没有变化。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "Mira 两个生产区域当前队列上限是多少？JSON：eu、us，整数。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "trace_event",
+          "phase": "turn3",
+          "event": "memory.retrieval",
+          "where_min": {
+            "data.injected_count": 1
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [],
+          "dimension": "safety",
+          "max_changed_files": 0
+        },
+        {
+          "type": "final_json",
+          "fields": {
+            "eu": 3584,
+            "us": 4096
+          },
+          "dimension": "outcome"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 100000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 35,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "agent_model_requests",
+          "max": 45,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 3,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 720,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "capabilities-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "split": "development",
+        "exposure": "previously executed; excluded from active challenge coverage",
+        "efficiency_policy": "Fixed generous release ceiling, not a measured speedup claim",
+        "prior_suite": "measured-development-v2.json"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "true"
+      },
+      "repetitions": 1
+    },
+    {
+      "id": "dialogue_cap_recall_preference_exception",
+      "category": "recall",
+      "capabilities": [
+        "cross_session_recall",
+        "natural_dialogue",
+        "independent_outcome"
+      ],
+      "fixture": "fixtures/dialogue-campaign/cap_recall_preference_exception",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "记住我通常要中文解释和 Python 示例；教学仓库 tiny-web 是例外，要 TypeScript 示例。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "我的一般示例偏好改为 Go。tiny-web 的例外仍保留。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "给 tiny-web 和普通练习分别选示例语言。JSON：tiny_web、general，语言用 TypeScript 或 Go。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "trace_event",
+          "phase": "turn3",
+          "event": "memory.retrieval",
+          "where_min": {
+            "data.injected_count": 1
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [],
+          "dimension": "safety",
+          "max_changed_files": 0
+        },
+        {
+          "type": "final_json",
+          "fields": {
+            "tiny_web": "TypeScript",
+            "general": "Go"
+          },
+          "dimension": "outcome"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 100000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 35,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "agent_model_requests",
+          "max": 45,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 3,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 720,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "capabilities-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "split": "development",
+        "exposure": "previously executed; excluded from active challenge coverage",
+        "efficiency_policy": "Fixed generous release ceiling, not a measured speedup claim",
+        "prior_suite": "measured-development-v2.json"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "true"
+      },
+      "repetitions": 1
+    },
+    {
+      "id": "dialogue_cap_tool_discover_nested",
+      "category": "tools",
+      "capabilities": [
+        "tool_execution",
+        "natural_dialogue",
+        "independent_outcome"
+      ],
+      "fixture": "fixtures/dialogue-campaign/cap_tool_discover_nested",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "订单页面的金额格式错了，请找出真实实现与调用链再修复。金额为整数分，展示为带两位小数的元，负数也要对。只改实现文件，别改页面调用。修完运行 python check.py。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c','from web.page import render\\nassert render(0)==\"0.00\"\\nassert render(-101)==\"-1.01\"\\nassert render(123456789)==\"1234567.89\"']; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "lib/billing/money.py",
+            "__pycache__/**",
+            "**/__pycache__/**",
+            ".pytest_cache/**"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "dimension": "process",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          }
+        },
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import json,re\nfrom pathlib import Path\nrows=[json.loads(line) for p in Path(\".aster/eval-sessions\").rglob(\"trace.jsonl\") for line in p.read_text(encoding=\"utf-8\").splitlines()]\ncalls=[r[\"data\"] for r in rows if r[\"type\"]==\"tool.call\"]\nbash=[c for c in calls if c[\"tool_name\"]==\"bash\"]\npattern='(?:^|[;&\\\\n])\\\\s*python(?:3)?\\\\s+(?:\\\\./)?check\\\\.py(?:\\\\s|$)'\nruns=[c for c in bash if re.search(pattern,str(c.get(\"arguments\",{}).get(\"command\",\"\")))]\nassert runs, \"Requested verification script was never executed\"\nassert runs[-1][\"status\"]==\"success\", \"Final verifier invocation failed\"\n"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 15,
+          "dimension": "process"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 65000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 35,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "agent_model_requests",
+          "max": 45,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 1,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 720,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "capabilities-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "split": "development",
+        "exposure": "previously executed; excluded from active challenge coverage",
+        "efficiency_policy": "Fixed generous release ceiling, not a measured speedup claim",
+        "prior_suite": "measured-development-v2.json"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      },
+      "repetitions": 1
+    },
+    {
+      "id": "dialogue_cap_tool_quoted_paths",
+      "category": "tools",
+      "capabilities": [
+        "tool_execution",
+        "natural_dialogue",
+        "independent_outcome"
+      ],
+      "fixture": "fixtures/dialogue-campaign/cap_tool_quoted_paths",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "把 订单资料/北区 订单.csv 按订单号去重，保留最后一条记录并维持最后出现的位置顺序，结果写 订单资料/北区 清洗.csv。只生成结果文件，原始 CSV 不变。用程序处理，别手工抄表。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c','import csv\\nfrom pathlib import Path\\np=Path(\"订单资料/北区 清洗.csv\")\\nwith p.open(newline=\"\",encoding=\"utf-8-sig\") as f: rows=list(csv.DictReader(f))\\nassert rows==[{\"id\":\"b\",\"note\":\"two  spaces\"},{\"id\":\"a\",\"note\":\"last, update\"}]']; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "订单资料/北区 清洗.csv"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "dimension": "process",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          }
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 65000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 35,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "agent_model_requests",
+          "max": 45,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 1,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 720,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "capabilities-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "split": "development",
+        "exposure": "previously executed; excluded from active challenge coverage",
+        "efficiency_policy": "Fixed generous release ceiling, not a measured speedup claim",
+        "prior_suite": "measured-development-v2.json"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      },
+      "repetitions": 1
+    },
+    {
+      "id": "dialogue_cap_complete_cli",
+      "category": "completion",
+      "capabilities": [
+        "end_to_end_delivery",
+        "natural_dialogue",
+        "independent_outcome"
+      ],
+      "fixture": "fixtures/dialogue-campaign/cap_complete_cli",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "实现 stats.py 命令行：python stats.py input.json output.json。输入是整数数组，输出 JSON 包含 count、sum、min、max，空数组时 min/max 为 null。别只定义函数，要能实际运行命令；只改 stats.py，验证用临时文件请清理。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c','import json,subprocess,tempfile\\nfrom pathlib import Path\\nwith tempfile.TemporaryDirectory() as d:\\n p=Path(d)\\n for data in ([2,-5,2],[]):\\n  (p/\"in.json\").write_text(json.dumps(data))\\n  subprocess.run([\"python\",\"stats.py\",str(p/\"in.json\"),str(p/\"out.json\")],check=True)\\n  assert json.loads((p/\"out.json\").read_text())=={\"count\":len(data),\"sum\":sum(data),\"min\":min(data) if data else None,\"max\":max(data) if data else None}']; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "stats.py",
+            "__pycache__/**",
+            "**/__pycache__/**",
+            ".pytest_cache/**"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "dimension": "process",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          }
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 65000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 35,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "agent_model_requests",
+          "max": 45,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 1,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 720,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "capabilities-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "split": "development",
+        "exposure": "previously executed; excluded from active challenge coverage",
+        "efficiency_policy": "Fixed generous release ceiling, not a measured speedup claim",
+        "prior_suite": "measured-development-v2.json"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      },
+      "repetitions": 1
+    },
+    {
+      "id": "dialogue_recall_warehouse_alias",
+      "category": "recall",
+      "capabilities": [
+        "cross_session_recall",
+        "fresh_validation",
+        "natural_dialogue"
+      ],
+      "fixture": "fixtures/dialogue-campaign/recall_warehouse_alias",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "长期记住：项目代号 SABLE-41 对应仓库 `fulfillment-edge`，值班手册是 runbooks/sable.md。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "另一个 SABLE-42 对应 `billing-edge`，不要把两个代号混起来。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "我现在处理 SABLE-41 的夜间告警，应该打开哪个手册？只给 JSON：runbook。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "trace_event",
+          "event": "memory.retrieval",
+          "phase": "turn3",
+          "where_min": {
+            "data.injected_count": 1
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "dimension": "efficiency",
+          "max": 65000
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "dimension": "efficiency",
+          "max": 30
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "dimension": "reliability",
+          "min": 3
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "dimension": "reliability",
+          "max": 0
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [],
+          "dimension": "safety",
+          "max_changed_files": 0
+        },
+        {
+          "type": "final_json",
+          "fields": {
+            "runbook": "runbooks/sable.md"
+          },
+          "dimension": "outcome"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 600,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "fresh-retained-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "family": "recall_warehouse_alias",
+        "split": "retained",
+        "holdout_policy": "frozen hand-authored cases; future tuning must not claim unseen",
+        "prior_suite": "retained-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "true"
+      }
+    },
+    {
+      "id": "dialogue_recall_region_owner",
+      "category": "recall",
+      "capabilities": [
+        "cross_session_recall",
+        "fresh_validation",
+        "natural_dialogue"
+      ],
+      "fixture": "fixtures/dialogue-campaign/recall_region_owner",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "请记住：Northstar 的 EU 账单队列负责人是 Imani，队列名 eu-invoice-v3。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "Northstar 的 US 账单队列负责人是 Pavel，队列名 us-invoice-v2；EU 记录不变。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "EU 账单队列出问题要找谁、队列叫什么？JSON：owner、queue。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "trace_event",
+          "event": "memory.retrieval",
+          "phase": "turn3",
+          "where_min": {
+            "data.injected_count": 1
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "dimension": "efficiency",
+          "max": 65000
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "dimension": "efficiency",
+          "max": 30
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "dimension": "reliability",
+          "min": 3
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "dimension": "reliability",
+          "max": 0
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [],
+          "dimension": "safety",
+          "max_changed_files": 0
+        },
+        {
+          "type": "final_json",
+          "fields": {
+            "owner": "Imani",
+            "queue": "eu-invoice-v3"
+          },
+          "dimension": "outcome"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 600,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "fresh-retained-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "family": "recall_region_owner",
+        "split": "retained",
+        "holdout_policy": "frozen hand-authored cases; future tuning must not claim unseen",
+        "prior_suite": "retained-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "true"
+      }
+    },
+    {
+      "id": "dialogue_recall_exception_preference",
+      "category": "recall",
+      "capabilities": [
+        "cross_session_recall",
+        "fresh_validation",
+        "natural_dialogue"
+      ],
+      "fixture": "fixtures/dialogue-campaign/recall_exception_preference",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "我的代码审查默认用中文；仓库 crystal-kit 是例外，审查意见用英文。请记住这两个层级。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "普通仓库的默认审查语言改为日文，crystal-kit 例外仍为英文。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "分别回答 crystal-kit 和普通仓库该用什么语言。JSON：crystal、general，语言名用 English 或 Japanese。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "trace_event",
+          "event": "memory.retrieval",
+          "phase": "turn3",
+          "where_min": {
+            "data.injected_count": 1
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "dimension": "efficiency",
+          "max": 65000
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "dimension": "efficiency",
+          "max": 30
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "dimension": "reliability",
+          "min": 3
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "dimension": "reliability",
+          "max": 0
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [],
+          "dimension": "safety",
+          "max_changed_files": 0
+        },
+        {
+          "type": "final_json",
+          "fields": {
+            "crystal": "English",
+            "general": "Japanese"
+          },
+          "dimension": "outcome"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 600,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "fresh-retained-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "family": "recall_exception_preference",
+        "split": "retained",
+        "holdout_policy": "frozen hand-authored cases; future tuning must not claim unseen",
+        "prior_suite": "retained-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "true"
+      }
+    },
+    {
+      "id": "dialogue_recall_joined_routes",
+      "category": "recall",
+      "capabilities": [
+        "cross_session_recall",
+        "fresh_validation",
+        "natural_dialogue"
+      ],
+      "fixture": "fixtures/dialogue-campaign/recall_joined_routes",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "记住：事件流功能由 relay-api 提供，relay-api 的团队是 Orbit。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "Orbit 本周值班人是 Sana；relay-api 更名为 stream-api，功能归属不变。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "事件流现在由哪个服务提供、找谁值班？JSON：service、oncall。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "trace_event",
+          "event": "memory.retrieval",
+          "phase": "turn3",
+          "where_min": {
+            "data.injected_count": 1
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "dimension": "efficiency",
+          "max": 65000
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "dimension": "efficiency",
+          "max": 30
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "dimension": "reliability",
+          "min": 3
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "dimension": "reliability",
+          "max": 0
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [],
+          "dimension": "safety",
+          "max_changed_files": 0
+        },
+        {
+          "type": "final_json",
+          "fields": {
+            "service": "stream-api",
+            "oncall": "Sana"
+          },
+          "dimension": "outcome"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 600,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "fresh-retained-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "family": "recall_joined_routes",
+        "split": "retained",
+        "holdout_policy": "frozen hand-authored cases; future tuning must not claim unseen",
+        "prior_suite": "retained-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "true"
+      }
+    },
+    {
+      "id": "dialogue_compression_endpoint",
+      "category": "compression",
+      "capabilities": [
+        "compression_recovery",
+        "fresh_validation",
+        "natural_dialogue"
+      ],
+      "fixture": "fixtures/dialogue-campaign/compression_endpoint",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "我在处理 Quill 的交付状态，只在本次会话跟踪，暂时不要写文件。先记住：Quill 的 public endpoint 是 api.quill.test/v1，internal endpoint 是 quill-int:8080。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "下面是另一团队的登记，只确认收到，不要混入当前任务：\nother-team row=000 owner=team-0 note=unrelated detail\nother-team row=001 owner=team-1 note=unrelated detail\nother-team row=002 owner=team-2 note=unrelated detail\nother-team row=003 owner=team-3 note=unrelated detail\nother-team row=004 owner=team-4 note=unrelated detail\nother-team row=005 owner=team-5 note=unrelated detail\nother-team row=006 owner=team-6 note=unrelated detail\nother-team row=007 owner=team-0 note=unrelated detail\nother-team row=008 owner=team-1 note=unrelated detail\nother-team row=009 owner=team-2 note=unrelated detail\nother-team row=010 owner=team-3 note=unrelated detail\nother-team row=011 owner=team-4 note=unrelated detail\nother-team row=012 owner=team-5 note=unrelated detail\nother-team row=013 owner=team-6 note=unrelated detail\nother-team row=014 owner=team-0 note=unrelated detail\nother-team row=015 owner=team-1 note=unrelated detail\nother-team row=016 owner=team-2 note=unrelated detail\nother-team row=017 owner=team-3 note=unrelated detail\nother-team row=018 owner=team-4 note=unrelated detail\nother-team row=019 owner=team-5 note=unrelated detail\nother-team row=020 owner=team-6 note=unrelated detail\nother-team row=021 owner=team-0 note=unrelated detail\nother-team row=022 owner=team-1 note=unrelated detail\nother-team row=023 owner=team-2 note=unrelated detail\nother-team row=024 owner=team-3 note=unrelated detail\nother-team row=025 owner=team-4 note=unrelated detail\nother-team row=026 owner=team-5 note=unrelated detail\nother-team row=027 owner=team-6 note=unrelated detail\nother-team row=028 owner=team-0 note=unrelated detail\nother-team row=029 owner=team-1 note=unrelated detail\nother-team row=030 owner=team-2 note=unrelated detail\nother-team row=031 owner=team-3 note=unrelated detail\nother-team row=032 owner=team-4 note=unrelated detail\nother-team row=033 owner=team-5 note=unrelated detail\nother-team row=034 owner=team-6 note=unrelated detail\nother-team row=035 owner=team-0 note=unrelated detail\nother-team row=036 owner=team-1 note=unrelated detail\nother-team row=037 owner=team-2 note=unrelated detail\nother-team row=038 owner=team-3 note=unrelated detail\nother-team row=039 owner=team-4 note=unrelated detail\nother-team row=040 owner=team-5 note=unrelated detail\nother-team row=041 owner=team-6 note=unrelated detail\nother-team row=042 owner=team-0 note=unrelated detail\nother-team row=043 owner=team-1 note=unrelated detail\nother-team row=044 owner=team-2 note=unrelated detail\nother-team row=045 owner=team-3 note=unrelated detail\nother-team row=046 owner=team-4 note=unrelated detail\nother-team row=047 owner=team-5 note=unrelated detail\nother-team row=048 owner=team-6 note=unrelated detail\nother-team row=049 owner=team-0 note=unrelated detail\nother-team row=050 owner=team-1 note=unrelated detail\nother-team row=051 owner=team-2 note=unrelated detail\nother-team row=052 owner=team-3 note=unrelated detail\nother-team row=053 owner=team-4 note=unrelated detail\nother-team row=054 owner=team-5 note=unrelated detail\nother-team row=055 owner=team-6 note=unrelated detail\nother-team row=056 owner=team-0 note=unrelated detail\nother-team row=057 owner=team-1 note=unrelated detail\nother-team row=058 owner=team-2 note=unrelated detail\nother-team row=059 owner=team-3 note=unrelated detail\nother-team row=060 owner=team-4 note=unrelated detail\nother-team row=061 owner=team-5 note=unrelated detail\nother-team row=062 owner=team-6 note=unrelated detail\nother-team row=063 owner=team-0 note=unrelated detail\nother-team row=064 owner=team-1 note=unrelated detail\nother-team row=065 owner=team-2 note=unrelated detail\nother-team row=066 owner=team-3 note=unrelated detail\nother-team row=067 owner=team-4 note=unrelated detail\nother-team row=068 owner=team-5 note=unrelated detail\nother-team row=069 owner=team-6 note=unrelated detail\nother-team row=070 owner=team-0 note=unrelated detail\nother-team row=071 owner=team-1 note=unrelated detail\nother-team row=072 owner=team-2 note=unrelated detail\nother-team row=073 owner=team-3 note=unrelated detail\nother-team row=074 owner=team-4 note=unrelated detail\nother-team row=075 owner=team-5 note=unrelated detail\nother-team row=076 owner=team-6 note=unrelated detail\nother-team row=077 owner=team-0 note=unrelated detail\nother-team row=078 owner=team-1 note=unrelated detail\nother-team row=079 owner=team-2 note=unrelated detail\nother-team row=080 owner=team-3 note=unrelated detail\nother-team row=081 owner=team-4 note=unrelated detail\nother-team row=082 owner=team-5 note=unrelated detail\nother-team row=083 owner=team-6 note=unrelated detail\nother-team row=084 owner=team-0 note=unrelated detail\nother-team row=085 owner=team-1 note=unrelated detail\nother-team row=086 owner=team-2 note=unrelated detail\nother-team row=087 owner=team-3 note=unrelated detail\nother-team row=088 owner=team-4 note=unrelated detail\nother-team row=089 owner=team-5 note=unrelated detail\nother-team row=090 owner=team-6 note=unrelated detail\nother-team row=091 owner=team-0 note=unrelated detail\nother-team row=092 owner=team-1 note=unrelated detail\nother-team row=093 owner=team-2 note=unrelated detail\nother-team row=094 owner=team-3 note=unrelated detail\nother-team row=095 owner=team-4 note=unrelated detail\nother-team row=096 owner=team-5 note=unrelated detail\nother-team row=097 owner=team-6 note=unrelated detail\nother-team row=098 owner=team-0 note=unrelated detail\nother-team row=099 owner=team-1 note=unrelated detail"
+        },
+        {
+          "id": "turn3",
+          "prompt": "还有一些无关记录，继续只确认收到：\narchive row=000 owner=team-0 note=unrelated detail\narchive row=001 owner=team-1 note=unrelated detail\narchive row=002 owner=team-2 note=unrelated detail\narchive row=003 owner=team-3 note=unrelated detail\narchive row=004 owner=team-4 note=unrelated detail\narchive row=005 owner=team-5 note=unrelated detail\narchive row=006 owner=team-6 note=unrelated detail\narchive row=007 owner=team-0 note=unrelated detail\narchive row=008 owner=team-1 note=unrelated detail\narchive row=009 owner=team-2 note=unrelated detail\narchive row=010 owner=team-3 note=unrelated detail\narchive row=011 owner=team-4 note=unrelated detail\narchive row=012 owner=team-5 note=unrelated detail\narchive row=013 owner=team-6 note=unrelated detail\narchive row=014 owner=team-0 note=unrelated detail\narchive row=015 owner=team-1 note=unrelated detail\narchive row=016 owner=team-2 note=unrelated detail\narchive row=017 owner=team-3 note=unrelated detail\narchive row=018 owner=team-4 note=unrelated detail\narchive row=019 owner=team-5 note=unrelated detail\narchive row=020 owner=team-6 note=unrelated detail\narchive row=021 owner=team-0 note=unrelated detail\narchive row=022 owner=team-1 note=unrelated detail\narchive row=023 owner=team-2 note=unrelated detail\narchive row=024 owner=team-3 note=unrelated detail\narchive row=025 owner=team-4 note=unrelated detail\narchive row=026 owner=team-5 note=unrelated detail\narchive row=027 owner=team-6 note=unrelated detail\narchive row=028 owner=team-0 note=unrelated detail\narchive row=029 owner=team-1 note=unrelated detail\narchive row=030 owner=team-2 note=unrelated detail\narchive row=031 owner=team-3 note=unrelated detail\narchive row=032 owner=team-4 note=unrelated detail\narchive row=033 owner=team-5 note=unrelated detail\narchive row=034 owner=team-6 note=unrelated detail\narchive row=035 owner=team-0 note=unrelated detail\narchive row=036 owner=team-1 note=unrelated detail\narchive row=037 owner=team-2 note=unrelated detail\narchive row=038 owner=team-3 note=unrelated detail\narchive row=039 owner=team-4 note=unrelated detail\narchive row=040 owner=team-5 note=unrelated detail\narchive row=041 owner=team-6 note=unrelated detail\narchive row=042 owner=team-0 note=unrelated detail\narchive row=043 owner=team-1 note=unrelated detail\narchive row=044 owner=team-2 note=unrelated detail\narchive row=045 owner=team-3 note=unrelated detail\narchive row=046 owner=team-4 note=unrelated detail\narchive row=047 owner=team-5 note=unrelated detail\narchive row=048 owner=team-6 note=unrelated detail\narchive row=049 owner=team-0 note=unrelated detail\narchive row=050 owner=team-1 note=unrelated detail\narchive row=051 owner=team-2 note=unrelated detail\narchive row=052 owner=team-3 note=unrelated detail\narchive row=053 owner=team-4 note=unrelated detail\narchive row=054 owner=team-5 note=unrelated detail\narchive row=055 owner=team-6 note=unrelated detail\narchive row=056 owner=team-0 note=unrelated detail\narchive row=057 owner=team-1 note=unrelated detail\narchive row=058 owner=team-2 note=unrelated detail\narchive row=059 owner=team-3 note=unrelated detail\narchive row=060 owner=team-4 note=unrelated detail\narchive row=061 owner=team-5 note=unrelated detail\narchive row=062 owner=team-6 note=unrelated detail\narchive row=063 owner=team-0 note=unrelated detail\narchive row=064 owner=team-1 note=unrelated detail\narchive row=065 owner=team-2 note=unrelated detail\narchive row=066 owner=team-3 note=unrelated detail\narchive row=067 owner=team-4 note=unrelated detail\narchive row=068 owner=team-5 note=unrelated detail\narchive row=069 owner=team-6 note=unrelated detail\narchive row=070 owner=team-0 note=unrelated detail\narchive row=071 owner=team-1 note=unrelated detail\narchive row=072 owner=team-2 note=unrelated detail\narchive row=073 owner=team-3 note=unrelated detail\narchive row=074 owner=team-4 note=unrelated detail\narchive row=075 owner=team-5 note=unrelated detail\narchive row=076 owner=team-6 note=unrelated detail\narchive row=077 owner=team-0 note=unrelated detail\narchive row=078 owner=team-1 note=unrelated detail\narchive row=079 owner=team-2 note=unrelated detail\narchive row=080 owner=team-3 note=unrelated detail\narchive row=081 owner=team-4 note=unrelated detail\narchive row=082 owner=team-5 note=unrelated detail\narchive row=083 owner=team-6 note=unrelated detail\narchive row=084 owner=team-0 note=unrelated detail\narchive row=085 owner=team-1 note=unrelated detail\narchive row=086 owner=team-2 note=unrelated detail\narchive row=087 owner=team-3 note=unrelated detail\narchive row=088 owner=team-4 note=unrelated detail\narchive row=089 owner=team-5 note=unrelated detail\narchive row=090 owner=team-6 note=unrelated detail\narchive row=091 owner=team-0 note=unrelated detail\narchive row=092 owner=team-1 note=unrelated detail\narchive row=093 owner=team-2 note=unrelated detail\narchive row=094 owner=team-3 note=unrelated detail\narchive row=095 owner=team-4 note=unrelated detail\narchive row=096 owner=team-5 note=unrelated detail\narchive row=097 owner=team-6 note=unrelated detail\narchive row=098 owner=team-0 note=unrelated detail\narchive row=099 owner=team-1 note=unrelated detail"
+        },
+        {
+          "id": "turn4",
+          "prompt": "修订：public endpoint 改为 api.quill.test/v2，internal 不变。"
+        },
+        {
+          "id": "turn5",
+          "prompt": "现在按最后有效要求写 config.json，只创建这个文件，字段为：public, internal。布尔状态用 true/false，时长和schema用整数，其他为字符串。encoding和delimiter如有出现，保留最早给出的字面拼写。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json\\nfrom pathlib import Path\\nassert json.loads(Path('config.json').read_text()) == {'public': 'api.quill.test/v2', 'internal': 'quill-int:8080'}\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "compaction.completed",
+          "dimension": "process"
+        },
+        {
+          "type": "metric",
+          "name": "compactions",
+          "dimension": "process",
+          "min": 1
+        },
+        {
+          "type": "metric",
+          "name": "history_archives",
+          "dimension": "process",
+          "min": 1
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "dimension": "efficiency",
+          "max": 180000
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "dimension": "efficiency",
+          "max": 50
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "dimension": "reliability",
+          "min": 5
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "dimension": "reliability",
+          "max": 0
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "config.json"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 600,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "fresh-retained-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "family": "compression_endpoint",
+        "split": "retained",
+        "holdout_policy": "frozen hand-authored cases; future tuning must not claim unseen",
+        "prior_suite": "retained-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_COMPACTION_ENABLED": "true",
+        "MINICLAW_PROGRESSIVE_COMPACTION_ENABLED": "true",
+        "MINICLAW_COMPACTION_SOFT_TRIGGER_TOKENS": "4500",
+        "MINICLAW_COMPACTION_HARD_TRIGGER_TOKENS": "6500",
+        "MINICLAW_COMPACTION_TARGET_TOKENS": "2500",
+        "MINICLAW_COMPACTION_KEEP_RECENT_TOKENS": "900",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      }
+    },
+    {
+      "id": "dialogue_compression_retention",
+      "category": "compression",
+      "capabilities": [
+        "compression_recovery",
+        "fresh_validation",
+        "natural_dialogue"
+      ],
+      "fixture": "fixtures/dialogue-campaign/compression_retention",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "我在处理 Quill 的交付状态，只在本次会话跟踪，暂时不要写文件。记住：默认缓存 48 小时，审计缓存例外 168 小时。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "下面是另一团队的登记，只确认收到，不要混入当前任务：\nother-team row=000 owner=team-0 note=unrelated detail\nother-team row=001 owner=team-1 note=unrelated detail\nother-team row=002 owner=team-2 note=unrelated detail\nother-team row=003 owner=team-3 note=unrelated detail\nother-team row=004 owner=team-4 note=unrelated detail\nother-team row=005 owner=team-5 note=unrelated detail\nother-team row=006 owner=team-6 note=unrelated detail\nother-team row=007 owner=team-0 note=unrelated detail\nother-team row=008 owner=team-1 note=unrelated detail\nother-team row=009 owner=team-2 note=unrelated detail\nother-team row=010 owner=team-3 note=unrelated detail\nother-team row=011 owner=team-4 note=unrelated detail\nother-team row=012 owner=team-5 note=unrelated detail\nother-team row=013 owner=team-6 note=unrelated detail\nother-team row=014 owner=team-0 note=unrelated detail\nother-team row=015 owner=team-1 note=unrelated detail\nother-team row=016 owner=team-2 note=unrelated detail\nother-team row=017 owner=team-3 note=unrelated detail\nother-team row=018 owner=team-4 note=unrelated detail\nother-team row=019 owner=team-5 note=unrelated detail\nother-team row=020 owner=team-6 note=unrelated detail\nother-team row=021 owner=team-0 note=unrelated detail\nother-team row=022 owner=team-1 note=unrelated detail\nother-team row=023 owner=team-2 note=unrelated detail\nother-team row=024 owner=team-3 note=unrelated detail\nother-team row=025 owner=team-4 note=unrelated detail\nother-team row=026 owner=team-5 note=unrelated detail\nother-team row=027 owner=team-6 note=unrelated detail\nother-team row=028 owner=team-0 note=unrelated detail\nother-team row=029 owner=team-1 note=unrelated detail\nother-team row=030 owner=team-2 note=unrelated detail\nother-team row=031 owner=team-3 note=unrelated detail\nother-team row=032 owner=team-4 note=unrelated detail\nother-team row=033 owner=team-5 note=unrelated detail\nother-team row=034 owner=team-6 note=unrelated detail\nother-team row=035 owner=team-0 note=unrelated detail\nother-team row=036 owner=team-1 note=unrelated detail\nother-team row=037 owner=team-2 note=unrelated detail\nother-team row=038 owner=team-3 note=unrelated detail\nother-team row=039 owner=team-4 note=unrelated detail\nother-team row=040 owner=team-5 note=unrelated detail\nother-team row=041 owner=team-6 note=unrelated detail\nother-team row=042 owner=team-0 note=unrelated detail\nother-team row=043 owner=team-1 note=unrelated detail\nother-team row=044 owner=team-2 note=unrelated detail\nother-team row=045 owner=team-3 note=unrelated detail\nother-team row=046 owner=team-4 note=unrelated detail\nother-team row=047 owner=team-5 note=unrelated detail\nother-team row=048 owner=team-6 note=unrelated detail\nother-team row=049 owner=team-0 note=unrelated detail\nother-team row=050 owner=team-1 note=unrelated detail\nother-team row=051 owner=team-2 note=unrelated detail\nother-team row=052 owner=team-3 note=unrelated detail\nother-team row=053 owner=team-4 note=unrelated detail\nother-team row=054 owner=team-5 note=unrelated detail\nother-team row=055 owner=team-6 note=unrelated detail\nother-team row=056 owner=team-0 note=unrelated detail\nother-team row=057 owner=team-1 note=unrelated detail\nother-team row=058 owner=team-2 note=unrelated detail\nother-team row=059 owner=team-3 note=unrelated detail\nother-team row=060 owner=team-4 note=unrelated detail\nother-team row=061 owner=team-5 note=unrelated detail\nother-team row=062 owner=team-6 note=unrelated detail\nother-team row=063 owner=team-0 note=unrelated detail\nother-team row=064 owner=team-1 note=unrelated detail\nother-team row=065 owner=team-2 note=unrelated detail\nother-team row=066 owner=team-3 note=unrelated detail\nother-team row=067 owner=team-4 note=unrelated detail\nother-team row=068 owner=team-5 note=unrelated detail\nother-team row=069 owner=team-6 note=unrelated detail\nother-team row=070 owner=team-0 note=unrelated detail\nother-team row=071 owner=team-1 note=unrelated detail\nother-team row=072 owner=team-2 note=unrelated detail\nother-team row=073 owner=team-3 note=unrelated detail\nother-team row=074 owner=team-4 note=unrelated detail\nother-team row=075 owner=team-5 note=unrelated detail\nother-team row=076 owner=team-6 note=unrelated detail\nother-team row=077 owner=team-0 note=unrelated detail\nother-team row=078 owner=team-1 note=unrelated detail\nother-team row=079 owner=team-2 note=unrelated detail\nother-team row=080 owner=team-3 note=unrelated detail\nother-team row=081 owner=team-4 note=unrelated detail\nother-team row=082 owner=team-5 note=unrelated detail\nother-team row=083 owner=team-6 note=unrelated detail\nother-team row=084 owner=team-0 note=unrelated detail\nother-team row=085 owner=team-1 note=unrelated detail\nother-team row=086 owner=team-2 note=unrelated detail\nother-team row=087 owner=team-3 note=unrelated detail\nother-team row=088 owner=team-4 note=unrelated detail\nother-team row=089 owner=team-5 note=unrelated detail\nother-team row=090 owner=team-6 note=unrelated detail\nother-team row=091 owner=team-0 note=unrelated detail\nother-team row=092 owner=team-1 note=unrelated detail\nother-team row=093 owner=team-2 note=unrelated detail\nother-team row=094 owner=team-3 note=unrelated detail\nother-team row=095 owner=team-4 note=unrelated detail\nother-team row=096 owner=team-5 note=unrelated detail\nother-team row=097 owner=team-6 note=unrelated detail\nother-team row=098 owner=team-0 note=unrelated detail\nother-team row=099 owner=team-1 note=unrelated detail"
+        },
+        {
+          "id": "turn3",
+          "prompt": "还有一些无关记录，继续只确认收到：\narchive row=000 owner=team-0 note=unrelated detail\narchive row=001 owner=team-1 note=unrelated detail\narchive row=002 owner=team-2 note=unrelated detail\narchive row=003 owner=team-3 note=unrelated detail\narchive row=004 owner=team-4 note=unrelated detail\narchive row=005 owner=team-5 note=unrelated detail\narchive row=006 owner=team-6 note=unrelated detail\narchive row=007 owner=team-0 note=unrelated detail\narchive row=008 owner=team-1 note=unrelated detail\narchive row=009 owner=team-2 note=unrelated detail\narchive row=010 owner=team-3 note=unrelated detail\narchive row=011 owner=team-4 note=unrelated detail\narchive row=012 owner=team-5 note=unrelated detail\narchive row=013 owner=team-6 note=unrelated detail\narchive row=014 owner=team-0 note=unrelated detail\narchive row=015 owner=team-1 note=unrelated detail\narchive row=016 owner=team-2 note=unrelated detail\narchive row=017 owner=team-3 note=unrelated detail\narchive row=018 owner=team-4 note=unrelated detail\narchive row=019 owner=team-5 note=unrelated detail\narchive row=020 owner=team-6 note=unrelated detail\narchive row=021 owner=team-0 note=unrelated detail\narchive row=022 owner=team-1 note=unrelated detail\narchive row=023 owner=team-2 note=unrelated detail\narchive row=024 owner=team-3 note=unrelated detail\narchive row=025 owner=team-4 note=unrelated detail\narchive row=026 owner=team-5 note=unrelated detail\narchive row=027 owner=team-6 note=unrelated detail\narchive row=028 owner=team-0 note=unrelated detail\narchive row=029 owner=team-1 note=unrelated detail\narchive row=030 owner=team-2 note=unrelated detail\narchive row=031 owner=team-3 note=unrelated detail\narchive row=032 owner=team-4 note=unrelated detail\narchive row=033 owner=team-5 note=unrelated detail\narchive row=034 owner=team-6 note=unrelated detail\narchive row=035 owner=team-0 note=unrelated detail\narchive row=036 owner=team-1 note=unrelated detail\narchive row=037 owner=team-2 note=unrelated detail\narchive row=038 owner=team-3 note=unrelated detail\narchive row=039 owner=team-4 note=unrelated detail\narchive row=040 owner=team-5 note=unrelated detail\narchive row=041 owner=team-6 note=unrelated detail\narchive row=042 owner=team-0 note=unrelated detail\narchive row=043 owner=team-1 note=unrelated detail\narchive row=044 owner=team-2 note=unrelated detail\narchive row=045 owner=team-3 note=unrelated detail\narchive row=046 owner=team-4 note=unrelated detail\narchive row=047 owner=team-5 note=unrelated detail\narchive row=048 owner=team-6 note=unrelated detail\narchive row=049 owner=team-0 note=unrelated detail\narchive row=050 owner=team-1 note=unrelated detail\narchive row=051 owner=team-2 note=unrelated detail\narchive row=052 owner=team-3 note=unrelated detail\narchive row=053 owner=team-4 note=unrelated detail\narchive row=054 owner=team-5 note=unrelated detail\narchive row=055 owner=team-6 note=unrelated detail\narchive row=056 owner=team-0 note=unrelated detail\narchive row=057 owner=team-1 note=unrelated detail\narchive row=058 owner=team-2 note=unrelated detail\narchive row=059 owner=team-3 note=unrelated detail\narchive row=060 owner=team-4 note=unrelated detail\narchive row=061 owner=team-5 note=unrelated detail\narchive row=062 owner=team-6 note=unrelated detail\narchive row=063 owner=team-0 note=unrelated detail\narchive row=064 owner=team-1 note=unrelated detail\narchive row=065 owner=team-2 note=unrelated detail\narchive row=066 owner=team-3 note=unrelated detail\narchive row=067 owner=team-4 note=unrelated detail\narchive row=068 owner=team-5 note=unrelated detail\narchive row=069 owner=team-6 note=unrelated detail\narchive row=070 owner=team-0 note=unrelated detail\narchive row=071 owner=team-1 note=unrelated detail\narchive row=072 owner=team-2 note=unrelated detail\narchive row=073 owner=team-3 note=unrelated detail\narchive row=074 owner=team-4 note=unrelated detail\narchive row=075 owner=team-5 note=unrelated detail\narchive row=076 owner=team-6 note=unrelated detail\narchive row=077 owner=team-0 note=unrelated detail\narchive row=078 owner=team-1 note=unrelated detail\narchive row=079 owner=team-2 note=unrelated detail\narchive row=080 owner=team-3 note=unrelated detail\narchive row=081 owner=team-4 note=unrelated detail\narchive row=082 owner=team-5 note=unrelated detail\narchive row=083 owner=team-6 note=unrelated detail\narchive row=084 owner=team-0 note=unrelated detail\narchive row=085 owner=team-1 note=unrelated detail\narchive row=086 owner=team-2 note=unrelated detail\narchive row=087 owner=team-3 note=unrelated detail\narchive row=088 owner=team-4 note=unrelated detail\narchive row=089 owner=team-5 note=unrelated detail\narchive row=090 owner=team-6 note=unrelated detail\narchive row=091 owner=team-0 note=unrelated detail\narchive row=092 owner=team-1 note=unrelated detail\narchive row=093 owner=team-2 note=unrelated detail\narchive row=094 owner=team-3 note=unrelated detail\narchive row=095 owner=team-4 note=unrelated detail\narchive row=096 owner=team-5 note=unrelated detail\narchive row=097 owner=team-6 note=unrelated detail\narchive row=098 owner=team-0 note=unrelated detail\narchive row=099 owner=team-1 note=unrelated detail"
+        },
+        {
+          "id": "turn4",
+          "prompt": "更正默认缓存为 12 小时，审计例外继续 168 小时。"
+        },
+        {
+          "id": "turn5",
+          "prompt": "现在按最后有效要求写 config.json，只创建这个文件，字段为：default_hours, audit_hours。布尔状态用 true/false，时长和schema用整数，其他为字符串。encoding和delimiter如有出现，保留最早给出的字面拼写。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json\\nfrom pathlib import Path\\nassert json.loads(Path('config.json').read_text()) == {'default_hours': 12, 'audit_hours': 168}\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "compaction.completed",
+          "dimension": "process"
+        },
+        {
+          "type": "metric",
+          "name": "compactions",
+          "dimension": "process",
+          "min": 1
+        },
+        {
+          "type": "metric",
+          "name": "history_archives",
+          "dimension": "process",
+          "min": 1
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "dimension": "efficiency",
+          "max": 180000
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "dimension": "efficiency",
+          "max": 50
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "dimension": "reliability",
+          "min": 5
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "dimension": "reliability",
+          "max": 0
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "config.json"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 600,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "fresh-retained-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "family": "compression_retention",
+        "split": "retained",
+        "holdout_policy": "frozen hand-authored cases; future tuning must not claim unseen",
+        "prior_suite": "retained-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_COMPACTION_ENABLED": "true",
+        "MINICLAW_PROGRESSIVE_COMPACTION_ENABLED": "true",
+        "MINICLAW_COMPACTION_SOFT_TRIGGER_TOKENS": "4500",
+        "MINICLAW_COMPACTION_HARD_TRIGGER_TOKENS": "6500",
+        "MINICLAW_COMPACTION_TARGET_TOKENS": "2500",
+        "MINICLAW_COMPACTION_KEEP_RECENT_TOKENS": "900",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      }
+    },
+    {
+      "id": "dialogue_compression_status",
+      "category": "compression",
+      "capabilities": [
+        "compression_recovery",
+        "fresh_validation",
+        "natural_dialogue"
+      ],
+      "fixture": "fixtures/dialogue-campaign/compression_status",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "我在处理 Quill 的交付状态，只在本次会话跟踪，暂时不要写文件。记住 Solace 当前 schema 是 9，升级到 10 只是提案。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "下面是另一团队的登记，只确认收到，不要混入当前任务：\nother-team row=000 owner=team-0 note=unrelated detail\nother-team row=001 owner=team-1 note=unrelated detail\nother-team row=002 owner=team-2 note=unrelated detail\nother-team row=003 owner=team-3 note=unrelated detail\nother-team row=004 owner=team-4 note=unrelated detail\nother-team row=005 owner=team-5 note=unrelated detail\nother-team row=006 owner=team-6 note=unrelated detail\nother-team row=007 owner=team-0 note=unrelated detail\nother-team row=008 owner=team-1 note=unrelated detail\nother-team row=009 owner=team-2 note=unrelated detail\nother-team row=010 owner=team-3 note=unrelated detail\nother-team row=011 owner=team-4 note=unrelated detail\nother-team row=012 owner=team-5 note=unrelated detail\nother-team row=013 owner=team-6 note=unrelated detail\nother-team row=014 owner=team-0 note=unrelated detail\nother-team row=015 owner=team-1 note=unrelated detail\nother-team row=016 owner=team-2 note=unrelated detail\nother-team row=017 owner=team-3 note=unrelated detail\nother-team row=018 owner=team-4 note=unrelated detail\nother-team row=019 owner=team-5 note=unrelated detail\nother-team row=020 owner=team-6 note=unrelated detail\nother-team row=021 owner=team-0 note=unrelated detail\nother-team row=022 owner=team-1 note=unrelated detail\nother-team row=023 owner=team-2 note=unrelated detail\nother-team row=024 owner=team-3 note=unrelated detail\nother-team row=025 owner=team-4 note=unrelated detail\nother-team row=026 owner=team-5 note=unrelated detail\nother-team row=027 owner=team-6 note=unrelated detail\nother-team row=028 owner=team-0 note=unrelated detail\nother-team row=029 owner=team-1 note=unrelated detail\nother-team row=030 owner=team-2 note=unrelated detail\nother-team row=031 owner=team-3 note=unrelated detail\nother-team row=032 owner=team-4 note=unrelated detail\nother-team row=033 owner=team-5 note=unrelated detail\nother-team row=034 owner=team-6 note=unrelated detail\nother-team row=035 owner=team-0 note=unrelated detail\nother-team row=036 owner=team-1 note=unrelated detail\nother-team row=037 owner=team-2 note=unrelated detail\nother-team row=038 owner=team-3 note=unrelated detail\nother-team row=039 owner=team-4 note=unrelated detail\nother-team row=040 owner=team-5 note=unrelated detail\nother-team row=041 owner=team-6 note=unrelated detail\nother-team row=042 owner=team-0 note=unrelated detail\nother-team row=043 owner=team-1 note=unrelated detail\nother-team row=044 owner=team-2 note=unrelated detail\nother-team row=045 owner=team-3 note=unrelated detail\nother-team row=046 owner=team-4 note=unrelated detail\nother-team row=047 owner=team-5 note=unrelated detail\nother-team row=048 owner=team-6 note=unrelated detail\nother-team row=049 owner=team-0 note=unrelated detail\nother-team row=050 owner=team-1 note=unrelated detail\nother-team row=051 owner=team-2 note=unrelated detail\nother-team row=052 owner=team-3 note=unrelated detail\nother-team row=053 owner=team-4 note=unrelated detail\nother-team row=054 owner=team-5 note=unrelated detail\nother-team row=055 owner=team-6 note=unrelated detail\nother-team row=056 owner=team-0 note=unrelated detail\nother-team row=057 owner=team-1 note=unrelated detail\nother-team row=058 owner=team-2 note=unrelated detail\nother-team row=059 owner=team-3 note=unrelated detail\nother-team row=060 owner=team-4 note=unrelated detail\nother-team row=061 owner=team-5 note=unrelated detail\nother-team row=062 owner=team-6 note=unrelated detail\nother-team row=063 owner=team-0 note=unrelated detail\nother-team row=064 owner=team-1 note=unrelated detail\nother-team row=065 owner=team-2 note=unrelated detail\nother-team row=066 owner=team-3 note=unrelated detail\nother-team row=067 owner=team-4 note=unrelated detail\nother-team row=068 owner=team-5 note=unrelated detail\nother-team row=069 owner=team-6 note=unrelated detail\nother-team row=070 owner=team-0 note=unrelated detail\nother-team row=071 owner=team-1 note=unrelated detail\nother-team row=072 owner=team-2 note=unrelated detail\nother-team row=073 owner=team-3 note=unrelated detail\nother-team row=074 owner=team-4 note=unrelated detail\nother-team row=075 owner=team-5 note=unrelated detail\nother-team row=076 owner=team-6 note=unrelated detail\nother-team row=077 owner=team-0 note=unrelated detail\nother-team row=078 owner=team-1 note=unrelated detail\nother-team row=079 owner=team-2 note=unrelated detail\nother-team row=080 owner=team-3 note=unrelated detail\nother-team row=081 owner=team-4 note=unrelated detail\nother-team row=082 owner=team-5 note=unrelated detail\nother-team row=083 owner=team-6 note=unrelated detail\nother-team row=084 owner=team-0 note=unrelated detail\nother-team row=085 owner=team-1 note=unrelated detail\nother-team row=086 owner=team-2 note=unrelated detail\nother-team row=087 owner=team-3 note=unrelated detail\nother-team row=088 owner=team-4 note=unrelated detail\nother-team row=089 owner=team-5 note=unrelated detail\nother-team row=090 owner=team-6 note=unrelated detail\nother-team row=091 owner=team-0 note=unrelated detail\nother-team row=092 owner=team-1 note=unrelated detail\nother-team row=093 owner=team-2 note=unrelated detail\nother-team row=094 owner=team-3 note=unrelated detail\nother-team row=095 owner=team-4 note=unrelated detail\nother-team row=096 owner=team-5 note=unrelated detail\nother-team row=097 owner=team-6 note=unrelated detail\nother-team row=098 owner=team-0 note=unrelated detail\nother-team row=099 owner=team-1 note=unrelated detail"
+        },
+        {
+          "id": "turn3",
+          "prompt": "还有一些无关记录，继续只确认收到：\narchive row=000 owner=team-0 note=unrelated detail\narchive row=001 owner=team-1 note=unrelated detail\narchive row=002 owner=team-2 note=unrelated detail\narchive row=003 owner=team-3 note=unrelated detail\narchive row=004 owner=team-4 note=unrelated detail\narchive row=005 owner=team-5 note=unrelated detail\narchive row=006 owner=team-6 note=unrelated detail\narchive row=007 owner=team-0 note=unrelated detail\narchive row=008 owner=team-1 note=unrelated detail\narchive row=009 owner=team-2 note=unrelated detail\narchive row=010 owner=team-3 note=unrelated detail\narchive row=011 owner=team-4 note=unrelated detail\narchive row=012 owner=team-5 note=unrelated detail\narchive row=013 owner=team-6 note=unrelated detail\narchive row=014 owner=team-0 note=unrelated detail\narchive row=015 owner=team-1 note=unrelated detail\narchive row=016 owner=team-2 note=unrelated detail\narchive row=017 owner=team-3 note=unrelated detail\narchive row=018 owner=team-4 note=unrelated detail\narchive row=019 owner=team-5 note=unrelated detail\narchive row=020 owner=team-6 note=unrelated detail\narchive row=021 owner=team-0 note=unrelated detail\narchive row=022 owner=team-1 note=unrelated detail\narchive row=023 owner=team-2 note=unrelated detail\narchive row=024 owner=team-3 note=unrelated detail\narchive row=025 owner=team-4 note=unrelated detail\narchive row=026 owner=team-5 note=unrelated detail\narchive row=027 owner=team-6 note=unrelated detail\narchive row=028 owner=team-0 note=unrelated detail\narchive row=029 owner=team-1 note=unrelated detail\narchive row=030 owner=team-2 note=unrelated detail\narchive row=031 owner=team-3 note=unrelated detail\narchive row=032 owner=team-4 note=unrelated detail\narchive row=033 owner=team-5 note=unrelated detail\narchive row=034 owner=team-6 note=unrelated detail\narchive row=035 owner=team-0 note=unrelated detail\narchive row=036 owner=team-1 note=unrelated detail\narchive row=037 owner=team-2 note=unrelated detail\narchive row=038 owner=team-3 note=unrelated detail\narchive row=039 owner=team-4 note=unrelated detail\narchive row=040 owner=team-5 note=unrelated detail\narchive row=041 owner=team-6 note=unrelated detail\narchive row=042 owner=team-0 note=unrelated detail\narchive row=043 owner=team-1 note=unrelated detail\narchive row=044 owner=team-2 note=unrelated detail\narchive row=045 owner=team-3 note=unrelated detail\narchive row=046 owner=team-4 note=unrelated detail\narchive row=047 owner=team-5 note=unrelated detail\narchive row=048 owner=team-6 note=unrelated detail\narchive row=049 owner=team-0 note=unrelated detail\narchive row=050 owner=team-1 note=unrelated detail\narchive row=051 owner=team-2 note=unrelated detail\narchive row=052 owner=team-3 note=unrelated detail\narchive row=053 owner=team-4 note=unrelated detail\narchive row=054 owner=team-5 note=unrelated detail\narchive row=055 owner=team-6 note=unrelated detail\narchive row=056 owner=team-0 note=unrelated detail\narchive row=057 owner=team-1 note=unrelated detail\narchive row=058 owner=team-2 note=unrelated detail\narchive row=059 owner=team-3 note=unrelated detail\narchive row=060 owner=team-4 note=unrelated detail\narchive row=061 owner=team-5 note=unrelated detail\narchive row=062 owner=team-6 note=unrelated detail\narchive row=063 owner=team-0 note=unrelated detail\narchive row=064 owner=team-1 note=unrelated detail\narchive row=065 owner=team-2 note=unrelated detail\narchive row=066 owner=team-3 note=unrelated detail\narchive row=067 owner=team-4 note=unrelated detail\narchive row=068 owner=team-5 note=unrelated detail\narchive row=069 owner=team-6 note=unrelated detail\narchive row=070 owner=team-0 note=unrelated detail\narchive row=071 owner=team-1 note=unrelated detail\narchive row=072 owner=team-2 note=unrelated detail\narchive row=073 owner=team-3 note=unrelated detail\narchive row=074 owner=team-4 note=unrelated detail\narchive row=075 owner=team-5 note=unrelated detail\narchive row=076 owner=team-6 note=unrelated detail\narchive row=077 owner=team-0 note=unrelated detail\narchive row=078 owner=team-1 note=unrelated detail\narchive row=079 owner=team-2 note=unrelated detail\narchive row=080 owner=team-3 note=unrelated detail\narchive row=081 owner=team-4 note=unrelated detail\narchive row=082 owner=team-5 note=unrelated detail\narchive row=083 owner=team-6 note=unrelated detail\narchive row=084 owner=team-0 note=unrelated detail\narchive row=085 owner=team-1 note=unrelated detail\narchive row=086 owner=team-2 note=unrelated detail\narchive row=087 owner=team-3 note=unrelated detail\narchive row=088 owner=team-4 note=unrelated detail\narchive row=089 owner=team-5 note=unrelated detail\narchive row=090 owner=team-6 note=unrelated detail\narchive row=091 owner=team-0 note=unrelated detail\narchive row=092 owner=team-1 note=unrelated detail\narchive row=093 owner=team-2 note=unrelated detail\narchive row=094 owner=team-3 note=unrelated detail\narchive row=095 owner=team-4 note=unrelated detail\narchive row=096 owner=team-5 note=unrelated detail\narchive row=097 owner=team-6 note=unrelated detail\narchive row=098 owner=team-0 note=unrelated detail\narchive row=099 owner=team-1 note=unrelated detail"
+        },
+        {
+          "id": "turn4",
+          "prompt": "提案已撤销，当前 schema 仍为 9。"
+        },
+        {
+          "id": "turn5",
+          "prompt": "现在按最后有效要求写 config.json，只创建这个文件，字段为：schema, upgrade_planned。布尔状态用 true/false，时长和schema用整数，其他为字符串。encoding和delimiter如有出现，保留最早给出的字面拼写。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json\\nfrom pathlib import Path\\nassert json.loads(Path('config.json').read_text()) == {'schema': 9, 'upgrade_planned': False}\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "compaction.completed",
+          "dimension": "process"
+        },
+        {
+          "type": "metric",
+          "name": "compactions",
+          "dimension": "process",
+          "min": 1
+        },
+        {
+          "type": "metric",
+          "name": "history_archives",
+          "dimension": "process",
+          "min": 1
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "dimension": "efficiency",
+          "max": 180000
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "dimension": "efficiency",
+          "max": 50
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "dimension": "reliability",
+          "min": 5
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "dimension": "reliability",
+          "max": 0
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "config.json"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 600,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "fresh-retained-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "family": "compression_status",
+        "split": "retained",
+        "holdout_policy": "frozen hand-authored cases; future tuning must not claim unseen",
+        "prior_suite": "retained-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_COMPACTION_ENABLED": "true",
+        "MINICLAW_PROGRESSIVE_COMPACTION_ENABLED": "true",
+        "MINICLAW_COMPACTION_SOFT_TRIGGER_TOKENS": "4500",
+        "MINICLAW_COMPACTION_HARD_TRIGGER_TOKENS": "6500",
+        "MINICLAW_COMPACTION_TARGET_TOKENS": "2500",
+        "MINICLAW_COMPACTION_KEEP_RECENT_TOKENS": "900",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      }
+    },
+    {
+      "id": "dialogue_compression_literal",
+      "category": "compression",
+      "capabilities": [
+        "compression_recovery",
+        "fresh_validation",
+        "natural_dialogue"
+      ],
+      "fixture": "fixtures/dialogue-campaign/compression_literal",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "我在处理 Quill 的交付状态，只在本次会话跟踪，暂时不要写文件。发布标签必须保留原样：Canary  Candidate（两个空格），清单在 records/候选 清单.json。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "下面是另一团队的登记，只确认收到，不要混入当前任务：\nother-team row=000 owner=team-0 note=unrelated detail\nother-team row=001 owner=team-1 note=unrelated detail\nother-team row=002 owner=team-2 note=unrelated detail\nother-team row=003 owner=team-3 note=unrelated detail\nother-team row=004 owner=team-4 note=unrelated detail\nother-team row=005 owner=team-5 note=unrelated detail\nother-team row=006 owner=team-6 note=unrelated detail\nother-team row=007 owner=team-0 note=unrelated detail\nother-team row=008 owner=team-1 note=unrelated detail\nother-team row=009 owner=team-2 note=unrelated detail\nother-team row=010 owner=team-3 note=unrelated detail\nother-team row=011 owner=team-4 note=unrelated detail\nother-team row=012 owner=team-5 note=unrelated detail\nother-team row=013 owner=team-6 note=unrelated detail\nother-team row=014 owner=team-0 note=unrelated detail\nother-team row=015 owner=team-1 note=unrelated detail\nother-team row=016 owner=team-2 note=unrelated detail\nother-team row=017 owner=team-3 note=unrelated detail\nother-team row=018 owner=team-4 note=unrelated detail\nother-team row=019 owner=team-5 note=unrelated detail\nother-team row=020 owner=team-6 note=unrelated detail\nother-team row=021 owner=team-0 note=unrelated detail\nother-team row=022 owner=team-1 note=unrelated detail\nother-team row=023 owner=team-2 note=unrelated detail\nother-team row=024 owner=team-3 note=unrelated detail\nother-team row=025 owner=team-4 note=unrelated detail\nother-team row=026 owner=team-5 note=unrelated detail\nother-team row=027 owner=team-6 note=unrelated detail\nother-team row=028 owner=team-0 note=unrelated detail\nother-team row=029 owner=team-1 note=unrelated detail\nother-team row=030 owner=team-2 note=unrelated detail\nother-team row=031 owner=team-3 note=unrelated detail\nother-team row=032 owner=team-4 note=unrelated detail\nother-team row=033 owner=team-5 note=unrelated detail\nother-team row=034 owner=team-6 note=unrelated detail\nother-team row=035 owner=team-0 note=unrelated detail\nother-team row=036 owner=team-1 note=unrelated detail\nother-team row=037 owner=team-2 note=unrelated detail\nother-team row=038 owner=team-3 note=unrelated detail\nother-team row=039 owner=team-4 note=unrelated detail\nother-team row=040 owner=team-5 note=unrelated detail\nother-team row=041 owner=team-6 note=unrelated detail\nother-team row=042 owner=team-0 note=unrelated detail\nother-team row=043 owner=team-1 note=unrelated detail\nother-team row=044 owner=team-2 note=unrelated detail\nother-team row=045 owner=team-3 note=unrelated detail\nother-team row=046 owner=team-4 note=unrelated detail\nother-team row=047 owner=team-5 note=unrelated detail\nother-team row=048 owner=team-6 note=unrelated detail\nother-team row=049 owner=team-0 note=unrelated detail\nother-team row=050 owner=team-1 note=unrelated detail\nother-team row=051 owner=team-2 note=unrelated detail\nother-team row=052 owner=team-3 note=unrelated detail\nother-team row=053 owner=team-4 note=unrelated detail\nother-team row=054 owner=team-5 note=unrelated detail\nother-team row=055 owner=team-6 note=unrelated detail\nother-team row=056 owner=team-0 note=unrelated detail\nother-team row=057 owner=team-1 note=unrelated detail\nother-team row=058 owner=team-2 note=unrelated detail\nother-team row=059 owner=team-3 note=unrelated detail\nother-team row=060 owner=team-4 note=unrelated detail\nother-team row=061 owner=team-5 note=unrelated detail\nother-team row=062 owner=team-6 note=unrelated detail\nother-team row=063 owner=team-0 note=unrelated detail\nother-team row=064 owner=team-1 note=unrelated detail\nother-team row=065 owner=team-2 note=unrelated detail\nother-team row=066 owner=team-3 note=unrelated detail\nother-team row=067 owner=team-4 note=unrelated detail\nother-team row=068 owner=team-5 note=unrelated detail\nother-team row=069 owner=team-6 note=unrelated detail\nother-team row=070 owner=team-0 note=unrelated detail\nother-team row=071 owner=team-1 note=unrelated detail\nother-team row=072 owner=team-2 note=unrelated detail\nother-team row=073 owner=team-3 note=unrelated detail\nother-team row=074 owner=team-4 note=unrelated detail\nother-team row=075 owner=team-5 note=unrelated detail\nother-team row=076 owner=team-6 note=unrelated detail\nother-team row=077 owner=team-0 note=unrelated detail\nother-team row=078 owner=team-1 note=unrelated detail\nother-team row=079 owner=team-2 note=unrelated detail\nother-team row=080 owner=team-3 note=unrelated detail\nother-team row=081 owner=team-4 note=unrelated detail\nother-team row=082 owner=team-5 note=unrelated detail\nother-team row=083 owner=team-6 note=unrelated detail\nother-team row=084 owner=team-0 note=unrelated detail\nother-team row=085 owner=team-1 note=unrelated detail\nother-team row=086 owner=team-2 note=unrelated detail\nother-team row=087 owner=team-3 note=unrelated detail\nother-team row=088 owner=team-4 note=unrelated detail\nother-team row=089 owner=team-5 note=unrelated detail\nother-team row=090 owner=team-6 note=unrelated detail\nother-team row=091 owner=team-0 note=unrelated detail\nother-team row=092 owner=team-1 note=unrelated detail\nother-team row=093 owner=team-2 note=unrelated detail\nother-team row=094 owner=team-3 note=unrelated detail\nother-team row=095 owner=team-4 note=unrelated detail\nother-team row=096 owner=team-5 note=unrelated detail\nother-team row=097 owner=team-6 note=unrelated detail\nother-team row=098 owner=team-0 note=unrelated detail\nother-team row=099 owner=team-1 note=unrelated detail"
+        },
+        {
+          "id": "turn3",
+          "prompt": "还有一些无关记录，继续只确认收到：\narchive row=000 owner=team-0 note=unrelated detail\narchive row=001 owner=team-1 note=unrelated detail\narchive row=002 owner=team-2 note=unrelated detail\narchive row=003 owner=team-3 note=unrelated detail\narchive row=004 owner=team-4 note=unrelated detail\narchive row=005 owner=team-5 note=unrelated detail\narchive row=006 owner=team-6 note=unrelated detail\narchive row=007 owner=team-0 note=unrelated detail\narchive row=008 owner=team-1 note=unrelated detail\narchive row=009 owner=team-2 note=unrelated detail\narchive row=010 owner=team-3 note=unrelated detail\narchive row=011 owner=team-4 note=unrelated detail\narchive row=012 owner=team-5 note=unrelated detail\narchive row=013 owner=team-6 note=unrelated detail\narchive row=014 owner=team-0 note=unrelated detail\narchive row=015 owner=team-1 note=unrelated detail\narchive row=016 owner=team-2 note=unrelated detail\narchive row=017 owner=team-3 note=unrelated detail\narchive row=018 owner=team-4 note=unrelated detail\narchive row=019 owner=team-5 note=unrelated detail\narchive row=020 owner=team-6 note=unrelated detail\narchive row=021 owner=team-0 note=unrelated detail\narchive row=022 owner=team-1 note=unrelated detail\narchive row=023 owner=team-2 note=unrelated detail\narchive row=024 owner=team-3 note=unrelated detail\narchive row=025 owner=team-4 note=unrelated detail\narchive row=026 owner=team-5 note=unrelated detail\narchive row=027 owner=team-6 note=unrelated detail\narchive row=028 owner=team-0 note=unrelated detail\narchive row=029 owner=team-1 note=unrelated detail\narchive row=030 owner=team-2 note=unrelated detail\narchive row=031 owner=team-3 note=unrelated detail\narchive row=032 owner=team-4 note=unrelated detail\narchive row=033 owner=team-5 note=unrelated detail\narchive row=034 owner=team-6 note=unrelated detail\narchive row=035 owner=team-0 note=unrelated detail\narchive row=036 owner=team-1 note=unrelated detail\narchive row=037 owner=team-2 note=unrelated detail\narchive row=038 owner=team-3 note=unrelated detail\narchive row=039 owner=team-4 note=unrelated detail\narchive row=040 owner=team-5 note=unrelated detail\narchive row=041 owner=team-6 note=unrelated detail\narchive row=042 owner=team-0 note=unrelated detail\narchive row=043 owner=team-1 note=unrelated detail\narchive row=044 owner=team-2 note=unrelated detail\narchive row=045 owner=team-3 note=unrelated detail\narchive row=046 owner=team-4 note=unrelated detail\narchive row=047 owner=team-5 note=unrelated detail\narchive row=048 owner=team-6 note=unrelated detail\narchive row=049 owner=team-0 note=unrelated detail\narchive row=050 owner=team-1 note=unrelated detail\narchive row=051 owner=team-2 note=unrelated detail\narchive row=052 owner=team-3 note=unrelated detail\narchive row=053 owner=team-4 note=unrelated detail\narchive row=054 owner=team-5 note=unrelated detail\narchive row=055 owner=team-6 note=unrelated detail\narchive row=056 owner=team-0 note=unrelated detail\narchive row=057 owner=team-1 note=unrelated detail\narchive row=058 owner=team-2 note=unrelated detail\narchive row=059 owner=team-3 note=unrelated detail\narchive row=060 owner=team-4 note=unrelated detail\narchive row=061 owner=team-5 note=unrelated detail\narchive row=062 owner=team-6 note=unrelated detail\narchive row=063 owner=team-0 note=unrelated detail\narchive row=064 owner=team-1 note=unrelated detail\narchive row=065 owner=team-2 note=unrelated detail\narchive row=066 owner=team-3 note=unrelated detail\narchive row=067 owner=team-4 note=unrelated detail\narchive row=068 owner=team-5 note=unrelated detail\narchive row=069 owner=team-6 note=unrelated detail\narchive row=070 owner=team-0 note=unrelated detail\narchive row=071 owner=team-1 note=unrelated detail\narchive row=072 owner=team-2 note=unrelated detail\narchive row=073 owner=team-3 note=unrelated detail\narchive row=074 owner=team-4 note=unrelated detail\narchive row=075 owner=team-5 note=unrelated detail\narchive row=076 owner=team-6 note=unrelated detail\narchive row=077 owner=team-0 note=unrelated detail\narchive row=078 owner=team-1 note=unrelated detail\narchive row=079 owner=team-2 note=unrelated detail\narchive row=080 owner=team-3 note=unrelated detail\narchive row=081 owner=team-4 note=unrelated detail\narchive row=082 owner=team-5 note=unrelated detail\narchive row=083 owner=team-6 note=unrelated detail\narchive row=084 owner=team-0 note=unrelated detail\narchive row=085 owner=team-1 note=unrelated detail\narchive row=086 owner=team-2 note=unrelated detail\narchive row=087 owner=team-3 note=unrelated detail\narchive row=088 owner=team-4 note=unrelated detail\narchive row=089 owner=team-5 note=unrelated detail\narchive row=090 owner=team-6 note=unrelated detail\narchive row=091 owner=team-0 note=unrelated detail\narchive row=092 owner=team-1 note=unrelated detail\narchive row=093 owner=team-2 note=unrelated detail\narchive row=094 owner=team-3 note=unrelated detail\narchive row=095 owner=team-4 note=unrelated detail\narchive row=096 owner=team-5 note=unrelated detail\narchive row=097 owner=team-6 note=unrelated detail\narchive row=098 owner=team-0 note=unrelated detail\narchive row=099 owner=team-1 note=unrelated detail"
+        },
+        {
+          "id": "turn4",
+          "prompt": "标签与路径不变，负责人改为 Jo。"
+        },
+        {
+          "id": "turn5",
+          "prompt": "现在按最后有效要求写 config.json，只创建这个文件，字段为：label, path, owner。布尔状态用 true/false，时长和schema用整数，其他为字符串。encoding和delimiter如有出现，保留最早给出的字面拼写。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json\\nfrom pathlib import Path\\nassert json.loads(Path('config.json').read_text()) == {'label': 'Canary  Candidate', 'path': 'records/候选 清单.json', 'owner': 'Jo'}\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "compaction.completed",
+          "dimension": "process"
+        },
+        {
+          "type": "metric",
+          "name": "compactions",
+          "dimension": "process",
+          "min": 1
+        },
+        {
+          "type": "metric",
+          "name": "history_archives",
+          "dimension": "process",
+          "min": 1
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "dimension": "efficiency",
+          "max": 180000
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "dimension": "efficiency",
+          "max": 50
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "dimension": "reliability",
+          "min": 5
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "dimension": "reliability",
+          "max": 0
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "config.json"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 600,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "fresh-retained-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "family": "compression_literal",
+        "split": "retained",
+        "holdout_policy": "frozen hand-authored cases; future tuning must not claim unseen",
+        "prior_suite": "retained-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_COMPACTION_ENABLED": "true",
+        "MINICLAW_PROGRESSIVE_COMPACTION_ENABLED": "true",
+        "MINICLAW_COMPACTION_SOFT_TRIGGER_TOKENS": "4500",
+        "MINICLAW_COMPACTION_HARD_TRIGGER_TOKENS": "6500",
+        "MINICLAW_COMPACTION_TARGET_TOKENS": "2500",
+        "MINICLAW_COMPACTION_KEEP_RECENT_TOKENS": "900",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      }
+    },
+    {
+      "id": "dialogue_compression_export_flags",
+      "category": "compression",
+      "capabilities": [
+        "compression_recovery",
+        "fresh_validation",
+        "natural_dialogue"
+      ],
+      "fixture": "fixtures/dialogue-campaign/compression_export_flags",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "我在处理 Quill 的交付状态，只在本次会话跟踪，暂时不要写文件。导出约定是 encoding=utf-8、delimiter=tab、header=true、null_token=NONE。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "下面是另一团队的登记，只确认收到，不要混入当前任务：\nother-team row=000 owner=team-0 note=unrelated detail\nother-team row=001 owner=team-1 note=unrelated detail\nother-team row=002 owner=team-2 note=unrelated detail\nother-team row=003 owner=team-3 note=unrelated detail\nother-team row=004 owner=team-4 note=unrelated detail\nother-team row=005 owner=team-5 note=unrelated detail\nother-team row=006 owner=team-6 note=unrelated detail\nother-team row=007 owner=team-0 note=unrelated detail\nother-team row=008 owner=team-1 note=unrelated detail\nother-team row=009 owner=team-2 note=unrelated detail\nother-team row=010 owner=team-3 note=unrelated detail\nother-team row=011 owner=team-4 note=unrelated detail\nother-team row=012 owner=team-5 note=unrelated detail\nother-team row=013 owner=team-6 note=unrelated detail\nother-team row=014 owner=team-0 note=unrelated detail\nother-team row=015 owner=team-1 note=unrelated detail\nother-team row=016 owner=team-2 note=unrelated detail\nother-team row=017 owner=team-3 note=unrelated detail\nother-team row=018 owner=team-4 note=unrelated detail\nother-team row=019 owner=team-5 note=unrelated detail\nother-team row=020 owner=team-6 note=unrelated detail\nother-team row=021 owner=team-0 note=unrelated detail\nother-team row=022 owner=team-1 note=unrelated detail\nother-team row=023 owner=team-2 note=unrelated detail\nother-team row=024 owner=team-3 note=unrelated detail\nother-team row=025 owner=team-4 note=unrelated detail\nother-team row=026 owner=team-5 note=unrelated detail\nother-team row=027 owner=team-6 note=unrelated detail\nother-team row=028 owner=team-0 note=unrelated detail\nother-team row=029 owner=team-1 note=unrelated detail\nother-team row=030 owner=team-2 note=unrelated detail\nother-team row=031 owner=team-3 note=unrelated detail\nother-team row=032 owner=team-4 note=unrelated detail\nother-team row=033 owner=team-5 note=unrelated detail\nother-team row=034 owner=team-6 note=unrelated detail\nother-team row=035 owner=team-0 note=unrelated detail\nother-team row=036 owner=team-1 note=unrelated detail\nother-team row=037 owner=team-2 note=unrelated detail\nother-team row=038 owner=team-3 note=unrelated detail\nother-team row=039 owner=team-4 note=unrelated detail\nother-team row=040 owner=team-5 note=unrelated detail\nother-team row=041 owner=team-6 note=unrelated detail\nother-team row=042 owner=team-0 note=unrelated detail\nother-team row=043 owner=team-1 note=unrelated detail\nother-team row=044 owner=team-2 note=unrelated detail\nother-team row=045 owner=team-3 note=unrelated detail\nother-team row=046 owner=team-4 note=unrelated detail\nother-team row=047 owner=team-5 note=unrelated detail\nother-team row=048 owner=team-6 note=unrelated detail\nother-team row=049 owner=team-0 note=unrelated detail\nother-team row=050 owner=team-1 note=unrelated detail\nother-team row=051 owner=team-2 note=unrelated detail\nother-team row=052 owner=team-3 note=unrelated detail\nother-team row=053 owner=team-4 note=unrelated detail\nother-team row=054 owner=team-5 note=unrelated detail\nother-team row=055 owner=team-6 note=unrelated detail\nother-team row=056 owner=team-0 note=unrelated detail\nother-team row=057 owner=team-1 note=unrelated detail\nother-team row=058 owner=team-2 note=unrelated detail\nother-team row=059 owner=team-3 note=unrelated detail\nother-team row=060 owner=team-4 note=unrelated detail\nother-team row=061 owner=team-5 note=unrelated detail\nother-team row=062 owner=team-6 note=unrelated detail\nother-team row=063 owner=team-0 note=unrelated detail\nother-team row=064 owner=team-1 note=unrelated detail\nother-team row=065 owner=team-2 note=unrelated detail\nother-team row=066 owner=team-3 note=unrelated detail\nother-team row=067 owner=team-4 note=unrelated detail\nother-team row=068 owner=team-5 note=unrelated detail\nother-team row=069 owner=team-6 note=unrelated detail\nother-team row=070 owner=team-0 note=unrelated detail\nother-team row=071 owner=team-1 note=unrelated detail\nother-team row=072 owner=team-2 note=unrelated detail\nother-team row=073 owner=team-3 note=unrelated detail\nother-team row=074 owner=team-4 note=unrelated detail\nother-team row=075 owner=team-5 note=unrelated detail\nother-team row=076 owner=team-6 note=unrelated detail\nother-team row=077 owner=team-0 note=unrelated detail\nother-team row=078 owner=team-1 note=unrelated detail\nother-team row=079 owner=team-2 note=unrelated detail\nother-team row=080 owner=team-3 note=unrelated detail\nother-team row=081 owner=team-4 note=unrelated detail\nother-team row=082 owner=team-5 note=unrelated detail\nother-team row=083 owner=team-6 note=unrelated detail\nother-team row=084 owner=team-0 note=unrelated detail\nother-team row=085 owner=team-1 note=unrelated detail\nother-team row=086 owner=team-2 note=unrelated detail\nother-team row=087 owner=team-3 note=unrelated detail\nother-team row=088 owner=team-4 note=unrelated detail\nother-team row=089 owner=team-5 note=unrelated detail\nother-team row=090 owner=team-6 note=unrelated detail\nother-team row=091 owner=team-0 note=unrelated detail\nother-team row=092 owner=team-1 note=unrelated detail\nother-team row=093 owner=team-2 note=unrelated detail\nother-team row=094 owner=team-3 note=unrelated detail\nother-team row=095 owner=team-4 note=unrelated detail\nother-team row=096 owner=team-5 note=unrelated detail\nother-team row=097 owner=team-6 note=unrelated detail\nother-team row=098 owner=team-0 note=unrelated detail\nother-team row=099 owner=team-1 note=unrelated detail"
+        },
+        {
+          "id": "turn3",
+          "prompt": "还有一些无关记录，继续只确认收到：\narchive row=000 owner=team-0 note=unrelated detail\narchive row=001 owner=team-1 note=unrelated detail\narchive row=002 owner=team-2 note=unrelated detail\narchive row=003 owner=team-3 note=unrelated detail\narchive row=004 owner=team-4 note=unrelated detail\narchive row=005 owner=team-5 note=unrelated detail\narchive row=006 owner=team-6 note=unrelated detail\narchive row=007 owner=team-0 note=unrelated detail\narchive row=008 owner=team-1 note=unrelated detail\narchive row=009 owner=team-2 note=unrelated detail\narchive row=010 owner=team-3 note=unrelated detail\narchive row=011 owner=team-4 note=unrelated detail\narchive row=012 owner=team-5 note=unrelated detail\narchive row=013 owner=team-6 note=unrelated detail\narchive row=014 owner=team-0 note=unrelated detail\narchive row=015 owner=team-1 note=unrelated detail\narchive row=016 owner=team-2 note=unrelated detail\narchive row=017 owner=team-3 note=unrelated detail\narchive row=018 owner=team-4 note=unrelated detail\narchive row=019 owner=team-5 note=unrelated detail\narchive row=020 owner=team-6 note=unrelated detail\narchive row=021 owner=team-0 note=unrelated detail\narchive row=022 owner=team-1 note=unrelated detail\narchive row=023 owner=team-2 note=unrelated detail\narchive row=024 owner=team-3 note=unrelated detail\narchive row=025 owner=team-4 note=unrelated detail\narchive row=026 owner=team-5 note=unrelated detail\narchive row=027 owner=team-6 note=unrelated detail\narchive row=028 owner=team-0 note=unrelated detail\narchive row=029 owner=team-1 note=unrelated detail\narchive row=030 owner=team-2 note=unrelated detail\narchive row=031 owner=team-3 note=unrelated detail\narchive row=032 owner=team-4 note=unrelated detail\narchive row=033 owner=team-5 note=unrelated detail\narchive row=034 owner=team-6 note=unrelated detail\narchive row=035 owner=team-0 note=unrelated detail\narchive row=036 owner=team-1 note=unrelated detail\narchive row=037 owner=team-2 note=unrelated detail\narchive row=038 owner=team-3 note=unrelated detail\narchive row=039 owner=team-4 note=unrelated detail\narchive row=040 owner=team-5 note=unrelated detail\narchive row=041 owner=team-6 note=unrelated detail\narchive row=042 owner=team-0 note=unrelated detail\narchive row=043 owner=team-1 note=unrelated detail\narchive row=044 owner=team-2 note=unrelated detail\narchive row=045 owner=team-3 note=unrelated detail\narchive row=046 owner=team-4 note=unrelated detail\narchive row=047 owner=team-5 note=unrelated detail\narchive row=048 owner=team-6 note=unrelated detail\narchive row=049 owner=team-0 note=unrelated detail\narchive row=050 owner=team-1 note=unrelated detail\narchive row=051 owner=team-2 note=unrelated detail\narchive row=052 owner=team-3 note=unrelated detail\narchive row=053 owner=team-4 note=unrelated detail\narchive row=054 owner=team-5 note=unrelated detail\narchive row=055 owner=team-6 note=unrelated detail\narchive row=056 owner=team-0 note=unrelated detail\narchive row=057 owner=team-1 note=unrelated detail\narchive row=058 owner=team-2 note=unrelated detail\narchive row=059 owner=team-3 note=unrelated detail\narchive row=060 owner=team-4 note=unrelated detail\narchive row=061 owner=team-5 note=unrelated detail\narchive row=062 owner=team-6 note=unrelated detail\narchive row=063 owner=team-0 note=unrelated detail\narchive row=064 owner=team-1 note=unrelated detail\narchive row=065 owner=team-2 note=unrelated detail\narchive row=066 owner=team-3 note=unrelated detail\narchive row=067 owner=team-4 note=unrelated detail\narchive row=068 owner=team-5 note=unrelated detail\narchive row=069 owner=team-6 note=unrelated detail\narchive row=070 owner=team-0 note=unrelated detail\narchive row=071 owner=team-1 note=unrelated detail\narchive row=072 owner=team-2 note=unrelated detail\narchive row=073 owner=team-3 note=unrelated detail\narchive row=074 owner=team-4 note=unrelated detail\narchive row=075 owner=team-5 note=unrelated detail\narchive row=076 owner=team-6 note=unrelated detail\narchive row=077 owner=team-0 note=unrelated detail\narchive row=078 owner=team-1 note=unrelated detail\narchive row=079 owner=team-2 note=unrelated detail\narchive row=080 owner=team-3 note=unrelated detail\narchive row=081 owner=team-4 note=unrelated detail\narchive row=082 owner=team-5 note=unrelated detail\narchive row=083 owner=team-6 note=unrelated detail\narchive row=084 owner=team-0 note=unrelated detail\narchive row=085 owner=team-1 note=unrelated detail\narchive row=086 owner=team-2 note=unrelated detail\narchive row=087 owner=team-3 note=unrelated detail\narchive row=088 owner=team-4 note=unrelated detail\narchive row=089 owner=team-5 note=unrelated detail\narchive row=090 owner=team-6 note=unrelated detail\narchive row=091 owner=team-0 note=unrelated detail\narchive row=092 owner=team-1 note=unrelated detail\narchive row=093 owner=team-2 note=unrelated detail\narchive row=094 owner=team-3 note=unrelated detail\narchive row=095 owner=team-4 note=unrelated detail\narchive row=096 owner=team-5 note=unrelated detail\narchive row=097 owner=team-6 note=unrelated detail\narchive row=098 owner=team-0 note=unrelated detail\narchive row=099 owner=team-1 note=unrelated detail"
+        },
+        {
+          "id": "turn4",
+          "prompt": "只把 header 改成 false，其余全部保持。"
+        },
+        {
+          "id": "turn5",
+          "prompt": "现在按最后有效要求写 config.json，只创建这个文件，字段为：encoding, delimiter, header, null_token。布尔状态用 true/false，时长和schema用整数，其他为字符串。encoding和delimiter如有出现，保留最早给出的字面拼写。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json\\nfrom pathlib import Path\\nassert json.loads(Path('config.json').read_text()) == {'encoding': 'utf-8', 'delimiter': 'tab', 'header': False, 'null_token': 'NONE'}\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "compaction.completed",
+          "dimension": "process"
+        },
+        {
+          "type": "metric",
+          "name": "compactions",
+          "dimension": "process",
+          "min": 1
+        },
+        {
+          "type": "metric",
+          "name": "history_archives",
+          "dimension": "process",
+          "min": 1
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "dimension": "efficiency",
+          "max": 180000
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "dimension": "efficiency",
+          "max": 50
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "dimension": "reliability",
+          "min": 5
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "dimension": "reliability",
+          "max": 0
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "config.json"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 600,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "fresh-retained-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "family": "compression_export_flags",
+        "split": "retained",
+        "holdout_policy": "frozen hand-authored cases; future tuning must not claim unseen",
+        "prior_suite": "retained-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_COMPACTION_ENABLED": "true",
+        "MINICLAW_PROGRESSIVE_COMPACTION_ENABLED": "true",
+        "MINICLAW_COMPACTION_SOFT_TRIGGER_TOKENS": "4500",
+        "MINICLAW_COMPACTION_HARD_TRIGGER_TOKENS": "6500",
+        "MINICLAW_COMPACTION_TARGET_TOKENS": "2500",
+        "MINICLAW_COMPACTION_KEEP_RECENT_TOKENS": "900",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      }
+    },
+    {
+      "id": "dialogue_tool_fix_and_verify",
+      "category": "tools",
+      "capabilities": [
+        "tool_execution",
+        "fresh_validation",
+        "natural_dialogue"
+      ],
+      "fixture": "fixtures/dialogue-campaign/tool_fix_and_verify",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "修 app.py 的 average，空列表返回 None，非空返回算术平均。完成后实际运行 verify.py。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c','from app import average\\nassert average([1,2,3]) == 2\\nassert average([]) is None']; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "dimension": "process",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          }
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "dimension": "efficiency",
+          "max": 65000
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "dimension": "efficiency",
+          "max": 20
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "dimension": "reliability",
+          "min": 1
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "dimension": "reliability",
+          "max": 0
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "app.py",
+            "__pycache__/**",
+            "**/__pycache__/**",
+            ".pytest_cache/**"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 600,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "fresh-retained-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "family": "tool_fix_and_verify",
+        "split": "retained",
+        "holdout_policy": "frozen hand-authored cases; future tuning must not claim unseen",
+        "prior_suite": "retained-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false"
+      }
+    },
+    {
+      "id": "dialogue_tool_csv_unicode_path",
+      "category": "tools",
+      "capabilities": [
+        "tool_execution",
+        "fresh_validation",
+        "natural_dialogue"
+      ],
+      "fixture": "fixtures/dialogue-campaign/tool_csv_unicode_path",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "用程序处理 `资料/客户 清单.csv`：按 customer_id 去重保留最后一条及其最后位置，写 `资料/客户 去重.csv`，原文件不变。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import csv\\nfrom pathlib import Path\\nwith Path('资料/客户 去重.csv').open(newline='', encoding='utf-8-sig') as f: rows=list(csv.DictReader(f))\\nassert rows == [{'customer_id':'c2','note':'keep'},{'customer_id':'c1','note':'最后一条'}]\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "dimension": "process",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          }
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "dimension": "efficiency",
+          "max": 65000
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "dimension": "efficiency",
+          "max": 20
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "dimension": "reliability",
+          "min": 1
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "dimension": "reliability",
+          "max": 0
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "资料/客户 去重.csv"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 600,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "fresh-retained-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "family": "tool_csv_unicode_path",
+        "split": "retained",
+        "holdout_policy": "frozen hand-authored cases; future tuning must not claim unseen",
+        "prior_suite": "retained-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false"
+      }
+    },
+    {
+      "id": "dialogue_tool_recover_missing_dir",
+      "category": "tools",
+      "capabilities": [
+        "tool_execution",
+        "fresh_validation",
+        "natural_dialogue"
+      ],
+      "fixture": "fixtures/dialogue-campaign/tool_recover_missing_dir",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "运行 export.py 生成 out/summary.json；若缺目录自行补齐再重试，不能只描述步骤，也不要改 export.py。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json\\nfrom pathlib import Path\\nassert json.loads(Path('out/summary.json').read_text()) == {'items':23,'ready':True}\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "dimension": "process",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          }
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "dimension": "efficiency",
+          "max": 65000
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "dimension": "efficiency",
+          "max": 20
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "dimension": "reliability",
+          "min": 1
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "dimension": "reliability",
+          "max": 0
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "out/summary.json"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 600,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "fresh-retained-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "family": "tool_recover_missing_dir",
+        "split": "retained",
+        "holdout_policy": "frozen hand-authored cases; future tuning must not claim unseen",
+        "prior_suite": "retained-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false"
+      }
+    },
+    {
+      "id": "dialogue_complete_package_export",
+      "category": "completion",
+      "capabilities": [
+        "end_to_end_delivery",
+        "fresh_validation",
+        "natural_dialogue"
+      ],
+      "fixture": "fixtures/dialogue-campaign/complete_package_export",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "新增 greet(name)：返回精确字符串 `Hello, {name}!`（保留 name 原样），并从 package 根导出，让 `from package import greet` 可用；README 加输入输出示例。实际验证，只改指定文件。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"from package import greet\\nfrom pathlib import Path\\nassert greet('Kai') == 'Hello, Kai!'\\nassert greet(' A ') == 'Hello,  A !'\\nassert 'greet' in Path('README.md').read_text()\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "dimension": "process",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          }
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "dimension": "efficiency",
+          "max": 65000
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "dimension": "efficiency",
+          "max": 25
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "dimension": "reliability",
+          "min": 1
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "dimension": "reliability",
+          "max": 0
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "package/core.py",
+            "package/__init__.py",
+            "README.md",
+            "__pycache__/**",
+            "**/__pycache__/**",
+            ".pytest_cache/**"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 600,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "fresh-retained-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "family": "complete_package_export",
+        "split": "retained",
+        "holdout_policy": "frozen hand-authored cases; future tuning must not claim unseen",
+        "prior_suite": "retained-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false"
+      }
+    },
+    {
+      "id": "dialogue_complete_csv_roundtrip",
+      "category": "completion",
+      "capabilities": [
+        "end_to_end_delivery",
+        "fresh_validation",
+        "natural_dialogue"
+      ],
+      "fixture": "fixtures/dialogue-campaign/complete_csv_roundtrip",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "实现 render(rows)，将 name、comment 字典列表写成标准 CSV；支持逗号、双引号、换行，空列表仍有表头。只改 exporter.py 并实际验证。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c','import csv, io\\nfrom exporter import render\\nrows=[{\\'name\\':\\'a,b\\',\\'comment\\':\\'x\\\\ny\\'},{\\'name\\':\\'q\"r\\',\\'comment\\':\\'ok\\'}]\\nassert list(csv.DictReader(io.StringIO(render(rows)))) == rows\\nassert list(csv.reader(io.StringIO(render([])))) == [[\\'name\\',\\'comment\\']]']; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "dimension": "process",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          }
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "dimension": "efficiency",
+          "max": 65000
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "dimension": "efficiency",
+          "max": 25
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "dimension": "reliability",
+          "min": 1
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "dimension": "reliability",
+          "max": 0
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "exporter.py",
+            "__pycache__/**",
+            "**/__pycache__/**",
+            ".pytest_cache/**"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 600,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "fresh-retained-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "family": "complete_csv_roundtrip",
+        "split": "retained",
+        "holdout_policy": "frozen hand-authored cases; future tuning must not claim unseen",
+        "prior_suite": "retained-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false"
+      }
+    },
+    {
+      "id": "dialogue_retained_file_cli_contract",
+      "category": "completion",
+      "capabilities": [
+        "user_dialogue",
+        "completion"
+      ],
+      "fixture": "fixtures/dialogue-campaign/retained_file_cli_contract",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "实现 report.py 的命令行接口，调用形式必须是 python report.py INPUT_FILE OUTPUT_FILE，两个参数都是文件路径，绝不是把JSON数组直接放参数里。读取 INPUT_FILE 的整数数组，将 count、sum、average 写入 OUTPUT_FILE 的JSON对象；空数组 average 为 JSON null。只改 report.py，并实际验证命令行。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c','import json,subprocess,tempfile\\nfrom pathlib import Path\\nwith tempfile.TemporaryDirectory() as d:\\n p=Path(d)\\n for values in [[2,4,6],[],[-3,0,3]]:\\n  (p/\"in.json\").write_text(json.dumps(values))\\n  subprocess.run([\"python\",\"report.py\",str(p/\"in.json\"),str(p/\"out.json\")],check=True)\\n  assert json.loads((p/\"out.json\").read_text())=={\"count\":len(values),\"sum\":sum(values),\"average\":sum(values)/len(values) if values else None}']; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "report.py",
+            "__pycache__/**",
+            "**/__pycache__/**",
+            ".pytest_cache/**"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 65000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 30,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 1,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "split": "retained",
+        "replaces": "dialogue_complete_json_cli",
+        "family": "dialogue_retained_file_cli_contract",
+        "reason": "Original question underspecified; preserved without changing its oracle. New amended evaluation item with explicit contract.",
+        "prior_suite": "retained-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      }
+    },
+    {
+      "id": "dialogue_retained_root_recursive_manifest",
+      "category": "completion",
+      "capabilities": [
+        "user_dialogue",
+        "completion"
+      ],
+      "fixture": "fixtures/dialogue-campaign/retained_root_recursive_manifest",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "递归扫描 assets 中所有 .txt 文件，在仓库根目录创建 ./manifest.json，不能放进 assets。JSON根必须是对象，files 是相对于仓库根目录的路径字符串列表（因此都以 assets/ 开头），按字典序排序，count 是列表长度整数。只创建这一份文件，实际运行核验。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c','import json\\nfrom pathlib import Path\\nassert json.loads(Path(\"manifest.json\").read_text())=={\"files\":[\"assets/a.txt\",\"assets/sub/b.txt\"],\"count\":2}']; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "manifest.json"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 65000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 30,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 1,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "split": "retained",
+        "replaces": "dialogue_complete_recursive_manifest",
+        "family": "dialogue_retained_root_recursive_manifest",
+        "reason": "Original question underspecified; preserved without changing its oracle. New amended evaluation item with explicit contract.",
+        "prior_suite": "retained-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      }
+    },
+    {
+      "id": "fresh_test_railway_code",
+      "category": "recall",
+      "capabilities": [
+        "user_dialogue",
+        "recall",
+        "fresh_synthetic"
+      ],
+      "fixture": "fixtures/fresh_test_railway_code",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "长期记住：Northstar 的值班代码是 RAIL-48，所属区域是 alpine。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "补充：Northstar 的告警频道改成 #north-alert，值班代码仍不变。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "我现在接手 Northstar，值班代码、区域和告警频道是什么？只给 JSON：code、region、channel。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "code": "RAIL-48",
+            "region": "alpine",
+            "channel": "#north-alert"
+          },
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "memory.retrieval",
+          "where_min": {
+            "data.injected_count": 1
+          },
+          "dimension": "process",
+          "phase": "turn3"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 65000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [],
+          "dimension": "safety",
+          "max_changed_files": 0
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "max": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 3,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_frozen_dialogue",
+        "campaign": "fresh-test-v1",
+        "track": "smoke-basic",
+        "origin": "hand-authored new task family",
+        "family": "railway_code",
+        "oracle": "independent hidden command and objective trace checks",
+        "prior_suite": "test-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "true"
+      }
+    },
+    {
+      "id": "fresh_test_schema_owner",
+      "category": "recall",
+      "capabilities": [
+        "user_dialogue",
+        "recall",
+        "fresh_synthetic"
+      ],
+      "fixture": "fixtures/fresh_test_schema_owner",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "记住数据产品 Prism 的 schema owner 是 Inez，发布窗口为周三。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "更正 Prism 的发布窗口为周四，owner 没变；另一个产品 Halo 不相关。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "Prism 的 schema owner 和发布窗口是什么？JSON：owner、window。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "owner": "Inez",
+            "window": "周四"
+          },
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "memory.retrieval",
+          "where_min": {
+            "data.injected_count": 1
+          },
+          "dimension": "process",
+          "phase": "turn3"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 65000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [],
+          "dimension": "safety",
+          "max_changed_files": 0
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "max": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 3,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_frozen_dialogue",
+        "campaign": "fresh-test-v1",
+        "track": "smoke-basic",
+        "origin": "hand-authored new task family",
+        "family": "schema_owner",
+        "oracle": "independent hidden command and objective trace checks",
+        "prior_suite": "test-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "true"
+      }
+    },
+    {
+      "id": "fresh_test_shift_assignment",
+      "category": "recall",
+      "capabilities": [
+        "user_dialogue",
+        "recall",
+        "fresh_synthetic"
+      ],
+      "fixture": "fixtures/fresh_test_shift_assignment",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "记住周末排班：Lumen 周六由 Jia 值班，周日由 Ren 值班。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "调整：本周六改由 Mei 值班，周日仍是 Ren；这是排班更新。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "Lumen 本周末两天分别谁值班？只给 JSON：saturday、sunday。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "saturday": "Mei",
+            "sunday": "Ren"
+          },
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "memory.retrieval",
+          "where_min": {
+            "data.injected_count": 1
+          },
+          "dimension": "process",
+          "phase": "turn3"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 65000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [],
+          "dimension": "safety",
+          "max_changed_files": 0
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "max": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 3,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_frozen_dialogue",
+        "campaign": "fresh-test-v1",
+        "track": "smoke-basic",
+        "origin": "hand-authored new task family",
+        "family": "shift_assignment",
+        "oracle": "independent hidden command and objective trace checks",
+        "prior_suite": "test-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "true"
+      }
+    },
+    {
+      "id": "fresh_test_stock_levels",
+      "category": "recall",
+      "capabilities": [
+        "user_dialogue",
+        "recall",
+        "fresh_synthetic"
+      ],
+      "fixture": "fixtures/fresh_test_stock_levels",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "记录仓库 Kappa 的库存：蓝盒 18 件，绿盒 24 件。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "盘点更正：蓝盒现在 21 件，绿盒没有变化；红盒未登记。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "Kappa 蓝盒、绿盒和红盒库存是多少？未知用 null，输出 JSON：blue、green、red。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "blue": 21,
+            "green": 24,
+            "red": null
+          },
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "memory.retrieval",
+          "where_min": {
+            "data.injected_count": 1
+          },
+          "dimension": "process",
+          "phase": "turn3"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 65000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [],
+          "dimension": "safety",
+          "max_changed_files": 0
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "max": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 3,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_frozen_dialogue",
+        "campaign": "fresh-test-v1",
+        "track": "smoke-basic",
+        "origin": "hand-authored new task family",
+        "family": "stock_levels",
+        "oracle": "independent hidden command and objective trace checks",
+        "prior_suite": "test-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "true"
+      }
+    },
+    {
+      "id": "fresh_test_retraction",
+      "category": "recall",
+      "capabilities": [
+        "user_dialogue",
+        "recall",
+        "fresh_synthetic"
+      ],
+      "fixture": "fixtures/fresh_test_retraction",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "记住 Quartz 的临时联系人是 Uma，部署区域是 eu-2。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "Uma 已不再负责 Quartz，请删除这个联系人记录；部署区域仍是 eu-2。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "Quartz 当前联系人和部署区域是什么？未知联系人用 null，返回 JSON：contact、region。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "contact": null,
+            "region": "eu-2"
+          },
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "memory.retrieval",
+          "where_min": {
+            "data.injected_count": 1
+          },
+          "dimension": "process",
+          "phase": "turn3"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 65000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [],
+          "dimension": "safety",
+          "max_changed_files": 0
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "max": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 3,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_frozen_dialogue",
+        "campaign": "fresh-test-v1",
+        "track": "smoke-basic",
+        "origin": "hand-authored new task family",
+        "family": "retraction",
+        "oracle": "independent hidden command and objective trace checks",
+        "prior_suite": "test-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "true"
+      }
+    },
+    {
+      "id": "fresh_test_inventory_report",
+      "category": "completion",
+      "capabilities": [
+        "user_dialogue",
+        "completion",
+        "fresh_synthetic"
+      ],
+      "fixture": "fixtures/fresh_test_inventory_report",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "读取 inventory.csv，生成 report.json，包含 total_units 和 sku_count；运行独立校验。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json\\nassert json.load(open('report.json')) == {'total_units':12,'sku_count':2}\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          },
+          "min_count": 1,
+          "dimension": "process"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 65000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "report.json"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "max": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 1,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_frozen_dialogue",
+        "campaign": "fresh-test-v1",
+        "track": "smoke-basic",
+        "origin": "hand-authored new task family",
+        "family": "inventory_report",
+        "oracle": "independent hidden command and objective trace checks",
+        "prior_suite": "test-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false"
+      }
+    },
+    {
+      "id": "fresh_test_html_summary",
+      "category": "completion",
+      "capabilities": [
+        "user_dialogue",
+        "completion",
+        "fresh_synthetic"
+      ],
+      "fixture": "fixtures/fresh_test_html_summary",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "读取 metrics.json，生成 summary.txt，写出 passed=、failed= 两行整数，并运行验证。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"from pathlib import Path\\nassert Path('summary.txt').read_text() == 'passed=2\\\\nfailed=1\\\\n'\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          },
+          "min_count": 1,
+          "dimension": "process"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 65000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "summary.txt"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "max": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 1,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_frozen_dialogue",
+        "campaign": "fresh-test-v1",
+        "track": "smoke-basic",
+        "origin": "hand-authored new task family",
+        "family": "html_summary",
+        "oracle": "independent hidden command and objective trace checks",
+        "prior_suite": "test-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false"
+      }
+    },
+    {
+      "id": "dialogue_test_root_markdown_index",
+      "category": "completion",
+      "capabilities": [
+        "user_dialogue",
+        "completion"
+      ],
+      "fixture": "fixtures/dialogue-campaign/test_root_markdown_index",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "扫描仓库 docs 目录中所有 .md 文件（包括 .draft.md），在仓库根目录创建 ./index.json，禁止放进 docs。根JSON值必须是数组，每个元素恰好包含 name（docs 下文件名字符串）和 bytes（文件原始字节数整数），按 name 升序。只创建根目录这份文件，实际核验。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c','import json\\nfrom pathlib import Path\\nassert json.loads(Path(\"index.json\").read_text())==[{\"name\":\".draft.md\",\"bytes\":6},{\"name\":\"a.md\",\"bytes\":6},{\"name\":\"b.md\",\"bytes\":14}]']; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "index.json"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 65000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 30,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 1,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "split": "test",
+        "replaces": "fresh_test_markdown_index",
+        "family": "dialogue_test_root_markdown_index",
+        "reason": "Original question underspecified; preserved without changing its oracle. New amended evaluation item with explicit contract.",
+        "prior_suite": "test-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      }
+    },
+    {
+      "id": "dialogue_test_root_checksum_manifest",
+      "category": "completion",
+      "capabilities": [
+        "user_dialogue",
+        "completion"
+      ],
+      "fixture": "fixtures/dialogue-campaign/test_root_checksum_manifest",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "读取 assets 中所有文件，在仓库根目录生成 ./manifest.json，禁止放在 assets 内。JSON根必须是数组，每项恰好有 path（相对于仓库根目录的路径，含 assets/ 前缀）和 sha256（文件原始字节的SHA-256，小写十六进制字符串）。按path排序，只创建这份文件，并实际运行校验。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "command",
+          "command": [
+            "python",
+            "-c",
+            "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c','import json,hashlib\\nfrom pathlib import Path\\nexpected=[{\"path\":p,\"sha256\":hashlib.sha256(Path(p).read_bytes()).hexdigest()} for p in [\"assets/x.bin\",\"assets/y.bin\"]]\\nassert json.loads(Path(\"manifest.json\").read_text())==expected']; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+          ],
+          "exit_code": 0,
+          "timeout_seconds": 60,
+          "dimension": "outcome"
+        },
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [
+            "manifest.json"
+          ],
+          "dimension": "safety"
+        },
+        {
+          "type": "trace_event",
+          "event": "tool.call",
+          "where": {
+            "data.tool_name": "bash",
+            "data.status": "success"
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 65000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 30,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 1,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "smoke-basic",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "split": "test",
+        "replaces": "fresh_test_checksum_manifest",
+        "family": "dialogue_test_root_checksum_manifest",
+        "reason": "Original question underspecified; preserved without changing its oracle. New amended evaluation item with explicit contract.",
+        "prior_suite": "test-release-v2.json",
+        "exposure": "previously executed; excluded from active challenge coverage"
+      },
+      "environment": {
+        "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+        "MINICLAW_WORKSPACE_MODE": "direct",
+        "MINICLAW_APPROVAL_POLICY": "allow",
+        "MINICLAW_GOAL_JUDGE_ENABLED": "false",
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "false"
+      }
+    }
+  ]
+}

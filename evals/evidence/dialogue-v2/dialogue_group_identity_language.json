@@ -1,0 +1,192 @@
+{
+  "id": "dialogue_group_identity_language",
+  "category": "actor-isolation",
+  "source": {
+    "kind": "synthetic_user_dialogue",
+    "campaign": "dialogue-20260905",
+    "track": "failure-regression",
+    "origin": "hand-authored realistic scenario",
+    "oracle": "independent expected fields or isolated hidden tests",
+    "input_adapter": "feishu-router",
+    "actors": [
+      "Alice",
+      "Bob",
+      "Alice",
+      "Bob"
+    ],
+    "failure_family": "shared-thread-actor-binding",
+    "actor_policy": "Personal preferences follow inbound user_id, shared thread context is not private-user identity.",
+    "discovery_report": ".aster\\evals\\expansion-20260905\\router-discovery\\cases\\dialogue_group_identity_language\\result.json",
+    "confirmation_report": ".aster\\evals\\expansion-20260905\\router-confirmation\\cases\\dialogue_group_identity_language\\result.json",
+    "observed_attempts": 3,
+    "observed_failures": 3,
+    "failure_signature": "shared-thread-actor-binding",
+    "status": "known-failure-unfixed"
+  },
+  "user_dialogue": [
+    {
+      "id": "turn1",
+      "prompt": "我是 Alice，请记住我的代码示例语言是 Python。这是我的个人偏好，不是群里所有人的约定。"
+    },
+    {
+      "id": "turn2",
+      "prompt": "我是 Bob，请记住我的代码示例语言是 Go。我的偏好只属于我，不要覆盖 Alice 的记录。"
+    },
+    {
+      "id": "turn3",
+      "prompt": "按我之前明确告诉你的个人记录，我的代码示例语言是什么？只给 JSON：value。"
+    },
+    {
+      "id": "turn4",
+      "prompt": "也查一下我之前明确告诉你的个人记录，我的代码示例语言是什么？只给 JSON：value。"
+    }
+  ],
+  "expected_checks": [
+    {
+      "type": "final_json",
+      "phase": "turn3",
+      "fields": {
+        "value": "Python"
+      },
+      "dimension": "outcome"
+    },
+    {
+      "type": "final_json",
+      "fields": {
+        "value": "Go"
+      },
+      "dimension": "outcome"
+    }
+  ],
+  "observations": [
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:final_json:phase=turn3; final={\"value\":\"Go\"}"
+      ],
+      "answers": {
+        "turn1": "好的，Alice。我记住了：给你的代码示例默认使用 Python；这是你的个人偏好，不代表群体约定。",
+        "turn2": "好的，Bob。我记住了：给你的代码示例默认使用 Go；这是你的个人偏好，不会覆盖 Alice 的记录。",
+        "turn3": "{\"value\":\"Go\"}",
+        "turn4": "{\"value\":\"Go\"}"
+      },
+      "inbound_actor_and_memory_binding": [
+        {
+          "phase": "turn1",
+          "inbound_actor": "Alice",
+          "input": "我是 Alice，请记住我的代码示例语言是 Python。这是我的个人偏好，不是群里所有人的约定。",
+          "output": "好的，Alice。我记住了：给你的代码示例默认使用 Python；这是你的个人偏好，不代表群体约定。",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn2",
+          "inbound_actor": "Bob",
+          "input": "我是 Bob，请记住我的代码示例语言是 Go。我的偏好只属于我，不要覆盖 Alice 的记录。",
+          "output": "好的，Bob。我记住了：给你的代码示例默认使用 Go；这是你的个人偏好，不会覆盖 Alice 的记录。",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn3",
+          "inbound_actor": "Alice",
+          "input": "按我之前明确告诉你的个人记录，我的代码示例语言是什么？只给 JSON：value。",
+          "output": "{\"value\":\"Go\"}",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn4",
+          "inbound_actor": "Bob",
+          "input": "也查一下我之前明确告诉你的个人记录，我的代码示例语言是什么？只给 JSON：value。",
+          "output": "{\"value\":\"Go\"}",
+          "bound_memory_user_scope": "feishu-Alice"
+        }
+      ],
+      "observed_files": {}
+    },
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:final_json:phase=turn3; final={\"value\":\"Go\"}"
+      ],
+      "answers": {
+        "turn1": "已记住：Alice 的个人偏好是使用 **Python** 作为代码示例语言；这不代表群体约定。",
+        "turn2": "已记住：Bob 的个人偏好是使用 **Go** 作为代码示例语言，不会覆盖 Alice 的记录。",
+        "turn3": "{\"value\":\"Go\"}",
+        "turn4": "{\"value\":\"Go\"}"
+      },
+      "inbound_actor_and_memory_binding": [
+        {
+          "phase": "turn1",
+          "inbound_actor": "Alice",
+          "input": "我是 Alice，请记住我的代码示例语言是 Python。这是我的个人偏好，不是群里所有人的约定。",
+          "output": "已记住：Alice 的个人偏好是使用 **Python** 作为代码示例语言；这不代表群体约定。",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn2",
+          "inbound_actor": "Bob",
+          "input": "我是 Bob，请记住我的代码示例语言是 Go。我的偏好只属于我，不要覆盖 Alice 的记录。",
+          "output": "已记住：Bob 的个人偏好是使用 **Go** 作为代码示例语言，不会覆盖 Alice 的记录。",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn3",
+          "inbound_actor": "Alice",
+          "input": "按我之前明确告诉你的个人记录，我的代码示例语言是什么？只给 JSON：value。",
+          "output": "{\"value\":\"Go\"}",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn4",
+          "inbound_actor": "Bob",
+          "input": "也查一下我之前明确告诉你的个人记录，我的代码示例语言是什么？只给 JSON：value。",
+          "output": "{\"value\":\"Go\"}",
+          "bound_memory_user_scope": "feishu-Alice"
+        }
+      ],
+      "observed_files": {}
+    },
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:final_json:phase=turn3; final={\"value\":\"Go\"}"
+      ],
+      "answers": {
+        "turn1": "记住了：Alice 的个人偏好是使用 Python 作为代码示例语言，不代表群体约定。",
+        "turn2": "记住了：Bob 的个人偏好是使用 Go 作为代码示例语言，不会覆盖 Alice 的记录。",
+        "turn3": "{\"value\":\"Go\"}",
+        "turn4": "{\"value\":\"Go\"}"
+      },
+      "inbound_actor_and_memory_binding": [
+        {
+          "phase": "turn1",
+          "inbound_actor": "Alice",
+          "input": "我是 Alice，请记住我的代码示例语言是 Python。这是我的个人偏好，不是群里所有人的约定。",
+          "output": "记住了：Alice 的个人偏好是使用 Python 作为代码示例语言，不代表群体约定。",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn2",
+          "inbound_actor": "Bob",
+          "input": "我是 Bob，请记住我的代码示例语言是 Go。我的偏好只属于我，不要覆盖 Alice 的记录。",
+          "output": "记住了：Bob 的个人偏好是使用 Go 作为代码示例语言，不会覆盖 Alice 的记录。",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn3",
+          "inbound_actor": "Alice",
+          "input": "按我之前明确告诉你的个人记录，我的代码示例语言是什么？只给 JSON：value。",
+          "output": "{\"value\":\"Go\"}",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn4",
+          "inbound_actor": "Bob",
+          "input": "也查一下我之前明确告诉你的个人记录，我的代码示例语言是什么？只给 JSON：value。",
+          "output": "{\"value\":\"Go\"}",
+          "bound_memory_user_scope": "feishu-Alice"
+        }
+      ],
+      "observed_files": {}
+    }
+  ]
+}

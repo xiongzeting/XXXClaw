@@ -1,0 +1,8 @@
+order_id,cents,status
+O-1,1200,settled
+O-2,900,settled
+O-3,500,pending
+O-4,700,settled
+O-5,300,settled
+O-6,1000,rejected
+O-7,200,settled

@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "miniclaw"
+version = "0.1.0"
+description = "A small Python coding-agent framework with explicit model, loop, and tool boundaries."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "MiniClaw contributors" }]
+dependencies = ["httpx>=0.27,<1"]
+
+[project.optional-dependencies]
+feishu = ["lark-oapi==1.7.3"]
+retrieval = ["sentence-transformers>=2.3,<6", "faiss-cpu>=1.8,<2"]
+rerank = ["sentence-transformers>=2.3,<6"]
+benchmark = ["datasets>=2.18,<5", "pyarrow>=14", "sentence-transformers>=2.3,<6", "faiss-cpu>=1.8,<2"]
+all = ["lark-oapi==1.7.3", "datasets>=2.18,<5", "pyarrow>=14", "sentence-transformers>=2.3,<6", "faiss-cpu>=1.8,<2"]
+
+[project.scripts]
+miniclaw = "MiniClaw.cli:main"
+miniclaw-feishu = "MiniClaw.platforms.feishu.cli:main"
+miniclaw-trace = "MiniClaw.trace.cli:main"
+miniclaw-runtime-smoke = "MiniClaw.coding_agent.runtime.smoke:main"
+miniclaw-eval = "MiniClaw.evaluation.cli:main"
+miniclaw-eval-splits = "MiniClaw.evaluation.splits:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

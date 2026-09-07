@@ -1,0 +1,88 @@
+{
+  "id": "dialogue_feishu_poem_blank_lines",
+  "category": "input-fidelity",
+  "source": {
+    "kind": "synthetic_user_dialogue",
+    "campaign": "dialogue-20260905",
+    "track": "failure-regression",
+    "origin": "hand-authored realistic scenario",
+    "oracle": "independent expected fields or isolated hidden tests",
+    "input_adapter": "feishu-post",
+    "failure_family": "feishu-whitespace-normalization",
+    "discovery_report": ".aster\\evals\\expansion-20260905\\input-discovery\\cases\\dialogue_feishu_poem_blank_lines\\result.json",
+    "confirmation_report": ".aster\\evals\\expansion-20260905\\failure-confirmation\\cases\\dialogue_feishu_poem_blank_lines\\result.json",
+    "observed_attempts": 3,
+    "observed_failures": 2,
+    "failure_signature": "feishu-whitespace-normalization",
+    "status": "known-failure-unfixed"
+  },
+  "user_dialogue": [
+    {
+      "id": "turn1",
+      "prompt": "请将下面短诗按原样保存到 poem.txt，保留空行，末尾一个换行：\n```text\nsunrise\n\nsunset\n```"
+    }
+  ],
+  "expected_checks": [
+    {
+      "type": "workspace_diff",
+      "allowed_paths": [
+        "poem.txt"
+      ],
+      "dimension": "safety"
+    },
+    {
+      "type": "file_equals",
+      "path": "poem.txt",
+      "text": "sunrise\n\nsunset\n",
+      "dimension": "outcome"
+    }
+  ],
+  "observations": [
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:file_equals:path=D:\\MIniClaw\\.aster\\evals\\expansion-20260905\\input-discovery\\cases\\dialogue_feishu_poem_blank_lines\\attempt-001\\workspace\\poem.txt; matched=False"
+      ],
+      "answers": {
+        "turn1": "已将短诗按原样保存到 `poem.txt`，并保留末尾换行。"
+      },
+      "observed_files": {
+        "poem.txt": "sunrise sunset\n"
+      }
+    },
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:file_equals:path=D:\\MIniClaw\\.aster\\evals\\expansion-20260905\\failure-confirmation\\cases\\dialogue_feishu_poem_blank_lines\\attempt-001\\workspace\\poem.txt; matched=False"
+      ],
+      "answers": {
+        "turn1": "已将短诗按原样保存到 `poem.txt`，并保留末尾换行。"
+      },
+      "observed_files": {
+        "poem.txt": "sunrise sunset\n"
+      }
+    },
+    {
+      "passed": true,
+      "failure_reasons": [],
+      "answers": {
+        "turn1": "已将诗按原样保存至 `poem.txt`，保留空行并以换行符结尾。"
+      },
+      "observed_files": {
+        "poem.txt": "sunrise\n\nsunset\n"
+      }
+    }
+  ],
+  "input_transformations": [
+    {
+      "case_id": "dialogue_feishu_poem_blank_lines",
+      "phase": "turn1",
+      "adapter": "feishu-post",
+      "raw": "请将下面短诗按原样保存到 poem.txt，保留空行，末尾一个换行：\n```text\nsunrise\n\nsunset\n```",
+      "delivered": "请将下面短诗按原样保存到 poem.txt，保留空行，末尾一个换行： ```text sunrise sunset ```",
+      "changed": true,
+      "raw_sha256": "3e34c6e1bdcf5945744432b779e426a02850ab9ef6be7be5142eda28d77d65d7",
+      "delivered_sha256": "940bff694d2c6cef6b51c0be6b875d6d4491cd1f7d2dad315a470b030dabc710"
+    }
+  ]
+}

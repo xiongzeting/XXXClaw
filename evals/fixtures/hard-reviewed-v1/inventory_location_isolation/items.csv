@@ -1,0 +1,7 @@
+sku,location,quantity
+SKU-1,WH-A,4
+SKU-1,WH-B,3
+SKU-2,WH-A,2
+SKU-2,WH-B,1
+SKU-3,WH-A,-1
+SKU-3,WH-B,5

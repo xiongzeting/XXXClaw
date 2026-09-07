@@ -1,0 +1,9 @@
+transaction_id,order_id,cents,status
+P1,O-1,1200,settled
+P2,O-2,900,settled
+P3,O-3,500,pending
+P4,O-4,700,settled
+P5,O-5,300,settled
+P6,O-5,300,settled
+P7,O-7,200,settled
+P5,O-5,300,settled

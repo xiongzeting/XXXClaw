@@ -1,0 +1,292 @@
+{
+  "version": 1,
+  "name": "dialogue-failures-router",
+  "environment": {
+    "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+    "MINICLAW_WORKSPACE_MODE": "direct",
+    "MINICLAW_APPROVAL_POLICY": "allow",
+    "MINICLAW_GOAL_JUDGE_ENABLED": "false"
+  },
+  "cases": [
+    {
+      "id": "dialogue_group_identity_branch",
+      "category": "actor-isolation",
+      "capabilities": [
+        "user_dialogue",
+        "actor-isolation"
+      ],
+      "fixture": "fixtures/dialogue-campaign/group_identity_branch",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "我是 Alice，请记住我的个人实验分支是 alice-lab。这是我的个人偏好，不是群里所有人的约定。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "我是 Bob，请记住我的个人实验分支是 bob-lab。我的偏好只属于我，不要覆盖 Alice 的记录。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "按我之前明确告诉你的个人记录，我的个人实验分支是什么？只给 JSON：value。"
+        },
+        {
+          "id": "turn4",
+          "prompt": "也查一下我之前明确告诉你的个人记录，我的个人实验分支是什么？只给 JSON：value。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "phase": "turn3",
+          "fields": {
+            "value": "alice-lab"
+          },
+          "dimension": "outcome"
+        },
+        {
+          "type": "final_json",
+          "fields": {
+            "value": "bob-lab"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "failure-regression",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "input_adapter": "feishu-router",
+        "actors": [
+          "Alice",
+          "Bob",
+          "Alice",
+          "Bob"
+        ],
+        "failure_family": "shared-thread-actor-binding",
+        "actor_policy": "Personal preferences follow inbound user_id, shared thread context is not private-user identity.",
+        "discovery_report": ".aster\\evals\\expansion-20260905\\router-discovery\\cases\\dialogue_group_identity_branch\\result.json",
+        "confirmation_report": ".aster\\evals\\expansion-20260905\\router-confirmation\\cases\\dialogue_group_identity_branch\\result.json",
+        "observed_attempts": 3,
+        "observed_failures": 3,
+        "failure_signature": "shared-thread-actor-binding",
+        "status": "known-failure-unfixed"
+      },
+      "repetitions": 3,
+      "min_pass_rate": 1.0
+    },
+    {
+      "id": "dialogue_group_identity_contact",
+      "category": "actor-isolation",
+      "capabilities": [
+        "user_dialogue",
+        "actor-isolation"
+      ],
+      "fixture": "fixtures/dialogue-campaign/group_identity_contact",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "我是 Alice，请记住我的个人备用邮箱是 alice@example.test。这是我的个人偏好，不是群里所有人的约定。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "我是 Bob，请记住我的个人备用邮箱是 bob@example.test。我的偏好只属于我，不要覆盖 Alice 的记录。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "按我之前明确告诉你的个人记录，我的个人备用邮箱是什么？只给 JSON：value。"
+        },
+        {
+          "id": "turn4",
+          "prompt": "也查一下我之前明确告诉你的个人记录，我的个人备用邮箱是什么？只给 JSON：value。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "phase": "turn3",
+          "fields": {
+            "value": "alice@example.test"
+          },
+          "dimension": "outcome"
+        },
+        {
+          "type": "final_json",
+          "fields": {
+            "value": "bob@example.test"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "failure-regression",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "input_adapter": "feishu-router",
+        "actors": [
+          "Alice",
+          "Bob",
+          "Alice",
+          "Bob"
+        ],
+        "failure_family": "shared-thread-actor-binding",
+        "actor_policy": "Personal preferences follow inbound user_id, shared thread context is not private-user identity.",
+        "discovery_report": ".aster\\evals\\expansion-20260905\\router-discovery\\cases\\dialogue_group_identity_contact\\result.json",
+        "confirmation_report": ".aster\\evals\\expansion-20260905\\router-confirmation\\cases\\dialogue_group_identity_contact\\result.json",
+        "observed_attempts": 3,
+        "observed_failures": 3,
+        "failure_signature": "shared-thread-actor-binding",
+        "status": "known-failure-unfixed"
+      },
+      "repetitions": 3,
+      "min_pass_rate": 1.0
+    },
+    {
+      "id": "dialogue_group_identity_language",
+      "category": "actor-isolation",
+      "capabilities": [
+        "user_dialogue",
+        "actor-isolation"
+      ],
+      "fixture": "fixtures/dialogue-campaign/group_identity_language",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "我是 Alice，请记住我的代码示例语言是 Python。这是我的个人偏好，不是群里所有人的约定。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "我是 Bob，请记住我的代码示例语言是 Go。我的偏好只属于我，不要覆盖 Alice 的记录。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "按我之前明确告诉你的个人记录，我的代码示例语言是什么？只给 JSON：value。"
+        },
+        {
+          "id": "turn4",
+          "prompt": "也查一下我之前明确告诉你的个人记录，我的代码示例语言是什么？只给 JSON：value。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "phase": "turn3",
+          "fields": {
+            "value": "Python"
+          },
+          "dimension": "outcome"
+        },
+        {
+          "type": "final_json",
+          "fields": {
+            "value": "Go"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "failure-regression",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "input_adapter": "feishu-router",
+        "actors": [
+          "Alice",
+          "Bob",
+          "Alice",
+          "Bob"
+        ],
+        "failure_family": "shared-thread-actor-binding",
+        "actor_policy": "Personal preferences follow inbound user_id, shared thread context is not private-user identity.",
+        "discovery_report": ".aster\\evals\\expansion-20260905\\router-discovery\\cases\\dialogue_group_identity_language\\result.json",
+        "confirmation_report": ".aster\\evals\\expansion-20260905\\router-confirmation\\cases\\dialogue_group_identity_language\\result.json",
+        "observed_attempts": 3,
+        "observed_failures": 3,
+        "failure_signature": "shared-thread-actor-binding",
+        "status": "known-failure-unfixed"
+      },
+      "repetitions": 3,
+      "min_pass_rate": 1.0
+    },
+    {
+      "id": "dialogue_group_identity_timezone",
+      "category": "actor-isolation",
+      "capabilities": [
+        "user_dialogue",
+        "actor-isolation"
+      ],
+      "fixture": "fixtures/dialogue-campaign/group_identity_timezone",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "我是 Alice，请记住我的日程时区是 Asia/Shanghai。这是我的个人偏好，不是群里所有人的约定。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "我是 Bob，请记住我的日程时区是 Europe/London。我的偏好只属于我，不要覆盖 Alice 的记录。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "按我之前明确告诉你的个人记录，我的日程时区是什么？只给 JSON：value。"
+        },
+        {
+          "id": "turn4",
+          "prompt": "也查一下我之前明确告诉你的个人记录，我的日程时区是什么？只给 JSON：value。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "phase": "turn3",
+          "fields": {
+            "value": "Asia/Shanghai"
+          },
+          "dimension": "outcome"
+        },
+        {
+          "type": "final_json",
+          "fields": {
+            "value": "Europe/London"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "failure-regression",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "input_adapter": "feishu-router",
+        "actors": [
+          "Alice",
+          "Bob",
+          "Alice",
+          "Bob"
+        ],
+        "failure_family": "shared-thread-actor-binding",
+        "actor_policy": "Personal preferences follow inbound user_id, shared thread context is not private-user identity.",
+        "discovery_report": ".aster\\evals\\expansion-20260905\\router-discovery\\cases\\dialogue_group_identity_timezone\\result.json",
+        "confirmation_report": ".aster\\evals\\expansion-20260905\\router-confirmation\\cases\\dialogue_group_identity_timezone\\result.json",
+        "observed_attempts": 3,
+        "observed_failures": 3,
+        "failure_signature": "shared-thread-actor-binding",
+        "status": "known-failure-unfixed"
+      },
+      "repetitions": 3,
+      "min_pass_rate": 1.0
+    }
+  ]
+}

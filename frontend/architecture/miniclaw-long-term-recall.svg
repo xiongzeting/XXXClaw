@@ -1,0 +1,340 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3000" height="2820" viewBox="0 0 3000 2820" role="img" aria-labelledby="svg-title svg-desc">
+  <title id="svg-title">MiniClaw 长期记忆召回与作用域架构图</title>
+  <desc id="svg-desc">区分记忆类型、压缩层和作用域三个维度，说明当前 MiniClaw 没有独立的频道记忆或用户长期记忆存储；飞书 thread、channel、user 只决定 Session 划分。图中还展示 Semantic、当前 Session Archive、跨 Session Episode 和 Active Facts 的召回、BM25、向量、RRF、重排、自动注入与主动深挖。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07121c"/>
+      <stop offset="0.5" stop-color="#0a1722"/>
+      <stop offset="1" stop-color="#071018"/>
+    </linearGradient>
+    <linearGradient id="hero" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#43d9d0" stop-opacity="0.28"/>
+      <stop offset="0.55" stop-color="#6fa8ff" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#b996ff" stop-opacity="0.10"/>
+    </linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#294154" stroke-opacity="0.20" stroke-width="1"/>
+    </pattern>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000" flood-opacity="0.28"/>
+    </filter>
+    <marker id="arrowCyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#43d9d0"/></marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#6fa8ff"/></marker>
+    <marker id="arrowOrange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#ffb86b"/></marker>
+    <marker id="arrowPurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#b996ff"/></marker>
+    <style>
+      text { font-family: Inter, "Segoe UI", "Microsoft YaHei", sans-serif; fill: #e9f3f7; }
+      .title { font-size: 42px; font-weight: 700; }
+      .subtitle { font-size: 17px; fill: #9bb1bf; }
+      .section { fill: #0d1b28; stroke: #355268; stroke-width: 2; rx: 18; filter: url(#shadow); }
+      .head { fill: #132536; stroke: #355268; stroke-width: 1.5; rx: 14; }
+      .index { font-size: 14px; font-weight: 700; fill: #43d9d0; letter-spacing: 1px; }
+      .section-title { font-size: 25px; font-weight: 700; }
+      .note { font-size: 13px; fill: #91a9b8; }
+      .node { fill: #102231; stroke: #355268; stroke-width: 1.5; rx: 13; }
+      .cyan-node { fill: #0e2b2e; stroke: #3aa79f; }
+      .blue-node { fill: #10243a; stroke: #4d75aa; }
+      .orange-node { fill: #302419; stroke: #b57d3e; }
+      .purple-node { fill: #251d36; stroke: #765bab; }
+      .green-node { fill: #122b25; stroke: #4d9d70; }
+      .red-node { fill: #321d25; stroke: #b85e70; }
+      .muted-node { fill: #0b1721; stroke: #294154; }
+      .node-title { font-size: 18px; font-weight: 700; }
+      .node-text { font-size: 13px; fill: #c7d8e1; }
+      .small { font-size: 11px; fill: #8fa8b8; }
+      .code { font-family: "Cascadia Code", Consolas, monospace; font-size: 12px; fill: #b8cbd5; }
+      .hero-title { font-size: 28px; font-weight: 700; fill: #f1fbff; }
+      .hero-text { font-size: 17px; fill: #c9dce5; }
+      .warning { font-size: 15px; font-weight: 700; fill: #ff9bad; }
+      .metric { font-size: 25px; font-weight: 700; fill: #43d9d0; }
+      .metric-label { font-size: 12px; fill: #a9bdc8; }
+      .flow { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+      .cyan { stroke: #43d9d0; marker-end: url(#arrowCyan); }
+      .blue { stroke: #6fa8ff; marker-end: url(#arrowBlue); }
+      .orange { stroke: #ffb86b; marker-end: url(#arrowOrange); stroke-dasharray: 10 7; }
+      .purple { stroke: #b996ff; marker-end: url(#arrowPurple); stroke-dasharray: 6 7; }
+      .divider { stroke: #294154; stroke-width: 1; }
+      .scope-label { font-size: 15px; font-weight: 700; }
+      .storage { fill: #171f28; stroke: #b57d3e; stroke-width: 1.5; rx: 12; }
+      .storage-title { font-size: 14px; font-weight: 700; fill: #ffca8c; }
+      .storage-text { font-size: 11px; fill: #c7b69f; }
+    </style>
+  </defs>
+
+  <rect width="3000" height="2820" fill="url(#bg)"/>
+  <rect width="3000" height="2820" fill="url(#grid)"/>
+
+  <rect x="55" y="38" width="2890" height="135" rx="22" fill="url(#hero)" stroke="#355268" stroke-width="1.5"/>
+  <rect x="82" y="67" width="72" height="72" rx="18" fill="#0d2f32" stroke="#43d9d0" stroke-width="2"/>
+  <text x="118" y="114" text-anchor="middle" class="title" fill="#43d9d0" font-size="34">M</text>
+  <text x="180" y="95" class="title">MiniClaw · 长期记忆召回与作用域</text>
+  <text x="182" y="130" class="subtitle">先分清“记忆类型、召回来源、作用域”三个维度，再看 Semantic / Archive / Episode 如何融合</text>
+
+  <!-- Most important -->
+  <rect x="55" y="198" width="2890" height="205" rx="20" fill="#091b27" stroke="#43d9d0" stroke-width="2" filter="url(#shadow)"/>
+  <text x="92" y="237" class="index">先给结论：当前实现不是“频道 / 全局 / 用户 / 情景”四层</text>
+  <text x="92" y="278" class="hero-title">频道、用户、全局是“谁能看到”的作用域；Semantic、Archive、Episode 是“存什么”的记忆类型</text>
+  <text x="92" y="316" class="hero-text">当前只有两种主要作用域：Workspace 共享、Session 隔离。飞书 thread/channel/user 配置只决定 Session Key，不会创建独立的用户长期记忆库。</text>
+  <text x="92" y="349" class="warning">重要现状：Semantic Memory 是工作区共享；Episode 自动搜索跨工作区内所有 Session。多用户飞书场景下，它们目前不具备真正的用户级 ACL 隔离。</text>
+  <text x="92" y="378" class="hero-text">Archive 物理上也存于工作区共享索引，但自动召回默认按当前 session_id 过滤，因此通常只召回当前会话归档。</text>
+
+  <!-- Three concepts -->
+  <g id="concepts">
+    <rect x="55" y="440" width="940" height="530" class="section"/>
+    <rect x="75" y="460" width="900" height="78" class="head"/>
+    <text x="96" y="487" class="index">01 · THREE DIFFERENT DIMENSIONS</text>
+    <text x="96" y="516" class="section-title">三组概念，不要混成一组</text>
+
+    <rect x="84" y="574" width="882" height="105" class="node cyan-node"/>
+    <text x="109" y="607" class="node-title">A. 四种记忆生命周期</text>
+    <text x="109" y="636" class="node-text">Working Context / Semantic / Episodic / Procedural</text>
+    <text x="109" y="660" class="small">回答“数据是什么、什么时候写、活多久”；Archive 是 Working 压缩后的证据库</text>
+
+    <rect x="84" y="700" width="882" height="105" class="node blue-node"/>
+    <text x="109" y="733" class="node-title">B. 四层压缩职责</text>
+    <text x="109" y="762" class="node-text">Tool Artifact / History Archive / Task Checkpoint / Stable Semantic Facts</text>
+    <text x="109" y="786" class="small">回答“长上下文如何减负并保持可恢复”；不是用户/频道隔离层</text>
+
+    <rect x="84" y="826" width="882" height="105" class="node purple-node"/>
+    <text x="109" y="859" class="node-title">C. 四类召回答案证据</text>
+    <text x="109" y="888" class="node-text">Semantic / Current-session Archive / Episode；近期原文位于 Working Context</text>
+    <text x="109" y="912" class="small">回答“新问题来了，从哪里找信息”；Manager 顶层实际融合三路，Active 在 Archive 内部加入</text>
+  </g>
+
+  <!-- Scope matrix -->
+  <g id="scope">
+    <rect x="1030" y="440" width="1915" height="530" class="section"/>
+    <rect x="1050" y="460" width="1875" height="78" class="head"/>
+    <text x="1071" y="487" class="index">02 · CURRENT SCOPE MATRIX</text>
+    <text x="1071" y="516" class="section-title">当前真实作用域：Workspace 与 Session</text>
+
+    <text x="1080" y="580" class="scope-label">数据类型</text>
+    <text x="1510" y="580" class="scope-label">物理存储范围</text>
+    <text x="1920" y="580" class="scope-label">自动召回范围</text>
+    <text x="2350" y="580" class="scope-label">是否按用户隔离</text>
+    <line x1="1070" y1="597" x2="2900" y2="597" class="divider"/>
+
+    <rect x="1070" y="618" width="400" height="66" class="node blue-node"/><text x="1092" y="658" class="node-title">Working Context</text>
+    <text x="1510" y="657" class="node-text">每个 Session 独立 JSONL</text>
+    <text x="1920" y="657" class="node-text">当前 Session</text>
+    <text x="2350" y="657" class="node-text">仅当 Session Key 含用户维度</text>
+
+    <rect x="1070" y="700" width="400" height="66" class="node orange-node"/><text x="1092" y="740" class="node-title">Archive Memory</text>
+    <text x="1510" y="739" class="node-text">Workspace 共享 index.jsonl</text>
+    <text x="1920" y="739" class="node-text">默认 current session_id 过滤</text>
+    <text x="2350" y="739" class="node-text">没有独立 ACL；显式 sessionId 可跨查</text>
+
+    <rect x="1070" y="782" width="400" height="66" class="node green-node"/><text x="1092" y="822" class="node-title">Semantic Memory</text>
+    <text x="1510" y="821" class="node-text">Workspace 一个 MEMORY.md</text>
+    <text x="1920" y="821" class="node-text">所有 Session 都参与检索</text>
+    <text x="2350" y="821" class="warning">否：没有 user_id 字段</text>
+
+    <rect x="1070" y="864" width="400" height="66" class="node purple-node"/><text x="1092" y="904" class="node-title">Episodic Memory</text>
+    <text x="1510" y="903" class="node-text">Workspace episodes/*.md</text>
+    <text x="1920" y="903" class="node-text">搜索全部 Episode</text>
+    <text x="2350" y="903" class="warning">文件按 Session，检索未按用户过滤</text>
+  </g>
+
+  <!-- Feishu session scopes -->
+  <g id="feishu">
+    <rect x="55" y="1010" width="940" height="600" class="section"/>
+    <rect x="75" y="1030" width="900" height="78" class="head"/>
+    <text x="96" y="1057" class="index">03 · FEISHU SESSION SCOPE</text>
+    <text x="96" y="1086" class="section-title">thread / channel / user 只划分会话</text>
+
+    <rect x="84" y="1142" width="882" height="116" class="node cyan-node"/>
+    <text x="109" y="1174" class="node-title">thread（当前默认）</text>
+    <text x="109" y="1202" class="node-text">群聊：chat_id + thread_root；每个话题线程一套 Context / Goal / Trace</text>
+    <text x="109" y="1228" class="node-text">私聊：dm + chat_id；同一私聊复用一个 Session</text>
+    <text x="109" y="1250" class="small">默认值来自 FeishuSettings，不是 Semantic Memory 的用户隔离</text>
+
+    <rect x="84" y="1280" width="882" height="103" class="node blue-node"/>
+    <text x="109" y="1312" class="node-title">channel</text>
+    <text x="109" y="1340" class="node-text">整个 chat_id 共用一个 Session；群里不同用户、不同线程共享当前上下文</text>
+    <text x="109" y="1364" class="small">适合公共频道 Agent，但消息历史和 Archive 都会互相可见</text>
+
+    <rect x="84" y="1405" width="882" height="103" class="node purple-node"/>
+    <text x="109" y="1437" class="node-title">user</text>
+    <text x="109" y="1465" class="node-text">chat_id + user_id 共用一个 Session；同一用户在该频道中的线程合并</text>
+    <text x="109" y="1489" class="small">这是“用户会话隔离”，仍不是独立用户 Semantic / Episode Namespace</text>
+
+    <rect x="84" y="1530" width="882" height="47" class="node red-node"/>
+    <text x="109" y="1560" class="warning">tenant_id 当前未参与 Session Key，也没有 memory_namespace / ACL 层。</text>
+  </g>
+
+  <!-- Recall sources -->
+  <g id="sources">
+    <rect x="1030" y="1010" width="1915" height="600" class="section"/>
+    <rect x="1050" y="1030" width="1875" height="78" class="head"/>
+    <text x="1071" y="1057" class="index">04 · RECALL SOURCES</text>
+    <text x="1071" y="1086" class="section-title">一次新请求实际搜索哪些内容</text>
+
+    <rect x="1070" y="1142" width="420" height="170" class="node green-node"/>
+    <text x="1095" y="1176" class="node-title">Semantic · 权重 1.0</text>
+    <text x="1095" y="1205" class="node-text">preference / project</text>
+    <text x="1095" y="1231" class="node-text">environment / fact</text>
+    <text x="1095" y="1257" class="code">.aster/memory/MEMORY.md</text>
+    <text x="1095" y="1285" class="small">Workspace 共享；显式稳定事实</text>
+
+    <rect x="1510" y="1142" width="420" height="170" class="node orange-node"/>
+    <text x="1535" y="1176" class="node-title">Archive · 权重 1.0</text>
+    <text x="1535" y="1205" class="node-text">压缩消息 / Tool Artifact</text>
+    <text x="1535" y="1231" class="node-text">原始消息 / Tool Artifact</text>
+    <text x="1535" y="1257" class="code">archive-index.jsonl</text>
+    <text x="1535" y="1285" class="small">自动只查当前 Session</text>
+
+    <rect x="1950" y="1142" width="420" height="170" class="node purple-node"/>
+    <text x="1975" y="1176" class="node-title">Episode · 权重 0.6</text>
+    <text x="1975" y="1205" class="node-text">Session Goal / Outcome</text>
+    <text x="1975" y="1231" class="node-text">Status / Open Work</text>
+    <text x="1975" y="1257" class="code">episodes/*.md</text>
+    <text x="1975" y="1285" class="small">搜索 Workspace 全部 Episode</text>
+
+    <rect x="2390" y="1142" width="515" height="170" class="node blue-node"/>
+    <text x="2415" y="1176" class="node-title">Working Context</text>
+    <text x="2415" y="1205" class="node-text">近期原文保留在 Working Context</text>
+    <text x="2415" y="1231" class="node-text">与 Archive 旧事实统一做版本裁决</text>
+    <text x="2415" y="1257" class="code">active_messages</text>
+    <text x="2415" y="1285" class="small">普通近期消息不重复检索</text>
+
+    <rect x="1070" y="1355" width="1835" height="210" class="node muted-node"/>
+    <text x="1095" y="1389" class="node-title">不进入跨来源 RRF，但仍与 Prompt 相关的内容</text>
+    <text x="1095" y="1420" class="node-text">Working Context：近期消息本来就在模型 messages 中，不需要再召回。</text>
+    <text x="1095" y="1448" class="node-text">Procedural Memory：Skill 名称＋简介由 prompt_context 直接追加；Skill 正文通过 skill 工具按需读取。</text>
+    <text x="1095" y="1476" class="node-text">Project Instructions：AGENTS.md 等由 InstructionLoader 注入，不属于 Memory RRF。</text>
+    <text x="1095" y="1504" class="node-text">Checkpoint：是任务连续性摘要，不作为一个独立长期记忆检索来源。</text>
+    <text x="1095" y="1532" class="small">所以“所有进入 Prompt 的上下文”不等于“所有都由长期记忆召回器排序”。</text>
+  </g>
+
+  <!-- Retrieval pipeline -->
+  <g id="pipeline">
+    <rect x="55" y="1650" width="2890" height="600" class="section"/>
+    <rect x="75" y="1670" width="2850" height="78" class="head"/>
+    <text x="96" y="1697" class="index">05 · RETRIEVAL PIPELINE</text>
+    <text x="96" y="1726" class="section-title">从用户问题到 Top-8 原始证据</text>
+
+    <rect x="84" y="1787" width="340" height="135" class="node cyan-node"/>
+    <text x="109" y="1821" class="node-title">新 User Query</text>
+    <text x="109" y="1850" class="code">prompt_context(query)</text>
+    <text x="109" y="1876" class="node-text">run 开始前自动执行</text>
+    <text x="109" y="1900" class="small">不等模型主动调用 memory</text>
+
+    <rect x="474" y="1787" width="500" height="260" class="node blue-node"/>
+    <text x="499" y="1821" class="node-title">单来源 Hybrid Retriever</text>
+    <text x="499" y="1850" class="node-text">1. 版本裁决：subject + relation → max version</text>
+    <text x="499" y="1878" class="node-text">2. BM25 主检索：0.78</text>
+    <text x="499" y="1906" class="node-text">3. 本地 Hash Vector 辅助：0.22 / 384 维</text>
+    <text x="499" y="1934" class="node-text">4. Weighted RRF：k=60 / pool=24</text>
+    <text x="499" y="1962" class="node-text">5. coverage / subject / phrase rerank</text>
+    <text x="499" y="1990" class="small">Semantic 与 Archive 共用；Episode 当前为简单词频</text>
+    <text x="499" y="2020" class="small">可选本地 SentenceTransformer，默认未启用</text>
+
+    <rect x="1024" y="1787" width="540" height="260" class="node orange-node"/>
+    <text x="1049" y="1821" class="node-title">Archive 专项处理</text>
+    <text x="1049" y="1850" class="node-text">正文去重，防止重叠压缩占满 Top-K</text>
+    <text x="1049" y="1878" class="node-text">排除 memory 搜索结果 JSON，防递归污染</text>
+    <text x="1049" y="1906" class="node-text">current/latest 查询补充状态变化词</text>
+    <text x="1049" y="1934" class="node-text">推荐问题补充用户兴趣 Profile 查询</text>
+    <text x="1049" y="1962" class="node-text">用户/助手角色偏好与 Session 上下文扩展</text>
+    <text x="1049" y="1990" class="node-text">同 provenance 先选代表，保证 Session 多样性</text>
+    <text x="1049" y="2020" class="small">这些是查询分布规则，不写死 Benchmark 单题答案</text>
+
+    <rect x="1614" y="1787" width="480" height="260" class="node purple-node"/>
+    <text x="1639" y="1821" class="node-title">跨来源 RRF</text>
+    <text x="1639" y="1850" class="node-text">Semantic：1.0 / (60 + rank)</text>
+    <text x="1639" y="1878" class="node-text">Archive：1.0 / (60 + rank)</text>
+    <text x="1639" y="1906" class="node-text">Episode：0.6 / (60 + rank)</text>
+    <text x="1639" y="1934" class="node-text">按归一化正文跨来源去重</text>
+    <text x="1639" y="1962" class="node-text">同证据多来源时累加分数</text>
+    <text x="1639" y="1990" class="node-text">最终默认 Top 8，最大允许 20</text>
+    <text x="1639" y="2020" class="small">解决不同来源分数不可直接比较</text>
+
+    <rect x="2144" y="1787" width="385" height="260" class="node green-node"/>
+    <text x="2169" y="1821" class="node-title">自动 Prompt 注入</text>
+    <text x="2169" y="1850" class="node-text">每条最多 1,800 字符</text>
+    <text x="2169" y="1878" class="node-text">总块最多约 10,000 字符</text>
+    <text x="2169" y="1906" class="code">&lt;retrieved_memory&gt;</text>
+    <text x="2169" y="1934" class="node-text">当前请求 / 系统规则优先</text>
+    <text x="2169" y="1962" class="node-text">Archive 项携带 source_path</text>
+    <text x="2169" y="1990" class="small">Trace 记录注入项与来源</text>
+
+    <rect x="2579" y="1787" width="318" height="260" class="node cyan-node"/>
+    <text x="2604" y="1821" class="node-title">回答 / 深挖</text>
+    <text x="2604" y="1850" class="node-text">证据完整 → 直接回答</text>
+    <text x="2604" y="1885" class="node-text">多跳不足 →</text>
+    <text x="2604" y="1913" class="code">memory.archive_search</text>
+    <text x="2604" y="1941" class="node-text">更具体查询继续搜索</text>
+    <text x="2604" y="1969" class="node-text">默认当前 Session</text>
+    <text x="2604" y="1997" class="small">可传 sessionId；当前无 ACL</text>
+
+    <path d="M424 1855H474" class="flow cyan"/>
+    <path d="M974 1915H1024" class="flow blue"/>
+    <path d="M1564 1915H1614" class="flow purple"/>
+    <path d="M2094 1915H2144" class="flow blue"/>
+    <path d="M2529 1915H2579" class="flow cyan"/>
+  </g>
+
+  <!-- Writing and risk -->
+  <g id="write-and-boundary">
+    <rect x="55" y="2290" width="1430" height="465" class="section"/>
+    <rect x="75" y="2310" width="1390" height="78" class="head"/>
+    <text x="96" y="2337" class="index">06 · MEMORY WRITES</text>
+    <text x="96" y="2366" class="section-title">长期记忆如何写入与处理冲突</text>
+
+    <rect x="84" y="2428" width="425" height="276" class="node green-node"/>
+    <text x="109" y="2462" class="node-title">Semantic 显式写入</text>
+    <text x="109" y="2492" class="node-text">memory(remember) 或用户明确：</text>
+    <text x="109" y="2518" class="code">记住 [project]: ...</text>
+    <text x="109" y="2548" class="node-text">Secret / transient 过滤</text>
+    <text x="109" y="2576" class="node-text">大小写去重；单条 ≤ 2,000 字符</text>
+    <text x="109" y="2604" class="node-text">文件 ≤ 32 KiB；原子替换＋文件锁</text>
+    <text x="109" y="2632" class="node-text">类别是内容分类，不是作用域：</text>
+    <text x="109" y="2660" class="small">preference/project/environment/fact 都仍然 Workspace 共享</text>
+
+    <rect x="539" y="2428" width="425" height="276" class="node orange-node"/>
+    <text x="564" y="2462" class="node-title">冲突处理</text>
+    <text x="564" y="2492" class="node-text">相同 subject、不同 value：</text>
+    <text x="564" y="2520" class="node-text">reject → 持久 conflict_id</text>
+    <text x="564" y="2548" class="node-text">keep_existing → 保留旧值</text>
+    <text x="564" y="2576" class="node-text">replace → 替换旧值</text>
+    <text x="564" y="2604" class="node-text">keep_both → 两条并存</text>
+    <text x="564" y="2632" class="code">MEMORY.conflicts.jsonl</text>
+    <text x="564" y="2660" class="small">解决时再次检查旧值，防并发覆盖</text>
+
+    <rect x="994" y="2428" width="442" height="276" class="node blue-node"/>
+    <text x="1019" y="2462" class="node-title">Archive / Episode 自动写入</text>
+    <text x="1019" y="2492" class="node-text">Archive：压缩时写完整旧消息块</text>
+    <text x="1019" y="2520" class="node-text">Episode：run_finished 写 Session 概览</text>
+    <text x="1019" y="2548" class="node-text">它们不是用户确认过的稳定事实</text>
+    <text x="1019" y="2576" class="node-text">Archive 负责原始证据</text>
+    <text x="1019" y="2604" class="node-text">Episode 负责经历概览</text>
+    <text x="1019" y="2632" class="small">不要把“自动保存”误认为“自动写入全局用户画像”</text>
+  </g>
+
+  <g id="risk">
+    <rect x="1520" y="2290" width="1425" height="465" class="section"/>
+    <rect x="1540" y="2310" width="1385" height="78" class="head"/>
+    <text x="1561" y="2337" class="index">07 · CURRENT BOUNDARY &amp; FUTURE NAMESPACE</text>
+    <text x="1561" y="2366" class="section-title">多用户部署时必须知道的边界</text>
+
+    <rect x="1549" y="2428" width="650" height="276" class="node red-node"/>
+    <text x="1574" y="2462" class="node-title">当前没有实现的能力</text>
+    <text x="1574" y="2492" class="warning">• 没有独立 UserMemoryStore</text>
+    <text x="1574" y="2520" class="warning">• 没有 ChannelMemoryStore</text>
+    <text x="1574" y="2548" class="warning">• 没有 tenant/user/channel memory ACL</text>
+    <text x="1574" y="2576" class="warning">• Semantic 记录没有 owner / visibility 字段</text>
+    <text x="1574" y="2604" class="warning">• Episode 自动检索没有当前用户过滤</text>
+    <text x="1574" y="2632" class="warning">• archive_search 的 sessionId 没有授权校验</text>
+    <text x="1574" y="2664" class="small">单用户本地项目可接受；共享飞书机器人存在跨会话信息暴露风险</text>
+
+    <rect x="2229" y="2428" width="667" height="276" class="node cyan-node"/>
+    <text x="2254" y="2462" class="node-title">如果未来做真正四级作用域，推荐模型</text>
+    <text x="2254" y="2492" class="code">MemoryNamespace</text>
+    <text x="2254" y="2520" class="node-text">tenant_id → workspace/project → channel_id → user_id → session_id</text>
+    <text x="2254" y="2548" class="node-text">每条记录带 owner、visibility、source、retention</text>
+    <text x="2254" y="2576" class="node-text">查询按权限构造允许的 namespace 集合</text>
+    <text x="2254" y="2604" class="node-text">global/channel/user/session 分别建立候选列表</text>
+    <text x="2254" y="2632" class="node-text">再进行带 scope weight 的 RRF，而不是混在一个文件里</text>
+    <text x="2254" y="2664" class="small">这是推荐后续设计，不是当前已经实现的功能</text>
+  </g>
+</svg>

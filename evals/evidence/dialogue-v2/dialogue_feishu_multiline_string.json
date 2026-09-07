@@ -1,0 +1,93 @@
+{
+  "id": "dialogue_feishu_multiline_string",
+  "category": "input-fidelity",
+  "source": {
+    "kind": "synthetic_user_dialogue",
+    "campaign": "dialogue-20260905",
+    "track": "failure-regression",
+    "origin": "hand-authored realistic scenario",
+    "oracle": "independent expected fields or isolated hidden tests",
+    "input_adapter": "feishu-text",
+    "failure_family": "feishu-whitespace-normalization",
+    "discovery_report": ".aster\\evals\\expansion-20260905\\input-discovery\\cases\\dialogue_feishu_multiline_string\\result.json",
+    "confirmation_report": ".aster\\evals\\expansion-20260905\\failure-confirmation\\cases\\dialogue_feishu_multiline_string\\result.json",
+    "observed_attempts": 3,
+    "observed_failures": 2,
+    "failure_signature": "feishu-whitespace-normalization",
+    "status": "known-failure-unfixed"
+  },
+  "user_dialogue": [
+    {
+      "id": "turn1",
+      "prompt": "请创建 payload.json，只有一个字段 message，字段内容就是引号内的三行文字，不含引号：\"alpha\n\nbeta\"。这是一个带空白行的原始消息，请逐字保留。"
+    }
+  ],
+  "expected_checks": [
+    {
+      "type": "workspace_diff",
+      "allowed_paths": [
+        "payload.json"
+      ],
+      "dimension": "safety"
+    },
+    {
+      "type": "command",
+      "command": [
+        "python",
+        "-c",
+        "import pathlib,subprocess,sys; args=['docker','run','--rm','--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','64','--memory','256m','--cpus','1','--tmpfs','/tmp:rw,noexec,nosuid,size=16m','--mount','type=bind,source='+str(pathlib.Path.cwd())+',target=/workspace,readonly','-w','/workspace','-e','PYTHONDONTWRITEBYTECODE=1','miniclaw-runtime:py313-bench','python','-c',\"import json\\nassert json.load(open('payload.json'))=={'message':'alpha\\\\n\\\\nbeta'}\"]; result=subprocess.run(args,timeout=45); sys.exit(result.returncode)"
+      ],
+      "exit_code": 0,
+      "timeout_seconds": 60,
+      "dimension": "outcome"
+    }
+  ],
+  "observations": [
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:command:exit=1, expected=0; output=Traceback (most recent call last):\n  File \"<string>\", line 2, in <module>\n    assert json.load(open('payload.json'))=={'message':'alpha\\n\\nbeta'}\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+      ],
+      "answers": {
+        "turn1": "已创建 `payload.json`，包含唯一字段 `message`，并保留了三行文字及其中的空白行。"
+      },
+      "observed_files": {
+        "payload.json": "{\n  \"message\": \"alpha beta\\n\\n这是一个带空白行的原始消息，请逐字保留。\"\n}\n"
+      }
+    },
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:command:exit=1, expected=0; output=Traceback (most recent call last):\n  File \"<string>\", line 2, in <module>\n    assert json.load(open('payload.json'))=={'message':'alpha\\n\\nbeta'}\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+      ],
+      "answers": {
+        "turn1": "已创建 `payload.json`，包含唯一字段 `message`，并保留了空白行。"
+      },
+      "observed_files": {
+        "payload.json": "{\n  \"message\": \"alpha beta\\n\\n这是一个带空白行的原始消息，请逐字保留。\"\n}\n"
+      }
+    },
+    {
+      "passed": true,
+      "failure_reasons": [],
+      "answers": {
+        "turn1": "已创建 `payload.json`，包含唯一字段 `message`，并保留了中间的空白行。"
+      },
+      "observed_files": {
+        "payload.json": "{\n  \"message\": \"alpha\\n\\nbeta\"\n}\n"
+      }
+    }
+  ],
+  "input_transformations": [
+    {
+      "case_id": "dialogue_feishu_multiline_string",
+      "phase": "turn1",
+      "adapter": "feishu-text",
+      "raw": "请创建 payload.json，只有一个字段 message，字段内容就是引号内的三行文字，不含引号：\"alpha\n\nbeta\"。这是一个带空白行的原始消息，请逐字保留。",
+      "delivered": "请创建 payload.json，只有一个字段 message，字段内容就是引号内的三行文字，不含引号：\"alpha beta\"。这是一个带空白行的原始消息，请逐字保留。",
+      "changed": true,
+      "raw_sha256": "c2ef43793c982878b554df76f1b9a6598ed0729be4678b5214c07816cd2c5ce9",
+      "delivered_sha256": "5448fa87cbd0da2abd7c542fdd3ab28ad424d7d03edf869632b8671099ddf39e"
+    }
+  ]
+}

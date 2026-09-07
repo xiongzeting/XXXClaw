@@ -1,0 +1,985 @@
+{
+  "version": 1,
+  "name": "dialogue-memory-development",
+  "environment": {
+    "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+    "MINICLAW_WORKSPACE_MODE": "direct",
+    "MINICLAW_APPROVAL_POLICY": "allow",
+    "MINICLAW_GOAL_JUDGE_ENABLED": "false"
+  },
+  "cases": [
+    {
+      "id": "dialogue_port_correction",
+      "category": "memory-update",
+      "capabilities": [
+        "user_dialogue",
+        "memory-update"
+      ],
+      "fixture": "fixtures/dialogue-campaign/port_correction",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "帮我记住：Orchid 项目生产服务端口是 8123，预发端口是 8124。以后我还会问。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "Orchid 昨晚已经完成迁移，生产端口改成 9137；8123 已停用。预发不变。请更新长期记录，避免以后给我旧端口。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "我在给 Orchid 写连接配置。现在生产和预发各用哪个端口？只给 JSON，字段 production、staging，值是整数。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "production": 9137,
+            "staging": 8124
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_path_relocation",
+      "category": "memory-update",
+      "capabilities": [
+        "user_dialogue",
+        "memory-update"
+      ],
+      "fixture": "fixtures/dialogue-campaign/path_relocation",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "记住 Atlas 项目的部署说明在 docs/deploy-v1.md，故障手册在 docs/oncall.md。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "Atlas 的部署说明已经移动到 ops/releases/guide.md，旧 docs/deploy-v1.md 已删除。故障手册没动。请以后以新位置为准并更新记忆。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "Atlas 的部署说明和故障手册现在哪？输出 JSON：deployment、oncall。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "deployment": "ops/releases/guide.md",
+            "oncall": "docs/oncall.md"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_cancelled_migration",
+      "category": "memory-update",
+      "capabilities": [
+        "user_dialogue",
+        "memory-update"
+      ],
+      "fixture": "fixtures/dialogue-campaign/cancelled_migration",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "请记住 Cedar 服务目前使用 PostgreSQL 15，计划下月迁移到 17；计划还没有执行。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "补充 Cedar 的情况：迁移到 17 的计划已经取消，现网依然是 15。请保存这个状态，别把计划当成已经完成。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "Cedar 当前数据库主版本和迁移计划状态是什么？JSON 字段 current_version 为整数，migration_cancelled 为布尔值。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "current_version": 15,
+            "migration_cancelled": true
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_owner_handover",
+      "category": "memory-update",
+      "capabilities": [
+        "user_dialogue",
+        "memory-update"
+      ],
+      "fixture": "fixtures/dialogue-campaign/owner_handover",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "记住 Delta 仓库：发布负责人 Lin，值班联系人 Mei。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "Delta 从今天起发布负责人换成 Qiu，Lin 已正式交接；Mei 继续值班。请替换发布负责人记录。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "Delta 现在谁负责发布、谁值班？返回 JSON，release_owner、oncall。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "release_owner": "Qiu",
+            "oncall": "Mei"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_two_people",
+      "category": "memory-scope",
+      "capabilities": [
+        "user_dialogue",
+        "memory-scope"
+      ],
+      "fixture": "fixtures/dialogue-campaign/two_people",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "帮我记住我们项目的两个人：我是 Nora，代码示例偏好 Python；同事 Evan 偏好 Go。不要混在一起。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "我们刚讨论过 Rust，只是闲聊，并没有改变任何人的代码示例偏好。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "替我和 Evan 各选默认示例语言，按之前明确记住的偏好。只给 JSON，Nora 和 Evan 两个字段。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "Nora": "Python",
+            "Evan": "Go"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_environment_scope",
+      "category": "memory-scope",
+      "capabilities": [
+        "user_dialogue",
+        "memory-scope"
+      ],
+      "fixture": "fixtures/dialogue-campaign/environment_scope",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "请记住 Nimbus 配置：生产环境 cache TTL 是 900 秒，开发环境是 30 秒。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "Nimbus 的开发环境 TTL 已改成 5 秒，为了更快调试。生产配置没有变化。请记住这是开发环境的修改。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "Nimbus 的生产和开发 TTL 分别是多少秒？JSON 字段 production、development。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "production": 900,
+            "development": 5
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_branch_scope",
+      "category": "memory-scope",
+      "capabilities": [
+        "user_dialogue",
+        "memory-scope"
+      ],
+      "fixture": "fixtures/dialogue-campaign/branch_scope",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "请记住 Ledger 仓库：main 分支要求 Python 3.11，legacy 分支固定 Python 3.9。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "Ledger 的 main 今天升级到 Python 3.12，legacy 仍维持原版本。请分别维护，不要把分支弄混。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "我要维护 Ledger 的两个分支，分别用什么 Python 版本？只给 JSON，main、legacy，版本为字符串。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "main": "3.12",
+            "legacy": "3.9"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_temporary_override",
+      "category": "memory-scope",
+      "capabilities": [
+        "user_dialogue",
+        "memory-scope"
+      ],
+      "fixture": "fixtures/dialogue-campaign/temporary_override",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "请记住：我长期希望提交说明用中文，函数和变量标识符用英文。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "仅这条回复用英文说 hello；这不是长期偏好变更，请不要覆盖原来的默认约定。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "现在恢复默认。我的提交说明语言和代码标识符语言分别是什么？JSON 字段 commit_language、identifier_language，用 Chinese 或 English。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "commit_language": "Chinese",
+            "identifier_language": "English"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_repo_contact_chain",
+      "category": "memory-multihop",
+      "capabilities": [
+        "user_dialogue",
+        "memory-multihop"
+      ],
+      "fixture": "fixtures/dialogue-campaign/repo_contact_chain",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "请长期记住：Aurora 仓库由 Polaris 团队维护；Beacon 仓库由 Harbor 团队维护。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "再记两条联系人映射：Polaris 团队发布联系人是 Mira；Harbor 团队是 Theo。Mira 的邮箱是 mira@example.test，Theo 的邮箱是 theo@example.test。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "Aurora 发版要联系谁、发哪个邮箱？请通过已保存的关联信息确定，输出 JSON：contact、email。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "contact": "Mira",
+            "email": "mira@example.test"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_incident_node_chain",
+      "category": "memory-multihop",
+      "capabilities": [
+        "user_dialogue",
+        "memory-multihop"
+      ],
+      "fixture": "fixtures/dialogue-campaign/incident_node_chain",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "记录这次故障定位，供下次会话查询：请求 req-742 由作业 job-19 处理，req-743 由 job-20 处理。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "继续记住映射：job-19 跑在容器 pod-fern，job-20 跑在 pod-moss。pod-fern 所在节点是 node-east-7，pod-moss 在 node-west-2。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "req-742 最终落在哪个容器、哪个节点？只给 JSON，pod、node。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "pod": "pod-fern",
+            "node": "node-east-7"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_feature_dependency",
+      "category": "memory-multihop",
+      "capabilities": [
+        "user_dialogue",
+        "memory-multihop"
+      ],
+      "fixture": "fixtures/dialogue-campaign/feature_dependency",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "记住配置关联：fast-checkout 功能依赖 payment-v2 服务；payment-v2 依赖 token-cache。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "再记住：token-cache 的负责人是 Ren，降级开关叫 disable_token_cache。旧 token-cache-v1 的负责人是 Sam，不要混淆。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "fast-checkout 依赖链末端缓存的负责人和降级开关是什么？只输出 JSON，owner、flag。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "owner": "Ren",
+            "flag": "disable_token_cache"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_renamed_service_chain",
+      "category": "memory-multihop",
+      "capabilities": [
+        "user_dialogue",
+        "memory-multihop"
+      ],
+      "fixture": "fixtures/dialogue-campaign/renamed_service_chain",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "记住：报表导出功能由 report-api 提供，report-api 属于 Analytics 团队。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "更新记录：report-api 正式更名为 insight-api，功能归属不变；Analytics 团队本周值班人是 Zed。旧名字仅用于历史日志。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "报表导出现在哪个服务、找谁值班？输出 JSON，service、oncall。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "service": "insight-api",
+            "oncall": "Zed"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_forget_preference",
+      "category": "memory-forgetting",
+      "capabilities": [
+        "user_dialogue",
+        "memory-forgetting"
+      ],
+      "fixture": "fixtures/dialogue-campaign/forget_preference",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "请长期记住：我默认使用 Vim，代码格式缩进用 4 个空格。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "我不再有默认编辑器偏好，请删除 Vim 这条偏好，以后不要据此推荐。4 空格缩进继续保留。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "现在记忆中是否还有我的默认编辑器偏好？没有就用 null。返回 JSON，editor、indent_spaces。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "editor": null,
+            "indent_spaces": 4
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_retracted_decision",
+      "category": "memory-forgetting",
+      "capabilities": [
+        "user_dialogue",
+        "memory-forgetting"
+      ],
+      "fixture": "fixtures/dialogue-campaign/retracted_decision",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "请记住本周技术决策：Iris 项目暂定用 MongoDB，日志格式采用 JSON。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "纠正：MongoDB 决策已撤回，数据库重新进入未决定状态，没有确定替代品。请更新记忆；JSON 日志的决定仍有效。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "Iris 当前确定的数据库与日志格式是什么？未确定项返回 null。JSON 字段 database、log_format。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "database": null,
+            "log_format": "JSON"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_hypothesis_not_fact",
+      "category": "memory-forgetting",
+      "capabilities": [
+        "user_dialogue",
+        "memory-forgetting"
+      ],
+      "fixture": "fixtures/dialogue-campaign/hypothesis_not_fact",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "请记住事故记录：缺少证据，暂时怀疑 Cedar 超时由 DNS 引起，但根因没有确认。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "调查更新：DNS 排查结果正常，已经排除；真实根因仍未找到。请替换旧假设状态。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "Cedar 超时已经确认的根因是什么？没有则 null；DNS 是否已排除？输出 JSON，confirmed_cause、dns_ruled_out。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "confirmed_cause": null,
+            "dns_ruled_out": true
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_project_scoped_forget",
+      "category": "memory-forgetting",
+      "capabilities": [
+        "user_dialogue",
+        "memory-forgetting"
+      ],
+      "fixture": "fixtures/dialogue-campaign/project_scoped_forget",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "请记住两个项目约定：Aster 的默认分支是 develop，Beryl 的默认分支也是 develop。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "仅 Aster 不再使用默认分支约定，请忘掉 Aster 的默认分支信息。Beryl 的记录保持原样。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "按现有明确记录，Aster 和 Beryl 默认分支各是什么？被撤销的写 null。JSON 字段 Aster、Beryl。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "Aster": null,
+            "Beryl": "develop"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_event_time_not_ingest",
+      "category": "temporal-evidence",
+      "capabilities": [
+        "user_dialogue",
+        "temporal-evidence"
+      ],
+      "fixture": "fixtures/dialogue-campaign/event_time_not_ingest",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "请看看 history.json，这些是线上配置变更记录，先理解时间字段。只读，不修改文件。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "提醒：effective_at 才是配置生效时间，ingested_at 只是采集时间；回补日志不能覆盖更晚的实际配置。现在生效的 region 和 retries 是什么？只给 JSON。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "region": "west",
+            "retries": 2
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_refund_accounting",
+      "category": "temporal-evidence",
+      "capabilities": [
+        "user_dialogue",
+        "temporal-evidence"
+      ],
+      "fixture": "fixtures/dialogue-campaign/refund_accounting",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "帮我对一下账，ledger.csv 是今天订单和退款记录，只读分析。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "统计已结算订单扣掉已完成退款后的净额。pending 订单和 rejected 退款都不计；金额单位分。返回 JSON：net_cents。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "net_cents": 1850
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_rollback_state",
+      "category": "temporal-evidence",
+      "capabilities": [
+        "user_dialogue",
+        "temporal-evidence"
+      ],
+      "fixture": "fixtures/dialogue-campaign/rollback_state",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "看看 releases.log，帮我确认这次发布的经过。不要修改文件。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "我只关心最后真正运行的版本，不是最后尝试发布的版本。回滚也要算。输出 JSON：running_version、last_attempt_version。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "running_version": "2.4.1",
+            "last_attempt_version": "2.5.0"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_timezone_cutoff",
+      "category": "temporal-evidence",
+      "capabilities": [
+        "user_dialogue",
+        "temporal-evidence"
+      ],
+      "fixture": "fixtures/dialogue-campaign/timezone_cutoff",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "events.csv 是 UTC 时间记录，我要按北京时间统计日报。先看一下字段，别修改文件。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "北京时间 2026-06-02 这一天成功完成的任务有几个？一天范围左闭右开，失败不计。只给 JSON：completed_count。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "completed_count": 2
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_missing_sla",
+      "category": "negative-evidence",
+      "capabilities": [
+        "user_dialogue",
+        "negative-evidence"
+      ],
+      "fixture": "fixtures/dialogue-campaign/missing_sla",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "请查看 service.md，帮我准备服务登记，只基于文件里的确定信息。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "返回 JSON：owner、sla_percent。没有写明的信息用 null，不要从行业惯例推测。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "owner": "Tao",
+            "sla_percent": null
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_conflicting_sources",
+      "category": "negative-evidence",
+      "capabilities": [
+        "user_dialogue",
+        "negative-evidence"
+      ],
+      "fixture": "fixtures/dialogue-campaign/conflicting_sources",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "config-a.md 和 config-b.md 是同时收到的两个配置说明，帮我核对。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "它们没有版本和时间，也没有权威优先级。现在能确定唯一的生产端口吗？输出 JSON：port，没有唯一答案就 null；conflict 为布尔值。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "port": null,
+            "conflict": true
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_staging_not_production",
+      "category": "negative-evidence",
+      "capabilities": [
+        "user_dialogue",
+        "negative-evidence"
+      ],
+      "fixture": "fixtures/dialogue-campaign/staging_not_production",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "阅读 permissions.md，我需要给生产发布做权限核对。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "按当前资料，能否证明 Kai 具有生产管理员权限？返回 JSON：production_admin_proven。只问是否有证据，不要求猜他实际有没有。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "production_admin_proven": false
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    },
+    {
+      "id": "dialogue_correlation_not_cause",
+      "category": "negative-evidence",
+      "capabilities": [
+        "user_dialogue",
+        "negative-evidence"
+      ],
+      "fixture": "fixtures/dialogue-campaign/correlation_not_cause",
+      "session_mode": "shared",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "阅读 incident.md，帮我做事故复盘。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "已确认的根因和已确认的影响请求数是什么？只按证据输出 JSON：root_cause、affected_requests，未确认的填 null。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "final_json",
+          "fields": {
+            "root_cause": null,
+            "affected_requests": 47
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 480,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "development",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests"
+      }
+    }
+  ]
+}

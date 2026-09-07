@@ -1,0 +1,192 @@
+{
+  "id": "dialogue_group_identity_branch",
+  "category": "actor-isolation",
+  "source": {
+    "kind": "synthetic_user_dialogue",
+    "campaign": "dialogue-20260905",
+    "track": "failure-regression",
+    "origin": "hand-authored realistic scenario",
+    "oracle": "independent expected fields or isolated hidden tests",
+    "input_adapter": "feishu-router",
+    "actors": [
+      "Alice",
+      "Bob",
+      "Alice",
+      "Bob"
+    ],
+    "failure_family": "shared-thread-actor-binding",
+    "actor_policy": "Personal preferences follow inbound user_id, shared thread context is not private-user identity.",
+    "discovery_report": ".aster\\evals\\expansion-20260905\\router-discovery\\cases\\dialogue_group_identity_branch\\result.json",
+    "confirmation_report": ".aster\\evals\\expansion-20260905\\router-confirmation\\cases\\dialogue_group_identity_branch\\result.json",
+    "observed_attempts": 3,
+    "observed_failures": 3,
+    "failure_signature": "shared-thread-actor-binding",
+    "status": "known-failure-unfixed"
+  },
+  "user_dialogue": [
+    {
+      "id": "turn1",
+      "prompt": "我是 Alice，请记住我的个人实验分支是 alice-lab。这是我的个人偏好，不是群里所有人的约定。"
+    },
+    {
+      "id": "turn2",
+      "prompt": "我是 Bob，请记住我的个人实验分支是 bob-lab。我的偏好只属于我，不要覆盖 Alice 的记录。"
+    },
+    {
+      "id": "turn3",
+      "prompt": "按我之前明确告诉你的个人记录，我的个人实验分支是什么？只给 JSON：value。"
+    },
+    {
+      "id": "turn4",
+      "prompt": "也查一下我之前明确告诉你的个人记录，我的个人实验分支是什么？只给 JSON：value。"
+    }
+  ],
+  "expected_checks": [
+    {
+      "type": "final_json",
+      "phase": "turn3",
+      "fields": {
+        "value": "alice-lab"
+      },
+      "dimension": "outcome"
+    },
+    {
+      "type": "final_json",
+      "fields": {
+        "value": "bob-lab"
+      },
+      "dimension": "outcome"
+    }
+  ],
+  "observations": [
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:final_json:phase=turn3; final={\"value\":\"bob-lab\"}"
+      ],
+      "answers": {
+        "turn1": "记住了：你的个人实验分支是 `alice-lab`，这是你的个人偏好，不代表群体约定。",
+        "turn2": "记住了：你的个人实验分支是 `bob-lab`，仅属于 Bob，不会覆盖 Alice 的记录。",
+        "turn3": "{\"value\":\"bob-lab\"}",
+        "turn4": "{\"value\":\"bob-lab\"}"
+      },
+      "inbound_actor_and_memory_binding": [
+        {
+          "phase": "turn1",
+          "inbound_actor": "Alice",
+          "input": "我是 Alice，请记住我的个人实验分支是 alice-lab。这是我的个人偏好，不是群里所有人的约定。",
+          "output": "记住了：你的个人实验分支是 `alice-lab`，这是你的个人偏好，不代表群体约定。",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn2",
+          "inbound_actor": "Bob",
+          "input": "我是 Bob，请记住我的个人实验分支是 bob-lab。我的偏好只属于我，不要覆盖 Alice 的记录。",
+          "output": "记住了：你的个人实验分支是 `bob-lab`，仅属于 Bob，不会覆盖 Alice 的记录。",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn3",
+          "inbound_actor": "Alice",
+          "input": "按我之前明确告诉你的个人记录，我的个人实验分支是什么？只给 JSON：value。",
+          "output": "{\"value\":\"bob-lab\"}",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn4",
+          "inbound_actor": "Bob",
+          "input": "也查一下我之前明确告诉你的个人记录，我的个人实验分支是什么？只给 JSON：value。",
+          "output": "{\"value\":\"bob-lab\"}",
+          "bound_memory_user_scope": "feishu-Alice"
+        }
+      ],
+      "observed_files": {}
+    },
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:final_json:phase=turn3; final={\"value\":\"bob-lab\"}"
+      ],
+      "answers": {
+        "turn1": "记住了：你是 Alice，你的个人实验分支是 `alice-lab`。这是你的个人偏好，不代表群体约定。",
+        "turn2": "记住了：你是 Bob，你的个人实验分支是 `bob-lab`。这是你的个人偏好，不会覆盖 Alice 的记录。",
+        "turn3": "{\"value\":\"bob-lab\"}",
+        "turn4": "{\"value\":\"bob-lab\"}"
+      },
+      "inbound_actor_and_memory_binding": [
+        {
+          "phase": "turn1",
+          "inbound_actor": "Alice",
+          "input": "我是 Alice，请记住我的个人实验分支是 alice-lab。这是我的个人偏好，不是群里所有人的约定。",
+          "output": "记住了：你是 Alice，你的个人实验分支是 `alice-lab`。这是你的个人偏好，不代表群体约定。",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn2",
+          "inbound_actor": "Bob",
+          "input": "我是 Bob，请记住我的个人实验分支是 bob-lab。我的偏好只属于我，不要覆盖 Alice 的记录。",
+          "output": "记住了：你是 Bob，你的个人实验分支是 `bob-lab`。这是你的个人偏好，不会覆盖 Alice 的记录。",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn3",
+          "inbound_actor": "Alice",
+          "input": "按我之前明确告诉你的个人记录，我的个人实验分支是什么？只给 JSON：value。",
+          "output": "{\"value\":\"bob-lab\"}",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn4",
+          "inbound_actor": "Bob",
+          "input": "也查一下我之前明确告诉你的个人记录，我的个人实验分支是什么？只给 JSON：value。",
+          "output": "{\"value\":\"bob-lab\"}",
+          "bound_memory_user_scope": "feishu-Alice"
+        }
+      ],
+      "observed_files": {}
+    },
+    {
+      "passed": false,
+      "failure_reasons": [
+        "outcome:final_json:phase=turn3; final={\"value\":\"bob-lab\"}"
+      ],
+      "answers": {
+        "turn1": "记住了：你是 Alice，你的个人实验分支是 `alice-lab`。这是你的个人偏好，不代表群体约定。",
+        "turn2": "记住了：你是 Bob，你的个人实验分支是 `bob-lab`。这是你的个人偏好，不会覆盖 Alice 的记录。",
+        "turn3": "{\"value\":\"bob-lab\"}",
+        "turn4": "{\"value\":\"bob-lab\"}"
+      },
+      "inbound_actor_and_memory_binding": [
+        {
+          "phase": "turn1",
+          "inbound_actor": "Alice",
+          "input": "我是 Alice，请记住我的个人实验分支是 alice-lab。这是我的个人偏好，不是群里所有人的约定。",
+          "output": "记住了：你是 Alice，你的个人实验分支是 `alice-lab`。这是你的个人偏好，不代表群体约定。",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn2",
+          "inbound_actor": "Bob",
+          "input": "我是 Bob，请记住我的个人实验分支是 bob-lab。我的偏好只属于我，不要覆盖 Alice 的记录。",
+          "output": "记住了：你是 Bob，你的个人实验分支是 `bob-lab`。这是你的个人偏好，不会覆盖 Alice 的记录。",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn3",
+          "inbound_actor": "Alice",
+          "input": "按我之前明确告诉你的个人记录，我的个人实验分支是什么？只给 JSON：value。",
+          "output": "{\"value\":\"bob-lab\"}",
+          "bound_memory_user_scope": "feishu-Alice"
+        },
+        {
+          "phase": "turn4",
+          "inbound_actor": "Bob",
+          "input": "也查一下我之前明确告诉你的个人记录，我的个人实验分支是什么？只给 JSON：value。",
+          "output": "{\"value\":\"bob-lab\"}",
+          "bound_memory_user_scope": "feishu-Alice"
+        }
+      ],
+      "observed_files": {}
+    }
+  ]
+}

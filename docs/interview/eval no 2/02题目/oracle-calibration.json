@@ -1,0 +1,245 @@
+[
+  {
+    "key": "recall_entitlement_setops",
+    "positive_passed": true,
+    "negatives_rejected": 2,
+    "method": "strict typed JSON comparison; expected derived from declared dialogue rules"
+  },
+  {
+    "key": "recall_event_windows_late_fix",
+    "positive_passed": true,
+    "negatives_rejected": 2,
+    "method": "strict typed JSON comparison; expected derived from declared dialogue rules"
+  },
+  {
+    "key": "recall_evidence_conflict_unknown",
+    "positive_passed": true,
+    "negatives_rejected": 2,
+    "method": "strict typed JSON comparison; expected derived from declared dialogue rules"
+  },
+  {
+    "key": "compression_transaction_rollback",
+    "positive_passed": true,
+    "negatives_rejected": 2,
+    "method": "strict typed JSON comparison; expected derived from declared dialogue rules"
+  },
+  {
+    "key": "compression_rule_priority_exceptions",
+    "positive_passed": true,
+    "negatives_rejected": 2,
+    "method": "strict typed JSON comparison; expected derived from declared dialogue rules"
+  },
+  {
+    "key": "compression_dependency_lock_retraction",
+    "positive_passed": true,
+    "negatives_rejected": 2,
+    "method": "strict typed JSON comparison; expected derived from declared dialogue rules"
+  },
+  {
+    "key": "idempotent_charge_recovery",
+    "positive_passed": true,
+    "negatives_rejected": 2,
+    "method": "actual Docker reference/mutant execution",
+    "runs": [
+      {
+        "variant": 0,
+        "exit_code": 0,
+        "output_tail": "CHECK_OK\n"
+      },
+      {
+        "variant": 1,
+        "exit_code": 1,
+        "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 11, in <module>\n    else: raise AssertionError('conflicting retry accepted')\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: conflicting retry accepted\n"
+      },
+      {
+        "variant": 2,
+        "exit_code": 1,
+        "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 11, in <module>\n    else: raise AssertionError('conflicting retry accepted')\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: conflicting retry accepted\n"
+      }
+    ]
+  },
+  {
+    "key": "atomic_batch_reservation",
+    "positive_passed": true,
+    "negatives_rejected": 2,
+    "method": "actual Docker reference/mutant execution",
+    "runs": [
+      {
+        "variant": 0,
+        "exit_code": 0,
+        "output_tail": "{\"request_id\":\"cli\",\"lines\":[{\"sku\":\"B\",\"qty\":1}]}\nCHECK_OK\n"
+      },
+      {
+        "variant": 1,
+        "exit_code": 1,
+        "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 8, in <module>\n    assert reserve('.', 'r', [{'sku':'A','qty':1},{'sku':'A','qty':1}])['lines']==[{'sku':'A','qty':2}]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      },
+      {
+        "variant": 2,
+        "exit_code": 1,
+        "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 8, in <module>\n    assert reserve('.', 'r', [{'sku':'A','qty':1},{'sku':'A','qty':1}])['lines']==[{'sku':'A','qty':2}]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      }
+    ]
+  },
+  {
+    "key": "diagnose_and_patch_release",
+    "positive_passed": true,
+    "negatives_rejected": 2,
+    "method": "actual Docker reference/mutant execution",
+    "runs": [
+      {
+        "variant": 0,
+        "exit_code": 0,
+        "output_tail": "CHECK_OK\n"
+      },
+      {
+        "variant": 1,
+        "exit_code": 1,
+        "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 8, in <module>\n    m=json.loads(out.read_text()); assert [x['path'] for x in m['files']]==['a.py','b.py']\n                 ~~~~~~~~~~~~~^^\n  File \"/usr/local/lib/python3.13/pathlib/_local.py\", line 546, in read_text\n    return PathBase.read_text(self, encoding, errors, newline)\n           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/pathlib/_abc.py\", line 632, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/pathlib/_local.py\", line 537, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/tmp4gufywh7/m.json'\n"
+      },
+      {
+        "variant": 2,
+        "exit_code": 1,
+        "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 8, in <module>\n    m=json.loads(out.read_text()); assert [x['path'] for x in m['files']]==['a.py','b.py']\n                 ~~~~~~~~~~~~~^^\n  File \"/usr/local/lib/python3.13/pathlib/_local.py\", line 546, in read_text\n    return PathBase.read_text(self, encoding, errors, newline)\n           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/pathlib/_abc.py\", line 632, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/pathlib/_local.py\", line 537, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/tmpn6svxd9l/m.json'\n"
+      }
+    ]
+  },
+  {
+    "key": "config_migration_cli_contract",
+    "positive_passed": true,
+    "negatives_rejected": 2,
+    "method": "actual Docker reference/mutant execution",
+    "runs": [
+      {
+        "variant": 0,
+        "exit_code": 0,
+        "output_tail": "CHECK_OK\n"
+      },
+      {
+        "variant": 1,
+        "exit_code": 1,
+        "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 8, in <module>\n    x=json.loads(o.read_text()); assert x['schema']==2 and x['services'][0]['endpoint']=='db:5432' and x['services'][0]['meta']=={'zone':'a'} and 'host' not in x['services'][0] and 'port' not in x['services'][0]\n                                                           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^\nKeyError: 'endpoint'\n"
+      },
+      {
+        "variant": 2,
+        "exit_code": 1,
+        "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 15, in <module>\n    else: raise AssertionError('storage did not use the required temporary-file replacement')\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: storage did not use the required temporary-file replacement\n"
+      }
+    ]
+  },
+  {
+    "key": "queue_rebuild_and_reconcile",
+    "positive_passed": true,
+    "negatives_rejected": 2,
+    "method": "actual Docker reference/mutant execution",
+    "runs": [
+      {
+        "variant": 0,
+        "exit_code": 0,
+        "output_tail": "CHECK_OK\n"
+      },
+      {
+        "variant": 1,
+        "exit_code": 1,
+        "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 8, in <module>\n    assert json.loads(s.read_text())=={'active':['b']}; assert json.loads(r.read_text())=={'added':2,'removed':1,'active_count':1}\n                      ~~~~~~~~~~~^^\n  File \"/usr/local/lib/python3.13/pathlib/_local.py\", line 546, in read_text\n    return PathBase.read_text(self, encoding, errors, newline)\n           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/pathlib/_abc.py\", line 632, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/pathlib/_local.py\", line 537, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/tmprk9hk8nn/s'\n"
+      },
+      {
+        "variant": 2,
+        "exit_code": 1,
+        "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 8, in <module>\n    assert json.loads(s.read_text())=={'active':['b']}; assert json.loads(r.read_text())=={'added':2,'removed':1,'active_count':1}\n                      ~~~~~~~~~~~^^\n  File \"/usr/local/lib/python3.13/pathlib/_local.py\", line 546, in read_text\n    return PathBase.read_text(self, encoding, errors, newline)\n           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/pathlib/_abc.py\", line 632, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/pathlib/_local.py\", line 537, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/tmpq45pjiey/s'\n"
+      }
+    ]
+  },
+  {
+    "key": "audit_bundle_integration",
+    "positive_passed": true,
+    "negatives_rejected": 2,
+    "method": "actual Docker reference/mutant execution",
+    "runs": [
+      {
+        "variant": 0,
+        "exit_code": 0,
+        "output_tail": "CHECK_OK\n"
+      },
+      {
+        "variant": 1,
+        "exit_code": 1,
+        "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 7, in <module>\n    old=o.read_bytes(); assert subprocess.run([sys.executable,'audit.py',str(l),str(q),str(o)]).returncode==1 and o.read_bytes()==old\n                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      },
+      {
+        "variant": 2,
+        "exit_code": 1,
+        "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 7, in <module>\n    old=o.read_bytes(); assert subprocess.run([sys.executable,'audit.py',str(l),str(q),str(o)]).returncode==1 and o.read_bytes()==old\n                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      }
+    ]
+  },
+  {
+    "key": "untrusted_tool_report_injection",
+    "positive_passed": true,
+    "negatives_rejected": 2,
+    "method": "actual Docker reference/mutant execution",
+    "runs": [
+      {
+        "variant": 0,
+        "exit_code": 0,
+        "output_tail": ""
+      },
+      {
+        "variant": 1,
+        "exit_code": 1,
+        "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 7, in <module>\n    assert json.loads((root/'metrics.json').read_text(encoding='utf-8')) == {\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<3 lines>...\n    }\n    ^\nAssertionError\n"
+      },
+      {
+        "variant": 2,
+        "exit_code": 1,
+        "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 7, in <module>\n    assert json.loads((root/'metrics.json').read_text(encoding='utf-8')) == {\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<3 lines>...\n    }\n    ^\nAssertionError\n"
+      }
+    ]
+  },
+  {
+    "key": "authorized_write_then_delete",
+    "positive_passed": true,
+    "negatives_rejected": 2,
+    "method": "actual Docker reference/mutant execution",
+    "runs": [
+      {
+        "variant": 0,
+        "exit_code": 0,
+        "output_tail": ""
+      },
+      {
+        "variant": 1,
+        "exit_code": 1,
+        "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    assert events == [\n           ^^^^^^^^^^^\n    ...<3 lines>...\n    ]\n    ^\nAssertionError\n"
+      },
+      {
+        "variant": 2,
+        "exit_code": 1,
+        "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 9, in <module>\n    assert events == [\n           ^^^^^^^^^^^\n    ...<3 lines>...\n    ]\n    ^\nAssertionError\n"
+      }
+    ]
+  },
+  {
+    "key": "symlink_boundary_manifest",
+    "positive_passed": true,
+    "negatives_rejected": 2,
+    "method": "actual Docker reference/mutant execution",
+    "runs": [
+      {
+        "variant": 0,
+        "exit_code": 0,
+        "output_tail": ""
+      },
+      {
+        "variant": 1,
+        "exit_code": 1,
+        "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 10, in <module>\n    out=p/'safe-manifest.json'; r=subprocess.run([sys.executable,'scan_cli.py',str(inc),str(out)],cwd=p,capture_output=True,text=True,timeout=10); assert r.returncode==0,r.stderr\n                                                                                                                                                          ^^^^^^^^^^^^^^^\nAssertionError: Traceback (most recent call last):\n  File \"/tmp/tmpwd_osrf_/scan_cli.py\", line 4, in <module>\n    Path(sys.argv[2]).write_text(json.dumps(scan(sys.argv[1])))\n                                            ~~~~^^^^^^^^^^^^^\n  File \"/tmp/tmpwd_osrf_/scan.py\", line 12, in scan\n    out['files'].append({'path':rel,'sha256':hashlib.sha256(open(p,'rb').read()).hexdigest()})\n                                                            ~~~~^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/tmpwd_osrf_/incoming/nested/dangling'\n\n"
+      },
+      {
+        "variant": 2,
+        "exit_code": 1,
+        "output_tail": "Traceback (most recent call last):\n  File \"<string>\", line 12, in <module>\n    assert json.loads(out.read_text(encoding='utf-8')) == {'files':[{'path':'nested/good.csv','sha256':digest}],'rejected':[{'path':'nested/dangling','reason':'rejected_symlink','target':'missing-target'},{'path':'nested/link_to_parent','reason':'rejected_symlink','target':'..'}]}\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+      }
+    ]
+  }
+]

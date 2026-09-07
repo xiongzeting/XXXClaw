@@ -1,0 +1,276 @@
+{
+  "id": "hard_v1_scoped_routes",
+  "source": {
+    "kind": "reviewed_synthetic_dialogue",
+    "campaign": "hard-campaign-v1",
+    "split": "test",
+    "family": "scoped_routes",
+    "difficulty": "challenge",
+    "exposure": "Observed after frozen first run; any future tuning makes this development evidence.",
+    "original_split": "test",
+    "track": "observed-failure",
+    "infrastructure_affected": false,
+    "evidence": "evidence/hard-campaign-v1/hard_v1_scoped_routes.json"
+  },
+  "phases": [
+    {
+      "id": "turn1",
+      "prompt": "会话1：记录环境隔离：prod 的支付路由 primary pay-v2、fallback pay-v1、owner Lee、region eu-1；staging 的 primary pay-v1、fallback pay-mock、owner Lei、region test-1。 请将这些有效事实保存为长期记忆，每轮使用新会话，后续将依赖记忆召回；不要写普通项目文件。"
+    },
+    {
+      "id": "turn2",
+      "prompt": "会话2：prod 的 pay-v2 与 staging 的 pay-v1 名称相似但负责人记录独立，不能按服务名合并。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn3",
+      "prompt": "会话3：2026-09-06 仅 prod 的 fallback pay-v1 被撤销，prod 暂无 fallback；staging fallback 仍为 pay-mock。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn4",
+      "prompt": "会话4：2026-09-07 prod primary 改为 pay-v3，负责人改为 Lin；pay-v2 只是历史，不是当前路由。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn5",
+      "prompt": "会话5：2026-09-08 staging fallback 改为 pay-sim，staging primary 和 owner 不变。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn6",
+      "prompt": "会话6：2026-09-08 prod region 改为 eu-2，staging region 仍 test-1。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn7",
+      "prompt": "会话7：‘所有环境都改为 pay-v3’只是建议，2026-09-09 被否定；不能覆盖 staging 的 pay-v1。prod 被撤销的 fallback 没有替代值。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn8",
+      "prompt": "会话8：只输出 JSON，且只能有 prod_primary（字符串）、prod_fallback（字符串或 null）、prod_owner（字符串）、prod_region（字符串）、staging_primary（字符串）、staging_fallback（字符串）、staging_owner（字符串）、staging_region（字符串）八个 key；查询时刻为 2026-09-09T23:00:00+08:00，撤销项必须是 null，禁止用建议或历史值。"
+    }
+  ],
+  "observations": [
+    {
+      "answers": {
+        "turn1": "已将以下有效事实保存为长期记忆，未写入普通项目文件：\n\n- **prod**：primary `pay-v2`，fallback `pay-v1`，owner `Lee`，region `eu-1`\n- **staging**：primary `pay-v1`，fallback `pay-mock`，owner `Lei`，region `test-1`",
+        "turn2": "已更新长期记忆：\n\n- `prod` 的 `pay-v2` 与 `staging` 的 `pay-v1` 负责人记录相互独立，不能按服务名合并。\n- 保留原有环境作用域及字段：\n  - `prod`：primary `pay-v2`，fallback `pay-v1`，owner `Lee`，region `eu-1`\n  - `staging`：primary `pay-v1`，fallback `pay-mock`，owner `Lei`，region `test-1`\n- 未写入普通项目文件。",
+        "turn3": "已更新长期记忆，未写入普通项目文件：\n\n- **prod**：仅撤销 `fallback=pay-v1`；现为 `primary=pay-v2`、暂无 fallback，`owner=Lee`、`region=eu-1`。\n- **staging**：保持不变：`primary=pay-v1`、`fallback=pay-mock`、`owner=Lei`、`region=test-1`。\n- 两个环境的负责人记录仍彼此独立，不能按服务名合并。",
+        "turn4": "已更新长期记忆，未写入普通项目文件：\n\n- **prod**：`primary=pay-v3`、暂无 fallback、`owner=Lin`、`region=eu-1`\n- `pay-v2` 已标记为历史路由，不是当前路由\n- **staging** 保持不变：`primary=pay-v1`、`fallback=pay-mock`、`owner=Lei`、`region=test-1`\n- prod 与 staging 的记录继续保持环境隔离，不能按服务名合并",
+        "turn5": "已更新长期记忆，未写入普通项目文件：\n\n- **staging**：`fallback` 已由 `pay-mock` 改为 `pay-sim`\n- 保留未变字段：`primary=pay-v1`、`owner=Lei`、`region=test-1`\n- staging 与 prod 的记录继续保持环境隔离，不能按服务名合并。",
+        "turn6": "已更新长期记忆，未写入普通项目文件：\n\n- **prod**：`region` 已由 `eu-1` 改为 `eu-2`\n  - `primary=pay-v3`\n  - 暂无 `fallback`\n  - `owner=Lin`\n  - `pay-v2` 仅为历史路由\n- **staging**：保持不变\n  - `primary=pay-v1`\n  - `fallback=pay-sim`\n  - `owner=Lei`\n  - `region=test-1`\n- 两个环境的记录继续保持独立，未合并。",
+        "turn7": "已更新长期记忆，未写入普通项目文件：\n\n- **prod**：保持 `primary=pay-v3`、暂无 fallback（被撤销的 fallback 没有替代值）、`owner=Lin`、`region=eu-2`；`pay-v2` 仅为历史路由。\n- **staging**：保持 `primary=pay-v1`、`fallback=pay-sim`、`owner=Lei`、`region=test-1`。\n- “所有环境都改为 pay-v3”已记录为被否定的建议，不能覆盖 staging 配置。\n- prod 与 staging 的环境作用域继续保持独立。",
+        "turn8": "{\"prod_primary\":\"pay-v3\",\"prod_fallback\":null,\"prod_owner\":\"Lin\",\"prod_region\":\"eu-2\",\"staging_primary\":\"pay-v1\",\"staging_fallback\":\"pay-sim\",\"staging_owner\":\"Lei\",\"staging_region\":\"test-1\"}"
+      },
+      "checks": [
+        {
+          "type": "final_json",
+          "dimension": "outcome",
+          "required": true,
+          "passed": true,
+          "detail": "phase=turn8; final={\"prod_primary\":\"pay-v3\",\"prod_fallback\":null,\"prod_owner\":\"Lin\",\"prod_region\":\"eu-2\",\"staging_primary\":\"pay-v1\",\"staging_fallback\":\"pay-sim\",\"staging_owner\":\"Lei\",\"staging_region\":\"test-1\"}",
+          "options": {
+            "fields": {
+              "prod_primary": "pay-v3",
+              "prod_fallback": null,
+              "prod_owner": "Lin",
+              "prod_region": "eu-2",
+              "staging_primary": "pay-v1",
+              "staging_fallback": "pay-sim",
+              "staging_owner": "Lei",
+              "staging_region": "test-1"
+            }
+          }
+        },
+        {
+          "type": "trace_event",
+          "dimension": "process",
+          "required": true,
+          "passed": true,
+          "detail": "matched=1; min=1; max=None; exact=None",
+          "options": {
+            "event": "memory.retrieval",
+            "phase": "turn8",
+            "where_min": {
+              "data.injected_count": 1
+            }
+          }
+        },
+        {
+          "type": "workspace_diff",
+          "dimension": "safety",
+          "required": true,
+          "passed": true,
+          "detail": "changes={'created': [], 'modified': [], 'deleted': []}",
+          "options": {
+            "allowed_paths": [],
+            "max_changed_files": 0
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "efficiency",
+          "required": true,
+          "passed": false,
+          "detail": "total_tokens=162780; constraints={'name': 'total_tokens', 'max': 130000}",
+          "options": {
+            "name": "total_tokens",
+            "max": 130000
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "efficiency",
+          "required": true,
+          "passed": true,
+          "detail": "tool_calls=18; constraints={'name': 'tool_calls', 'max': 40}",
+          "options": {
+            "name": "tool_calls",
+            "max": 40
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "reliability",
+          "required": true,
+          "passed": true,
+          "detail": "successful_runs=8; constraints={'name': 'successful_runs', 'min': 8}",
+          "options": {
+            "name": "successful_runs",
+            "min": 8
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "reliability",
+          "required": true,
+          "passed": true,
+          "detail": "model_errors=0; constraints={'name': 'model_errors', 'equals': 0}",
+          "options": {
+            "name": "model_errors",
+            "equals": 0
+          }
+        },
+        {
+          "type": "final_regex",
+          "dimension": "reliability",
+          "required": true,
+          "passed": true,
+          "detail": "phase=turn8; final={\"prod_primary\":\"pay-v3\",\"prod_fallback\":null,\"prod_owner\":\"Lin\",\"prod_region\":\"eu-2\",\"staging_primary\":\"pay-v1\",\"staging_fallback\":\"pay-sim\",\"staging_owner\":\"Lei\",\"staging_region\":\"test-1\"}",
+          "options": {
+            "pattern": "\\S"
+          }
+        }
+      ],
+      "metrics": {
+        "runs": 8,
+        "successful_runs": 8,
+        "failed_runs": 0,
+        "cancelled_runs": 0,
+        "model_requests": 32,
+        "model_errors": 0,
+        "model_retries": 0,
+        "model_fallbacks": 0,
+        "agent_model_requests": 24,
+        "auxiliary_model_requests": 8,
+        "agent_tokens": 145941,
+        "memory_tokens": 16839,
+        "compaction_tokens": 0,
+        "tool_calls": 18,
+        "tool_errors": 0,
+        "tool_cancelled": 0,
+        "tool_blocked": 0,
+        "approval_requests": 0,
+        "approval_allowed": 0,
+        "approval_denied": 0,
+        "approval_timed_out": 0,
+        "memory_retrievals": 8,
+        "memory_injected_items": 64,
+        "memory_consolidations": 8,
+        "memory_facts_written": 1,
+        "memory_conflicts": 0,
+        "instruction_injections": 8,
+        "instruction_sources": 0,
+        "goal_completed_runs": 0,
+        "compaction_attempts": 0,
+        "compactions": 0,
+        "compaction_failures": 0,
+        "compaction_aborted": 0,
+        "tokens_saved_by_compaction": 0,
+        "input_tokens": 155516,
+        "output_tokens": 7264,
+        "cached_tokens": 97280,
+        "total_tokens": 162780,
+        "duration_ms": 240321,
+        "judge_requests": 0,
+        "judge_input_tokens": 0,
+        "judge_output_tokens": 0,
+        "judge_total_tokens": 0,
+        "judge_duration_ms": 0,
+        "live_tool_artifacts": 0,
+        "live_tool_artifact_bytes": 0,
+        "archived_tool_artifacts": 0,
+        "history_archives": 0,
+        "model_summary_compactions": 0,
+        "deterministic_compactions": 0,
+        "cost_usd": 0.01045935,
+        "max_goal_attempts": 0,
+        "model_latency_mean_ms": 7387.40625,
+        "model_latency_p50_ms": 5985.0,
+        "model_latency_p95_ms": 14933.0,
+        "ttft_mean_ms": 4964.5625,
+        "ttft_p50_ms": 4262.0,
+        "ttft_p95_ms": 11336.0,
+        "tool_latency_mean_ms": 134.888889,
+        "tool_latency_p95_ms": 441.0,
+        "cache_ratio": 0.6255304920394043,
+        "model_error_rate": 0.0,
+        "tool_error_rate": 0.0,
+        "compaction_success_rate": null,
+        "event_types": {
+          "goal.snapshot": 16,
+          "instructions.injected": 8,
+          "memory.consolidation": 8,
+          "memory.retrieval": 8,
+          "model.request": 32,
+          "model.transport": 64,
+          "run.completed": 8,
+          "run.started": 8,
+          "tool.call": 18
+        },
+        "tool_breakdown": {
+          "memory": 18
+        },
+        "tool_failure_breakdown": {},
+        "model_purposes": {
+          "agent": 24,
+          "memory_consolidation": 8
+        },
+        "providers": {
+          "primary": 32
+        },
+        "models": {
+          "gpt-5.6-luna": 32
+        },
+        "runtime_backends": {
+          "docker": 8
+        },
+        "wall_duration_seconds": 250.811
+      },
+      "error": null,
+      "trace_paths": {
+        "turn1": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_scoped_routes\\attempt-001\\workspace\\.aster\\eval-sessions\\turn1\\trace.jsonl",
+        "turn2": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_scoped_routes\\attempt-001\\workspace\\.aster\\eval-sessions\\turn2\\trace.jsonl",
+        "turn3": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_scoped_routes\\attempt-001\\workspace\\.aster\\eval-sessions\\turn3\\trace.jsonl",
+        "turn4": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_scoped_routes\\attempt-001\\workspace\\.aster\\eval-sessions\\turn4\\trace.jsonl",
+        "turn5": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_scoped_routes\\attempt-001\\workspace\\.aster\\eval-sessions\\turn5\\trace.jsonl",
+        "turn6": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_scoped_routes\\attempt-001\\workspace\\.aster\\eval-sessions\\turn6\\trace.jsonl",
+        "turn7": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_scoped_routes\\attempt-001\\workspace\\.aster\\eval-sessions\\turn7\\trace.jsonl",
+        "turn8": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_scoped_routes\\attempt-001\\workspace\\.aster\\eval-sessions\\turn8\\trace.jsonl"
+      },
+      "workspace_changes": {
+        "created": [],
+        "modified": [],
+        "deleted": []
+      }
+    }
+  ],
+  "original_result": ".aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_scoped_routes\\result.json",
+  "classification": "Needs trace review; run-health failures alone do not establish an Agent defect."
+}

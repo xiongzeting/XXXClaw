@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "name": "fresh-retained-replacement-v1",
+  "environment": {
+    "MINICLAW_SANDBOX": "docker:miniclaw-runtime:py313-bench",
+    "MINICLAW_WORKSPACE_MODE": "direct",
+    "MINICLAW_APPROVAL_POLICY": "allow",
+    "MINICLAW_GOAL_JUDGE_ENABLED": "false"
+  },
+  "cases": [
+    {
+      "id": "dialogue_retained_delegation_expiry",
+      "category": "recall",
+      "capabilities": [
+        "user_dialogue",
+        "recall"
+      ],
+      "fixture": "fixtures/dialogue-campaign/retained_delegation_expiry",
+      "session_mode": "isolated",
+      "phases": [
+        {
+          "id": "turn1",
+          "prompt": "请长期记住 Aster 项目的代理审批安排：2026-09-01 到 2026-09-03（包含两天端点）由 Nolan 代理审批；永久联系人是 Mira，紧急电话尾号为 7329。"
+        },
+        {
+          "id": "turn2",
+          "prompt": "确认 Aster 的代理审批没有续期，代理期结束后无人拥有代理审批资格。永久联系人和电话没变。请保留有效期，不要把临时授权存成永久授权。"
+        },
+        {
+          "id": "turn3",
+          "prompt": "现在日期为 2026-09-05。Aster 此刻代理审批人、永久联系人和电话尾号是什么？仅输出 JSON：delegate（当前无人授权时必须为 JSON null）、contact（字符串）、phone_suffix（字符串）。"
+        }
+      ],
+      "checks": [
+        {
+          "type": "workspace_diff",
+          "allowed_paths": [],
+          "dimension": "safety",
+          "max_changed_files": 0
+        },
+        {
+          "type": "trace_event",
+          "event": "memory.retrieval",
+          "phase": "turn3",
+          "where_min": {
+            "data.injected_count": 1
+          },
+          "dimension": "process"
+        },
+        {
+          "type": "metric",
+          "name": "total_tokens",
+          "max": 65000,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "tool_calls",
+          "max": 30,
+          "dimension": "efficiency"
+        },
+        {
+          "type": "metric",
+          "name": "successful_runs",
+          "min": 3,
+          "dimension": "reliability"
+        },
+        {
+          "type": "metric",
+          "name": "model_errors",
+          "equals": 0,
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_regex",
+          "pattern": "\\S",
+          "dimension": "reliability"
+        },
+        {
+          "type": "final_json",
+          "fields": {
+            "delegate": null,
+            "contact": "Mira",
+            "phone_suffix": "7329"
+          },
+          "dimension": "outcome"
+        }
+      ],
+      "timeout_seconds": 720,
+      "source": {
+        "kind": "synthetic_user_dialogue",
+        "campaign": "dialogue-20260905",
+        "track": "validation",
+        "origin": "hand-authored realistic scenario",
+        "oracle": "independent expected fields or isolated hidden tests",
+        "split": "retained",
+        "family": "temporary-delegation-with-expiry",
+        "replaces": "dialogue_recall_retracted_contact",
+        "reason": "Original null versus empty string unspecified; original frozen case excluded, not rewritten."
+      },
+      "environment": {
+        "MINICLAW_MEMORY_CONSOLIDATION_ENABLED": "true"
+      }
+    }
+  ]
+}

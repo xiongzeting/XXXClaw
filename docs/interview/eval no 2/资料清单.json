@@ -1,0 +1,896 @@
+[
+  {
+    "source": "docs/interview/eval no 2/README.md (before archive organization)",
+    "archive": "01报告/第二轮20题Eval原始报告.md",
+    "sha256": "ce31a1bac2c3fbe8d5ae656d693d8da1c87c782383921922d60b111bca696f6d",
+    "bytes": 8039
+  },
+  {
+    "source": "docs/interview/eval no 2/主要修改方向（按优先级）.md",
+    "archive": "01报告/主要修改方向（原文）.md",
+    "sha256": "cccd95f4237db725ba73f9c92d925d7ce692f41fc1be403789c663a8eed3d504",
+    "bytes": 7852
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/boundary-campaign-v1.json",
+    "archive": "02题目/evals/boundary-campaign-v1.json",
+    "sha256": "f6812fdcb0b323c34e8be1ceee88aed93fafea76a173ca12d85e5e24026f97e9",
+    "bytes": 407645
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/boundary-development-v1.json",
+    "archive": "02题目/evals/boundary-development-v1.json",
+    "sha256": "2435ab5589c660a84492892698fbf5beb31da47f50188650982ae0dd5a3f3ff6",
+    "bytes": 53871
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/boundary-retained-v1.json",
+    "archive": "02题目/evals/boundary-retained-v1.json",
+    "sha256": "3f01f3dfd12f639c49a90bb491bc261a366ab728b06328583c70bf7dc471760b",
+    "bytes": 54845
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/boundary-returning-regression-v1.json",
+    "archive": "02题目/evals/boundary-returning-regression-v1.json",
+    "sha256": "d5456c15a53b9e629dd6b6387119eb66f982021b093734a8f169d0d8ad112b70",
+    "bytes": 245455
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/boundary-test-v1.json",
+    "archive": "02题目/evals/boundary-test-v1.json",
+    "sha256": "9b33a44762df373b845ba9540486512f0f8bde721d03f5af566fb8602e433874",
+    "bytes": 53713
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/atomic_batch_reservation/inventory.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/atomic_batch_reservation/inventory.py",
+    "sha256": "862193de7357cf421f036106ba25778550577319cf3d32c22cda863ebf04b9a1",
+    "bytes": 92
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/atomic_batch_reservation/README.md",
+    "archive": "02题目/evals/fixtures/boundary-v1/atomic_batch_reservation/README.md",
+    "sha256": "bafd3a463b87d204489374dc8f34b735aecdb4c48cd3b206681168bcf1083ad0",
+    "bytes": 62
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/atomic_batch_reservation/requests.json",
+    "archive": "02题目/evals/fixtures/boundary-v1/atomic_batch_reservation/requests.json",
+    "sha256": "5235f896ad5af725fb79a32a557ca02e4fa3e9ac344c1df85baf4023d200695a",
+    "bytes": 70
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/atomic_batch_reservation/reservations.json",
+    "archive": "02题目/evals/fixtures/boundary-v1/atomic_batch_reservation/reservations.json",
+    "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "bytes": 3
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/atomic_batch_reservation/stock.json",
+    "archive": "02题目/evals/fixtures/boundary-v1/atomic_batch_reservation/stock.json",
+    "sha256": "116a072da52ca0bd2570f6bf17f01f7c5bfc8498d0fd616c1a88657238bc5080",
+    "bytes": 17
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/atomic_batch_reservation/verify.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/atomic_batch_reservation/verify.py",
+    "sha256": "e595d5ef43f13bd9a755f64912813f4aed1b93bf0cd80f348f9e68c0143b9944",
+    "bytes": 123
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/audit_bundle_integration/aggregate.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/audit_bundle_integration/aggregate.py",
+    "sha256": "f8feb32a6f6147a9f4020d7583e40320f17b48628c2ee9b001fc5931de0bfd24",
+    "bytes": 16
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/audit_bundle_integration/audit.jsonl",
+    "archive": "02题目/evals/fixtures/boundary-v1/audit_bundle_integration/audit.jsonl",
+    "sha256": "26a3ae5dfcea0b55cdc9c251533747fbc3c1a32226f6490962411e3674391376",
+    "bytes": 48
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/audit_bundle_integration/audit.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/audit_bundle_integration/audit.py",
+    "sha256": "46dad9c4a9507178881bb5b1c4b0ee487adc7766cad82f50dff2bceee3849d01",
+    "bytes": 71
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/audit_bundle_integration/bundle.json",
+    "archive": "02题目/evals/fixtures/boundary-v1/audit_bundle_integration/bundle.json",
+    "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "bytes": 3
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/audit_bundle_integration/cli.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/audit_bundle_integration/cli.py",
+    "sha256": "9276bb21ac32c86b26660cefdf9844d298c19bca510e7d9559ca7976380a4a06",
+    "bytes": 10
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/audit_bundle_integration/parser.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/audit_bundle_integration/parser.py",
+    "sha256": "7c87b6268892076ded7aaefb9383125783a6ec70eb57690560f43e1b15e6f17a",
+    "bytes": 13
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/audit_bundle_integration/policy.json",
+    "archive": "02题目/evals/fixtures/boundary-v1/audit_bundle_integration/policy.json",
+    "sha256": "5dd31db0c5b195fd75d123a2420e1c77449c11f601b1bdbd34e73ddd527c2ac9",
+    "bytes": 31
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/audit_bundle_integration/policy.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/audit_bundle_integration/policy.py",
+    "sha256": "0983f9e40c6461db30f99808dfc75948378886809c204ec55d79168141d05e04",
+    "bytes": 13
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/audit_bundle_integration/verify.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/audit_bundle_integration/verify.py",
+    "sha256": "a73e104be9c1510c174e6341fecf2c72dacfce2ac24f1e57e9916227b0c18343",
+    "bytes": 107
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/authorized_write_then_delete/protected-canary.txt",
+    "archive": "02题目/evals/fixtures/boundary-v1/authorized_write_then_delete/protected-canary.txt",
+    "sha256": "c7cde8022846cd6aff9b189e32dc3aa4f3eea733835d469093054391490627b2",
+    "bytes": 5
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/authorized_write_then_delete/README.md",
+    "archive": "02题目/evals/fixtures/boundary-v1/authorized_write_then_delete/README.md",
+    "sha256": "253146e269a2966e52f1936e2928e86a987e2e6d3c3448fa7621ccef8a1df554",
+    "bytes": 62
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/authorized_write_then_delete/request.json",
+    "archive": "02题目/evals/fixtures/boundary-v1/authorized_write_then_delete/request.json",
+    "sha256": "805118ed56f6d1e04a7cbf364f5612b17fe53345ec3ccfc619c23561f21be4aa",
+    "bytes": 108
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/authorized_write_then_delete/workspace_api.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/authorized_write_then_delete/workspace_api.py",
+    "sha256": "6d752271405d019f38d1cabf9fea44d22cd7fb7a032691f40c075e0beb8875fc",
+    "bytes": 606
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/compression_dependency_lock_retraction/README.md",
+    "archive": "02题目/evals/fixtures/boundary-v1/compression_dependency_lock_retraction/README.md",
+    "sha256": "75cec238abf69b2fb2c833062d7269a0be292c16f3aa7f5f0c7af406423ba58a",
+    "bytes": 36
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/compression_rule_priority_exceptions/README.md",
+    "archive": "02题目/evals/fixtures/boundary-v1/compression_rule_priority_exceptions/README.md",
+    "sha256": "75cec238abf69b2fb2c833062d7269a0be292c16f3aa7f5f0c7af406423ba58a",
+    "bytes": 36
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/compression_transaction_rollback/README.md",
+    "archive": "02题目/evals/fixtures/boundary-v1/compression_transaction_rollback/README.md",
+    "sha256": "75cec238abf69b2fb2c833062d7269a0be292c16f3aa7f5f0c7af406423ba58a",
+    "bytes": 36
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/config_migration_cli_contract/config-v1.json",
+    "archive": "02题目/evals/fixtures/boundary-v1/config_migration_cli_contract/config-v1.json",
+    "sha256": "85912e9c68f1987b6da48f3821132ec0b818cd426561c4a739ee697cfb457040",
+    "bytes": 84
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/config_migration_cli_contract/migrate.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/config_migration_cli_contract/migrate.py",
+    "sha256": "8a6544cb027ff26e9f070617589bf3e5f8a07c0ce38af54965eedbb32c8eaf47",
+    "bytes": 79
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/config_migration_cli_contract/package/__init__.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/config_migration_cli_contract/package/__init__.py",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/config_migration_cli_contract/package/cli.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/config_migration_cli_contract/package/cli.py",
+    "sha256": "527194f3ba997159476d62c769c9d7a4058d57996152142e3dd6bb872a6a6e01",
+    "bytes": 16
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/config_migration_cli_contract/package/parser.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/config_migration_cli_contract/package/parser.py",
+    "sha256": "a335a631dbaa5760069860ab2f838278e885770abc8817b5bb639963079f2f6f",
+    "bytes": 19
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/config_migration_cli_contract/package/storage.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/config_migration_cli_contract/package/storage.py",
+    "sha256": "9657f875d715e08d95967d2107183ec46e602b6fae2c33876a569925ac0992f4",
+    "bytes": 20
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/config_migration_cli_contract/package/transform.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/config_migration_cli_contract/package/transform.py",
+    "sha256": "a3b4d8bbefcfedc9df3b1f93e0bfa227a70e55f64d4ed55a94f85118db24835e",
+    "bytes": 22
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/config_migration_cli_contract/README.md",
+    "archive": "02题目/evals/fixtures/boundary-v1/config_migration_cli_contract/README.md",
+    "sha256": "0bd4b449c7423a97402c78aee40f0a3bd1df34bf8445d47b3dedecea23172904",
+    "bytes": 49
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/config_migration_cli_contract/verify.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/config_migration_cli_contract/verify.py",
+    "sha256": "7ef29448c00711b4afec1fc5a0ec3c13f9ea08644347cf5c96079225da681131",
+    "bytes": 183
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/diagnose_and_patch_release/manifest.json",
+    "archive": "02题目/evals/fixtures/boundary-v1/diagnose_and_patch_release/manifest.json",
+    "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "bytes": 3
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/diagnose_and_patch_release/README.md",
+    "archive": "02题目/evals/fixtures/boundary-v1/diagnose_and_patch_release/README.md",
+    "sha256": "3c478dbb0bda176a2e9132fc1ef02c745193fc732c0ee25a66d77be75738d9c1",
+    "bytes": 40
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/diagnose_and_patch_release/release.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/diagnose_and_patch_release/release.py",
+    "sha256": "b9e903614d03e20b7b9398d8541260351265c798372d07f6701163e95abe2fa4",
+    "bytes": 192
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/diagnose_and_patch_release/src/.cache.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/diagnose_and_patch_release/src/.cache.py",
+    "sha256": "1d7a363ce12430881ec56c9cf1409c49c491043618e598c356e2959040872f5a",
+    "bytes": 4
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/diagnose_and_patch_release/src/a.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/diagnose_and_patch_release/src/a.py",
+    "sha256": "62bdb208de6dc6b169a467f646f50ca39e6c203fa6f6732431624d8dec1e77fb",
+    "bytes": 11
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/diagnose_and_patch_release/src/b.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/diagnose_and_patch_release/src/b.py",
+    "sha256": "82c7d03cf7d6e5cc3841b979771f5f96bf8027998aa39f3a800283df32b185d4",
+    "bytes": 11
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/diagnose_and_patch_release/tests/test_release.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/diagnose_and_patch_release/tests/test_release.py",
+    "sha256": "12a0b65a964b72e6ffa8d630898069402b4c2d854ee32544f1c18b789e78228c",
+    "bytes": 27
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/idempotent_charge_recovery/charge.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/idempotent_charge_recovery/charge.py",
+    "sha256": "e532d0fd4e9a02bec9cc0f9b33f918ce9208d2f646d3ca013b69e55f0eaf4ee9",
+    "bytes": 156
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/idempotent_charge_recovery/ledger.json",
+    "archive": "02题目/evals/fixtures/boundary-v1/idempotent_charge_recovery/ledger.json",
+    "sha256": "bf537c83ca7fa582a9e0852dfa09466a10c62b64e011dbf2c162019303009de2",
+    "bytes": 56
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/idempotent_charge_recovery/README.md",
+    "archive": "02题目/evals/fixtures/boundary-v1/idempotent_charge_recovery/README.md",
+    "sha256": "6f6bd8959a3babe35dbf93b4975b3a1fb9b4a8491f4b8a4eae03c6a20b2fa1c4",
+    "bytes": 71
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/idempotent_charge_recovery/verify.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/idempotent_charge_recovery/verify.py",
+    "sha256": "9d95fe3e44e23908e04997d0afd467e1aff4ec16a4492adabdc111a5f6a9f1cd",
+    "bytes": 88
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/queue_rebuild_and_reconcile/events.jsonl",
+    "archive": "02题目/evals/fixtures/boundary-v1/queue_rebuild_and_reconcile/events.jsonl",
+    "sha256": "420ce5bdbaff621d30a2e676d8f725d6e1ac3affe2ab3a83c751b56d682222ab",
+    "bytes": 63
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/queue_rebuild_and_reconcile/queue_tool.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/queue_rebuild_and_reconcile/queue_tool.py",
+    "sha256": "0e478b525adbeeb1b1de7674e1a00353d1d75eee666537ff0c1c13d3187322fe",
+    "bytes": 7
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/queue_rebuild_and_reconcile/report.json",
+    "archive": "02题目/evals/fixtures/boundary-v1/queue_rebuild_and_reconcile/report.json",
+    "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "bytes": 3
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/queue_rebuild_and_reconcile/state.json",
+    "archive": "02题目/evals/fixtures/boundary-v1/queue_rebuild_and_reconcile/state.json",
+    "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "bytes": 3
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/queue_rebuild_and_reconcile/verify.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/queue_rebuild_and_reconcile/verify.py",
+    "sha256": "0b069e55ae2322f009633ff4bdf6eb096e94fe968b95fc283e6d76a3be491ff1",
+    "bytes": 9
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/recall_entitlement_setops/README.md",
+    "archive": "02题目/evals/fixtures/boundary-v1/recall_entitlement_setops/README.md",
+    "sha256": "f44cb63fa844680e67ae50107aad1c5f5e57369ec9b1ab498f04b2204869ca96",
+    "bytes": 41
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/recall_event_windows_late_fix/README.md",
+    "archive": "02题目/evals/fixtures/boundary-v1/recall_event_windows_late_fix/README.md",
+    "sha256": "f44cb63fa844680e67ae50107aad1c5f5e57369ec9b1ab498f04b2204869ca96",
+    "bytes": 41
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/recall_evidence_conflict_unknown/README.md",
+    "archive": "02题目/evals/fixtures/boundary-v1/recall_evidence_conflict_unknown/README.md",
+    "sha256": "f44cb63fa844680e67ae50107aad1c5f5e57369ec9b1ab498f04b2204869ca96",
+    "bytes": 41
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/symlink_boundary_manifest/README.md",
+    "archive": "02题目/evals/fixtures/boundary-v1/symlink_boundary_manifest/README.md",
+    "sha256": "817f2926808c461d6519c643ac8cac6d1b3708c5c21981d6337fa65ed4df45b4",
+    "bytes": 187
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/untrusted_tool_report_injection/collect_metrics.py",
+    "archive": "02题目/evals/fixtures/boundary-v1/untrusted_tool_report_injection/collect_metrics.py",
+    "sha256": "7b11a4a4e3834f59c7b15895c9f40848fbb40d3ba6d412032dd534087c2ed6a0",
+    "bytes": 1042
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/untrusted_tool_report_injection/protected-canary.txt",
+    "archive": "02题目/evals/fixtures/boundary-v1/untrusted_tool_report_injection/protected-canary.txt",
+    "sha256": "c7cde8022846cd6aff9b189e32dc3aa4f3eea733835d469093054391490627b2",
+    "bytes": 5
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/untrusted_tool_report_injection/README.md",
+    "archive": "02题目/evals/fixtures/boundary-v1/untrusted_tool_report_injection/README.md",
+    "sha256": "ec192bab6dc02f966e9b3f9103b8f299d14db237d6959a7a34e5c3405ff4872b",
+    "bytes": 69
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/boundary-v1/untrusted_tool_report_injection/secrets.env",
+    "archive": "02题目/evals/fixtures/boundary-v1/untrusted_tool_report_injection/secrets.env",
+    "sha256": "2d3209463d4043a5ecaadef786c9374d47f1c76e5a6d1cf5c0234165632d9608",
+    "bytes": 23
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/interval_exclusions/cli.py",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/interval_exclusions/cli.py",
+    "sha256": "e74fa4f17877dcf6c76de950f5efadb9350a170d3bbbc5ad8395bb56ce6ff130",
+    "bytes": 42
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/interval_exclusions/README.md",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/interval_exclusions/README.md",
+    "sha256": "1fb1855c11282bc659de7eee3301537055a826f669bd772dcf8f01236d3b6c4e",
+    "bytes": 89
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/interval_exclusions/solution.py",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/interval_exclusions/solution.py",
+    "sha256": "c6d7c9009e9234f6b192067415bec7cb81a747411f27c809aa5857c2c2aedd0b",
+    "bytes": 74
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/interval_exclusions/verify.py",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/interval_exclusions/verify.py",
+    "sha256": "5da6ebe7ae1353783eaf37c379ddbbc4b0c0aa184ada3e88f9507fffbaba3166",
+    "bytes": 435
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/redaction_priority/cli.py",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/redaction_priority/cli.py",
+    "sha256": "e74fa4f17877dcf6c76de950f5efadb9350a170d3bbbc5ad8395bb56ce6ff130",
+    "bytes": 42
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/redaction_priority/README.md",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/redaction_priority/README.md",
+    "sha256": "1fb1855c11282bc659de7eee3301537055a826f669bd772dcf8f01236d3b6c4e",
+    "bytes": 89
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/redaction_priority/solution.py",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/redaction_priority/solution.py",
+    "sha256": "c6d7c9009e9234f6b192067415bec7cb81a747411f27c809aa5857c2c2aedd0b",
+    "bytes": 74
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/redaction_priority/verify.py",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/redaction_priority/verify.py",
+    "sha256": "b9df6433eca4463b4e59101b841bf87421d074bb61b8ea65230e4ad73b15b324",
+    "bytes": 478
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/shipping_caps/cli.py",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/shipping_caps/cli.py",
+    "sha256": "e74fa4f17877dcf6c76de950f5efadb9350a170d3bbbc5ad8395bb56ce6ff130",
+    "bytes": 42
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/shipping_caps/README.md",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/shipping_caps/README.md",
+    "sha256": "1fb1855c11282bc659de7eee3301537055a826f669bd772dcf8f01236d3b6c4e",
+    "bytes": 89
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/shipping_caps/solution.py",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/shipping_caps/solution.py",
+    "sha256": "c6d7c9009e9234f6b192067415bec7cb81a747411f27c809aa5857c2c2aedd0b",
+    "bytes": 74
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/shipping_caps/verify.py",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/shipping_caps/verify.py",
+    "sha256": "0075396bc45b41e3e80c0fe85a722ca68e83e43ad7e5566c116c457ae9020f11",
+    "bytes": 548
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/tiered_invoice/cli.py",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/tiered_invoice/cli.py",
+    "sha256": "e74fa4f17877dcf6c76de950f5efadb9350a170d3bbbc5ad8395bb56ce6ff130",
+    "bytes": 42
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/tiered_invoice/README.md",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/tiered_invoice/README.md",
+    "sha256": "1fb1855c11282bc659de7eee3301537055a826f669bd772dcf8f01236d3b6c4e",
+    "bytes": 89
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/tiered_invoice/solution.py",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/tiered_invoice/solution.py",
+    "sha256": "c6d7c9009e9234f6b192067415bec7cb81a747411f27c809aa5857c2c2aedd0b",
+    "bytes": 74
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/tiered_invoice/verify.py",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/tiered_invoice/verify.py",
+    "sha256": "7c8674cae3bb5048fdec7104f95aa1f5b35fe3e7229eb7d25d541bca291af0d6",
+    "bytes": 607
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/version_resolution/cli.py",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/version_resolution/cli.py",
+    "sha256": "e74fa4f17877dcf6c76de950f5efadb9350a170d3bbbc5ad8395bb56ce6ff130",
+    "bytes": 42
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/version_resolution/README.md",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/version_resolution/README.md",
+    "sha256": "1fb1855c11282bc659de7eee3301537055a826f669bd772dcf8f01236d3b6c4e",
+    "bytes": 89
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/version_resolution/solution.py",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/version_resolution/solution.py",
+    "sha256": "c6d7c9009e9234f6b192067415bec7cb81a747411f27c809aa5857c2c2aedd0b",
+    "bytes": 74
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/snapshot/evals/fixtures/hard-reviewed-v1/version_resolution/verify.py",
+    "archive": "02题目/evals/fixtures/hard-reviewed-v1/version_resolution/verify.py",
+    "sha256": "31e6148c0ac1425339fb7d00cbe4756fe38997ee10c5bb68b040048d7244c9cf",
+    "bytes": 458
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/freeze.json",
+    "archive": "02题目/freeze.json",
+    "sha256": "0f6c12bcb754a3c8d12451a2275802e17f766f96f02451bc60895e9900f092ef",
+    "bytes": 24912
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/returning-selection.json",
+    "archive": "02题目/returning-selection.json",
+    "sha256": "fb724f1117cbd91d7089c37899a5cb5e4758d42800b9df9d144deafb4ee576ba",
+    "bytes": 857
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/oracle-calibration.json",
+    "archive": "02题目/oracle-calibration.json",
+    "sha256": "a7a3171063303dbd0b2b2bc545ed6b353b3d3f4bc58321af531e123d32a30e44",
+    "bytes": 14749
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/common-oracle-calibration.json",
+    "archive": "02题目/common-oracle-calibration.json",
+    "sha256": "9ce5ebd7aece3ec77938392fa99f297d1659ce3ef0bdd4d1f0f246b60f7127c0",
+    "bytes": 1871
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/report.json",
+    "archive": "03原始结果/report.json",
+    "sha256": "087faed9cf4eae488a84e8c4e0cb20b3dd03f148f52c7a8fa850d4b716732af4",
+    "bytes": 1473856
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/report.md",
+    "archive": "03原始结果/report.md",
+    "sha256": "4d6d2b7cde62db6a97c2cf88f225347b52cf9577d1a09a84a290142d74caa6be",
+    "bytes": 8395
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/summary.json",
+    "archive": "03原始结果/summary.json",
+    "sha256": "493f0179f9ab2f966ceea72e2434ebe964f9c31782340f6aaffc3c223641c66e",
+    "bytes": 10852
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/completion.json",
+    "archive": "03原始结果/completion.json",
+    "sha256": "23f490e1333c3f72809e0b78905bcc4f41ad1ea7d9e5e21f0fd15fd80448cb07",
+    "bytes": 87
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/execution.json",
+    "archive": "03原始结果/execution.json",
+    "sha256": "99765b6f5aa4384e2c8fc2204193eeedffeb65a7d9753854b78af66edc7b3023",
+    "bytes": 100
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/final-analysis.json",
+    "archive": "03原始结果/final-analysis.json",
+    "sha256": "7ad434bd341c865938df3c274d27ddfacdb863125c3cda934cdebb01fea44e41",
+    "bytes": 48188
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/final-raw-overview.json",
+    "archive": "03原始结果/final-raw-overview.json",
+    "sha256": "0569627452e648b4737d33216d7cf6ce1f6e7c6baf40a8da8105c8468bdb2ee1",
+    "bytes": 18182
+  },
+  {
+    "source": "docs/interview/eval no 2/逐题结果.csv",
+    "archive": "03原始结果/逐题结果.csv",
+    "sha256": "6fb110ff85a4d404a0f6105c730fea2a443f6d256a5f3a5eae5446a1acbc09f4",
+    "bytes": 3400
+  },
+  {
+    "source": "docs/interview/eval no 2/原始成绩与复核标签.json",
+    "archive": "03原始结果/原始成绩与复核标签.json",
+    "sha256": "b78f2229e0dbd65fd3aab27397c38c217f300b961e504d6d2a43c3a392bab0d3",
+    "bytes": 54242
+  },
+  {
+    "source": "docs/interview/eval no 2/核对记录.json",
+    "archive": "03原始结果/核对记录.json",
+    "sha256": "e0310d6f4a791bfaa63ba72875d85ecb81501cf620e8387697ec92b77fcae830",
+    "bytes": 213
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/boundary_v1_atomic_batch_reservation/result.json",
+    "archive": "03原始结果/案例摘录/boundary_v1_atomic_batch_reservation.json",
+    "sha256": "8f851140e54744c1097267f3933a7b1a37dd3f402df496eb2b4d457048d66ea3",
+    "bytes": 37384
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/boundary_v1_audit_bundle_integration/result.json",
+    "archive": "03原始结果/案例摘录/boundary_v1_audit_bundle_integration.json",
+    "sha256": "ed38a29ac5b6d767bb026c0dcc437f2daa824d423d35ab60f368219b0d5dd417",
+    "bytes": 43081
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/boundary_v1_authorized_write_then_delete/result.json",
+    "archive": "03原始结果/案例摘录/boundary_v1_authorized_write_then_delete.json",
+    "sha256": "b60a0fa3e414be3be80c2a27496657120f35c7ae89a31d42ee6cb2648dcb2bd6",
+    "bytes": 38313
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/boundary_v1_compression_dependency_lock_retraction/result.json",
+    "archive": "03原始结果/案例摘录/boundary_v1_compression_dependency_lock_retraction.json",
+    "sha256": "2ee028f6f4488baec01595e80e98d45aa4db65cb113498189a76a7accb7d86f0",
+    "bytes": 89790
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/boundary_v1_compression_rule_priority_exceptions/result.json",
+    "archive": "03原始结果/案例摘录/boundary_v1_compression_rule_priority_exceptions.json",
+    "sha256": "461d686f4ca06027db8d41ad1f3158bf4c5b024b366e0e1d53fdf1ae9b4856f7",
+    "bytes": 92918
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/boundary_v1_compression_transaction_rollback/result.json",
+    "archive": "03原始结果/案例摘录/boundary_v1_compression_transaction_rollback.json",
+    "sha256": "7a3c871e0290206f293ee14a1100d90d2b77595438288d4b814d689d711f349a",
+    "bytes": 87084
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/boundary_v1_config_migration_cli_contract/result.json",
+    "archive": "03原始结果/案例摘录/boundary_v1_config_migration_cli_contract.json",
+    "sha256": "845f9b2052966ced14e5898af373a9fc0be11d518a5a15b17b6c7a1245cae06a",
+    "bytes": 53968
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/boundary_v1_diagnose_and_patch_release/result.json",
+    "archive": "03原始结果/案例摘录/boundary_v1_diagnose_and_patch_release.json",
+    "sha256": "e0e1fe63cc9d927b08829af0ac1e7dab296eca3960b823051a170e2684244e94",
+    "bytes": 40753
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/boundary_v1_idempotent_charge_recovery/result.json",
+    "archive": "03原始结果/案例摘录/boundary_v1_idempotent_charge_recovery.json",
+    "sha256": "1292ff8285a4cd6c4eb8d5c890931bff23eb241884ac705ada127a3b2be4353f",
+    "bytes": 36086
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/boundary_v1_queue_rebuild_and_reconcile/result.json",
+    "archive": "03原始结果/案例摘录/boundary_v1_queue_rebuild_and_reconcile.json",
+    "sha256": "808cd2543f4a8676a6b33de926516991aa821ce58fe940bf5ee0362242c07b46",
+    "bytes": 34844
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/boundary_v1_recall_entitlement_setops/result.json",
+    "archive": "03原始结果/案例摘录/boundary_v1_recall_entitlement_setops.json",
+    "sha256": "87770726a27d47567f6446282031723bce9086f174575a614f04ce97b7f80100",
+    "bytes": 34512
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/boundary_v1_recall_event_windows_late_fix/result.json",
+    "archive": "03原始结果/案例摘录/boundary_v1_recall_event_windows_late_fix.json",
+    "sha256": "393e3be24ec1221212ef6a875b18eceb794a948af4c1ce2b21316a7f32ac7c07",
+    "bytes": 33170
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/boundary_v1_recall_evidence_conflict_unknown/result.json",
+    "archive": "03原始结果/案例摘录/boundary_v1_recall_evidence_conflict_unknown.json",
+    "sha256": "14e02ceefb94055b056730f282ce0526f7a0c92ff7aee496f417f297ead75caa",
+    "bytes": 33827
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/boundary_v1_symlink_boundary_manifest/result.json",
+    "archive": "03原始结果/案例摘录/boundary_v1_symlink_boundary_manifest.json",
+    "sha256": "7c333bed80824fe8fd2112c2bd3e9fa3728868a4ec59eb0e399d200c4cb453c5",
+    "bytes": 44240
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/boundary_v1_untrusted_tool_report_injection/result.json",
+    "archive": "03原始结果/案例摘录/boundary_v1_untrusted_tool_report_injection.json",
+    "sha256": "2f977006538fda76a300ea54701d9816fbd5b203d8cd597411a800877b6601a0",
+    "bytes": 35261
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/hard_v1_interval_exclusions/result.json",
+    "archive": "03原始结果/案例摘录/hard_v1_interval_exclusions.json",
+    "sha256": "9ebb4972d857342a529f820ef2e92500b3ea2a6122f12b1c5677d1cc4d3e3a58",
+    "bytes": 131034
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/hard_v1_redaction_priority/result.json",
+    "archive": "03原始结果/案例摘录/hard_v1_redaction_priority.json",
+    "sha256": "bb196d7aacab56c324145ebef88829a7e20e02f5bfec67a9dbefff4d705f7f30",
+    "bytes": 131830
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/hard_v1_shipping_caps/result.json",
+    "archive": "03原始结果/案例摘录/hard_v1_shipping_caps.json",
+    "sha256": "48195e42f42a95bee5e06dfa02dd1869c416584af3fa341f5a147221940fac51",
+    "bytes": 129392
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/hard_v1_tiered_invoice/result.json",
+    "archive": "03原始结果/案例摘录/hard_v1_tiered_invoice.json",
+    "sha256": "6acada9e20f56b212230a53f8c27565bcc5c2f67872fd496d4393f2b06bcbd20",
+    "bytes": 130376
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/run/cases/hard_v1_version_resolution/result.json",
+    "archive": "03原始结果/案例摘录/hard_v1_version_resolution.json",
+    "sha256": "2ebee7da09ec5041b2f5a97404b7759784b8b41a1c015533585c7f30df7dbb62",
+    "bytes": 130003
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/interim-review.json",
+    "archive": "04评分复核/interim-review.json",
+    "sha256": "043f3c9b737cc8fbc549dfa83434c908221527cf98518deed5ad5dbb932afe94",
+    "bytes": 2644
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/final-contract-diagnostics.json",
+    "archive": "04评分复核/final-contract-diagnostics.json",
+    "sha256": "8fa9c5874be5a4e64eefb401c24e38de9f648e148ccfaa66a8e9bce64efbe489",
+    "bytes": 1613
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/atomic-commit-diagnostic.json",
+    "archive": "04评分复核/atomic-commit-diagnostic.json",
+    "sha256": "b192391cbd996e8d73933d0d0585b1f7f32f910eb0b100674e6243f3c4abafa2",
+    "bytes": 609
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/proposal-id-context-evidence.json",
+    "archive": "04评分复核/proposal-id-context-evidence.json",
+    "sha256": "455e491f9cdddd154b84ad667caf4659a19f664040407caaf04f9974b2678b27",
+    "bytes": 1379
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/final-review-memory.json",
+    "archive": "04评分复核/final-review-memory.json",
+    "sha256": "21016dd39fa25c17fdbf2264ff1ab87c5329011e5ff9d4f8fd2c61ee4c05b711",
+    "bytes": 7204
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/final-review-tools.json",
+    "archive": "04评分复核/final-review-tools.json",
+    "sha256": "77e39df2699cdb3792c1fda4c3b1c00d64c497f8f2033506bbf646626d942013",
+    "bytes": 5416
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/final-review-ui-safety.json",
+    "archive": "04评分复核/final-review-ui-safety.json",
+    "sha256": "1ed4d0bb00c60aa8e9963b97342dcae0968cd621237495e6f02393f81a93ed31",
+    "bytes": 7180
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/atomic-commit-diagnostic-code.py",
+    "archive": "04评分复核/atomic-commit-diagnostic-code.py",
+    "sha256": "eef87eeee011ac18fb662df4928a37604ebe67080a1c35c0a48084aab79036c5",
+    "bytes": 1322
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/audit_bundle_integration-diagnostic-oracle.py",
+    "archive": "04评分复核/audit_bundle_integration-diagnostic-oracle.py",
+    "sha256": "75f94f3cbd8418c808a7301810dba4f720ac9a72f40b8462f4cfbc7656cef9d0",
+    "bytes": 950
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/diagnose_and_patch_release-diagnostic-oracle.py",
+    "archive": "04评分复核/diagnose_and_patch_release-diagnostic-oracle.py",
+    "sha256": "7a021d9899f44a3bba466699a5e998c2d3f3fe201b6193d61be5ba54cba7bd4d",
+    "bytes": 921
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/probe_atomic_commit.py",
+    "archive": "04评分复核/probe_atomic_commit.py",
+    "sha256": "259f7270e25835083a1828cebec16180f17b6f0b68f4744152aa282a8fd3a0a5",
+    "bytes": 2247
+  },
+  {
+    "source": ".aster/evals/boundary-campaign-v1/probe_contracts_final.py",
+    "archive": "04评分复核/probe_contracts_final.py",
+    "sha256": "b0b783bbf953ee9d48822b7c0e29b7f505ec5f6d246282cfe34fe5cec5417b0c",
+    "bytes": 1587
+  },
+  {
+    "source": "frontend/eval-round1/round2-data.json",
+    "archive": "04评分复核/纠正后成绩与原始证据.json",
+    "sha256": "59222048860ce87514da8230742a396987c91e46aa121b6c28364d2ef7c4ad83",
+    "bytes": 75239
+  },
+  {
+    "source": "frontend/eval-round1/round2-data.json",
+    "archive": "04评分复核/纠正前后逐题对照.csv",
+    "sha256": "8093ce4482d948c6fa6cb407630c8d1d8552f3eabe3bf684b8d7c81d1b63a6a2",
+    "bytes": 3354
+  },
+  {
+    "source": "Generated archive guide",
+    "archive": "04评分复核/判分误报纠正说明.md",
+    "sha256": "8236cbd0b90b600ae535bdf1bd42e35339b854b37bb1c10f46edebb25611e223",
+    "bytes": 1977
+  },
+  {
+    "source": "Relinked historical report with current scoring note",
+    "archive": "01报告/第二轮20题Eval报告.md",
+    "sha256": "41d0b7437733788d61e8f665d4004acc78c8c9f3be8e193294f1364dacf20799",
+    "bytes": 7844
+  },
+  {
+    "source": "Relinked priority report with correction status update",
+    "archive": "01报告/主要修改方向.md",
+    "sha256": "c1af990de7088afd785da89855fd0f172bafec4948dde9584a7f9874cacbc298",
+    "bytes": 7994
+  },
+  {
+    "source": "scripts/run_boundary_campaign_v1.py",
+    "archive": "04评分复核/关联脚本/run_boundary_campaign_v1.py",
+    "sha256": "1c72a3ef64a3296964c6d8f38a2eba7634411bbdf142daf019ce1df8348f0ec2",
+    "bytes": 17900
+  },
+  {
+    "source": "scripts/boundary_delivery_specs.py",
+    "archive": "04评分复核/关联脚本/boundary_delivery_specs.py",
+    "sha256": "f5b544f786c6e7713236f3bca9afe19ba0e812644384156f236f2729cf05689d",
+    "bytes": 38539
+  },
+  {
+    "source": "scripts/boundary_memory_specs.py",
+    "archive": "04评分复核/关联脚本/boundary_memory_specs.py",
+    "sha256": "5803426802decf19c1844f775ea6d285132a1f8f8a0fa2bf1973f161bcd866ae",
+    "bytes": 14732
+  },
+  {
+    "source": "scripts/boundary_safety_specs.py",
+    "archive": "04评分复核/关联脚本/boundary_safety_specs.py",
+    "sha256": "236743aed9ab464ef20d84ce07de71749a8955cc01cdfe6ea5f9f725823b1279",
+    "bytes": 14798
+  },
+  {
+    "source": "scripts/report_boundary_campaign_v1.py",
+    "archive": "04评分复核/关联脚本/report_boundary_campaign_v1.py",
+    "sha256": "c82ad1c880e522d3596ed52088b4b992f043c4a9a1d7698f1518e3ff9a77463b",
+    "bytes": 2772
+  },
+  {
+    "source": "scripts/review_boundary_partial_v1.py",
+    "archive": "04评分复核/关联脚本/review_boundary_partial_v1.py",
+    "sha256": "71e968313972a2a1b58e9c5197fa81fbd3d72398a5f0e0f559d3702b887e3d32",
+    "bytes": 3480
+  },
+  {
+    "source": "scripts/build_eval_round1_dashboard.py",
+    "archive": "04评分复核/关联脚本/build_eval_round1_dashboard.py",
+    "sha256": "ec79e7b064276ac4186530bbeff2d2a55cd4b4b69bb17a4c961ad4774269241b",
+    "bytes": 8419
+  },
+  {
+    "source": "scripts/build_eval_round2_data.py",
+    "archive": "04评分复核/关联脚本/build_eval_round2_data.py",
+    "sha256": "e3b342db3e71c44bf13171c01ef854ec7515630d60c0dfc20e2d0c95ee4a5682",
+    "bytes": 5140
+  },
+  {
+    "source": "Completed run + frozen snapshot + diagnostics + associated scripts",
+    "archive": "05完整证据.zip",
+    "sha256": "72ca29d296629cdf84f370a4725034b14638341c0c3b7b34b2d69126e7310c2b",
+    "bytes": 24615688
+  },
+  {
+    "source": "Generated archive verification",
+    "archive": "05完整证据索引.json",
+    "sha256": "813e7829a17b155b4d37cbf155ad013dbb85614b55114c4df4b9a60ce9321f06",
+    "bytes": 535500
+  },
+  {
+    "source": "Generated archive navigation; original README preserved in 01报告",
+    "archive": "README.md",
+    "sha256": "6549018dff4ab9aa6bd1fb6e156ad85627003846801b55e49ff4e7cceace3177",
+    "bytes": 3238
+  },
+  {
+    "source": "Existing canonical second-round archive source",
+    "archive": "原始成绩与复核标签.json",
+    "sha256": "b78f2229e0dbd65fd3aab27397c38c217f300b961e504d6d2a43c3a392bab0d3",
+    "bytes": 54242
+  },
+  {
+    "source": "Existing canonical second-round archive source",
+    "archive": "逐题结果.csv",
+    "sha256": "6fb110ff85a4d404a0f6105c730fea2a443f6d256a5f3a5eae5446a1acbc09f4",
+    "bytes": 3400
+  },
+  {
+    "source": "Existing canonical second-round archive source",
+    "archive": "核对记录.json",
+    "sha256": "e0310d6f4a791bfaa63ba72875d85ecb81501cf620e8387697ec92b77fcae830",
+    "bytes": 213
+  },
+  {
+    "source": "Existing historical priority report",
+    "archive": "主要修改方向（按优先级）.md",
+    "sha256": "cccd95f4237db725ba73f9c92d925d7ce692f41fc1be403789c663a8eed3d504",
+    "bytes": 7852
+  },
+  {
+    "source": "Generated archive verification",
+    "archive": "归档核对记录.json",
+    "sha256": "8ba1eed69280f5de20bf5f78b0b64afec35ca1ae154f6ea03d789857e2b4e30b",
+    "bytes": 11374
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "finished_at": "2026-09-05T16:04:19.275665+00:00",
+  "frozen_source_verified": true,
+  "frozen_inputs_verified": true,
+  "live_workspace_source_drift": [
+    "MiniClaw/coding_agent/memory/archive.py",
+    "MiniClaw/coding_agent/memory/distillation.py",
+    "MiniClaw/coding_agent/memory/manager.py",
+    "MiniClaw/coding_agent/memory/quality.py",
+    "MiniClaw/coding_agent/memory/tools.py",
+    "MiniClaw/coding_agent/tools/grep.py",
+    "MiniClaw/evaluation/runner.py"
+  ],
+  "note": "Live edits do not affect isolated run."
+}

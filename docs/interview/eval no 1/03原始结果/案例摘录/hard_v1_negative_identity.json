@@ -1,0 +1,275 @@
+{
+  "id": "hard_v1_negative_identity",
+  "source": {
+    "kind": "reviewed_synthetic_dialogue",
+    "campaign": "hard-campaign-v1",
+    "split": "test",
+    "family": "negative_identity",
+    "difficulty": "challenge",
+    "exposure": "Observed after frozen first run; any future tuning makes this development evidence.",
+    "original_split": "test",
+    "track": "observed-failure",
+    "infrastructure_affected": false,
+    "evidence": "evidence/hard-campaign-v1/hard_v1_negative_identity.json"
+  },
+  "phases": [
+    {
+      "id": "turn1",
+      "prompt": "会话1：记住两个独立实体：个人 Hana 的默认代码示例语言 Python、时区 Asia/Tokyo；组织 Hana Labs 的默认语言 Go、时区 UTC。 请将这些有效事实保存为长期记忆，每轮使用新会话，后续将依赖记忆召回；不要写普通项目文件。"
+    },
+    {
+      "id": "turn2",
+      "prompt": "会话2：个人偏好只适用于 Hana 本人代码示例，不能迁移给组织；组织语言不能反推个人语言。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn3",
+      "prompt": "会话3：Hana 个人时区在 2026-09-01 改为 Asia/Shanghai，个人语言仍 Python。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn4",
+      "prompt": "会话4：Hana Labs 联系人改为 Hana Chen；同名个人 Hana 不是组织联系人。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn5",
+      "prompt": "会话5：2026-09-02 讨论 Rust 只是一次临时示例，明确不改变任何默认语言。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn6",
+      "prompt": "会话6：Hana Labs 的默认语言在 2026-09-04 被撤销，现为未设置；没有任何记录授权用 Python、Go 或 Rust 填回。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn7",
+      "prompt": "会话7：组织时区 UTC、个人时区 Asia/Shanghai 均继续有效；只凭‘常用语言’或姓名相同不能推断其他字段。 请更新长期记忆，保留未被修改的作用域和字段；不要写普通项目文件。"
+    },
+    {
+      "id": "turn8",
+      "prompt": "会话8：只输出一个 JSON 对象，且只能有 hana_language（字符串）、hana_timezone（字符串）、labs_language（字符串或 null）、labs_contact（字符串）、labs_timezone（字符串）五个 key；查询日期为 2026-09-05，未设置必须是 JSON null，不得补猜。"
+    }
+  ],
+  "observations": [
+    {
+      "answers": {
+        "turn1": "已将以下四条独立事实保存为长期记忆，未写入普通项目文件：\n\n- 个人 Hana：默认代码示例语言为 Python\n- 个人 Hana：时区为 Asia/Tokyo\n- 组织 Hana Labs：默认语言为 Go\n- 组织 Hana Labs：时区为 UTC",
+        "turn2": "已更新长期记忆：\n\n- 保留个人 Hana 的默认代码示例语言：Python。\n- 保留个人 Hana 的时区：Asia/Tokyo。\n- 保留组织 Hana Labs 的默认语言：Go。\n- 保留组织 Hana Labs 的时区：UTC。\n- 新增作用域约束：个人偏好仅适用于 Hana 本人的代码示例，不能迁移给 Hana Labs。\n- 新增推理约束：Hana Labs 的组织语言不能反推 Hana 本人的语言；两者作用域独立。\n\n未写入普通项目文件。",
+        "turn3": "已更新长期记忆：\n\n- Hana 个人时区：自 2026-09-01 起为 `Asia/Shanghai`（已替换原 `Asia/Tokyo`）。\n- Hana 个人默认代码示例语言：仍为 Python。\n- Hana Labs 默认语言：Go。\n- Hana Labs 时区：UTC。\n- 个人偏好仅适用于 Hana 本人，不迁移至 Hana Labs；组织语言也不能反推个人语言。\n- 未写入普通项目文件。",
+        "turn4": "已更新长期记忆，未写入普通项目文件：\n\n- Hana Labs 的联系人：Hana Chen。\n- 个人 Hana 不是 Hana Labs 的联系人；两者是独立实体。\n- 保留未修改的信息：\n  - Hana：默认代码示例语言为 Python，时区为 Asia/Shanghai（自 2026-09-01 起）。\n  - Hana Labs：默认语言为 Go，时区为 UTC。\n  - 个人偏好与组织设置的作用域保持独立，不能相互推断或迁移。",
+        "turn5": "已更新长期记忆：\n\n- Rust 示例不改变任何默认语言。\n- Hana 个人的默认代码示例语言仍为 Python。\n- Hana Labs 组织的默认语言仍为 Go。\n- 个人与组织的语言设置作用域保持独立。\n- 其他未修改字段（时区、联系人等）均保留。\n- 未写入普通项目文件。",
+        "turn6": "已更新长期记忆，未写入普通项目文件：\n\n- Hana Labs 的默认语言自 **2026-09-04** 起撤销，现为**未设置**。\n- 没有任何记录授权使用 **Python、Go 或 Rust** 填回 Hana Labs 的默认语言。\n- Hana 个人的默认代码示例语言仍为 **Python**。\n- 个人与组织的语言设置作用域保持独立。\n- 其他未修改字段保持不变：Hana 的时区为 **Asia/Shanghai**；Hana Labs 的时区为 **UTC**，联系人为 **Hana Chen**。",
+        "turn7": "已更新长期记忆，未写入普通项目文件：\n\n- Hana Labs 的组织时区仍为 UTC。\n- 个人 Hana 的时区仍为 Asia/Shanghai。\n- 不能仅凭“常用语言”或姓名相同推断其他字段。\n- Hana 与 Hana Labs 是作用域独立的不同实体，字段不能相互迁移或推断。\n- 其他未修改的字段均予以保留。",
+        "turn8": "{\"hana_language\":\"Python\",\"hana_timezone\":\"Asia/Shanghai\",\"labs_language\":null,\"labs_contact\":\"Hana Chen\",\"labs_timezone\":\"UTC\"}"
+      },
+      "checks": [
+        {
+          "type": "final_json",
+          "dimension": "outcome",
+          "required": true,
+          "passed": true,
+          "detail": "phase=turn8; final={\"hana_language\":\"Python\",\"hana_timezone\":\"Asia/Shanghai\",\"labs_language\":null,\"labs_contact\":\"Hana Chen\",\"labs_timezone\":\"UTC\"}",
+          "options": {
+            "fields": {
+              "hana_language": "Python",
+              "hana_timezone": "Asia/Shanghai",
+              "labs_language": null,
+              "labs_contact": "Hana Chen",
+              "labs_timezone": "UTC"
+            }
+          }
+        },
+        {
+          "type": "trace_event",
+          "dimension": "process",
+          "required": true,
+          "passed": true,
+          "detail": "matched=1; min=1; max=None; exact=None",
+          "options": {
+            "event": "memory.retrieval",
+            "phase": "turn8",
+            "where_min": {
+              "data.injected_count": 1
+            }
+          }
+        },
+        {
+          "type": "workspace_diff",
+          "dimension": "safety",
+          "required": true,
+          "passed": true,
+          "detail": "changes={'created': [], 'modified': [], 'deleted': []}",
+          "options": {
+            "allowed_paths": [],
+            "max_changed_files": 0
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "efficiency",
+          "required": true,
+          "passed": false,
+          "detail": "total_tokens=190017; constraints={'name': 'total_tokens', 'max': 130000}",
+          "options": {
+            "name": "total_tokens",
+            "max": 130000
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "efficiency",
+          "required": true,
+          "passed": true,
+          "detail": "tool_calls=27; constraints={'name': 'tool_calls', 'max': 40}",
+          "options": {
+            "name": "tool_calls",
+            "max": 40
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "reliability",
+          "required": true,
+          "passed": true,
+          "detail": "successful_runs=8; constraints={'name': 'successful_runs', 'min': 8}",
+          "options": {
+            "name": "successful_runs",
+            "min": 8
+          }
+        },
+        {
+          "type": "metric",
+          "dimension": "reliability",
+          "required": true,
+          "passed": true,
+          "detail": "model_errors=0; constraints={'name': 'model_errors', 'equals': 0}",
+          "options": {
+            "name": "model_errors",
+            "equals": 0
+          }
+        },
+        {
+          "type": "final_regex",
+          "dimension": "reliability",
+          "required": true,
+          "passed": true,
+          "detail": "phase=turn8; final={\"hana_language\":\"Python\",\"hana_timezone\":\"Asia/Shanghai\",\"labs_language\":null,\"labs_contact\":\"Hana Chen\",\"labs_timezone\":\"UTC\"}",
+          "options": {
+            "pattern": "\\S"
+          }
+        }
+      ],
+      "metrics": {
+        "runs": 8,
+        "successful_runs": 8,
+        "failed_runs": 0,
+        "cancelled_runs": 0,
+        "model_requests": 33,
+        "model_errors": 0,
+        "model_retries": 5,
+        "model_fallbacks": 0,
+        "agent_model_requests": 25,
+        "auxiliary_model_requests": 8,
+        "agent_tokens": 166869,
+        "memory_tokens": 23148,
+        "compaction_tokens": 0,
+        "tool_calls": 27,
+        "tool_errors": 1,
+        "tool_cancelled": 0,
+        "tool_blocked": 0,
+        "approval_requests": 0,
+        "approval_allowed": 0,
+        "approval_denied": 0,
+        "approval_timed_out": 0,
+        "memory_retrievals": 8,
+        "memory_injected_items": 63,
+        "memory_consolidations": 8,
+        "memory_facts_written": 0,
+        "memory_conflicts": 0,
+        "instruction_injections": 8,
+        "instruction_sources": 0,
+        "goal_completed_runs": 0,
+        "compaction_attempts": 0,
+        "compactions": 0,
+        "compaction_failures": 0,
+        "compaction_aborted": 0,
+        "tokens_saved_by_compaction": 0,
+        "input_tokens": 182961,
+        "output_tokens": 7056,
+        "cached_tokens": 97792,
+        "total_tokens": 190017,
+        "duration_ms": 303468,
+        "judge_requests": 0,
+        "judge_input_tokens": 0,
+        "judge_output_tokens": 0,
+        "judge_total_tokens": 0,
+        "judge_duration_ms": 0,
+        "live_tool_artifacts": 0,
+        "live_tool_artifact_bytes": 0,
+        "archived_tool_artifacts": 0,
+        "history_archives": 0,
+        "model_summary_compactions": 0,
+        "deterministic_compactions": 0,
+        "cost_usd": 0.01417313,
+        "max_goal_attempts": 0,
+        "model_latency_mean_ms": 9016.212121,
+        "model_latency_p50_ms": 6325.0,
+        "model_latency_p95_ms": 23682.0,
+        "ttft_mean_ms": 5125.212121,
+        "ttft_p50_ms": 4722.0,
+        "ttft_p95_ms": 9485.0,
+        "tool_latency_mean_ms": 152.851852,
+        "tool_latency_p95_ms": 391.0,
+        "cache_ratio": 0.5344964227348998,
+        "model_error_rate": 0.0,
+        "tool_error_rate": 0.037037037037037035,
+        "compaction_success_rate": null,
+        "event_types": {
+          "goal.snapshot": 16,
+          "instructions.injected": 8,
+          "memory.consolidation": 8,
+          "memory.retrieval": 8,
+          "model.request": 33,
+          "model.transport": 81,
+          "run.completed": 8,
+          "run.started": 8,
+          "tool.call": 27
+        },
+        "tool_breakdown": {
+          "memory": 27
+        },
+        "tool_failure_breakdown": {
+          "memory": 1
+        },
+        "model_purposes": {
+          "agent": 25,
+          "memory_consolidation": 8
+        },
+        "providers": {
+          "primary": 33
+        },
+        "models": {
+          "gpt-5.6-luna": 33
+        },
+        "runtime_backends": {
+          "docker": 8
+        },
+        "wall_duration_seconds": 314.329
+      },
+      "error": null,
+      "trace_paths": {
+        "turn1": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_negative_identity\\attempt-001\\workspace\\.aster\\eval-sessions\\turn1\\trace.jsonl",
+        "turn2": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_negative_identity\\attempt-001\\workspace\\.aster\\eval-sessions\\turn2\\trace.jsonl",
+        "turn3": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_negative_identity\\attempt-001\\workspace\\.aster\\eval-sessions\\turn3\\trace.jsonl",
+        "turn4": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_negative_identity\\attempt-001\\workspace\\.aster\\eval-sessions\\turn4\\trace.jsonl",
+        "turn5": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_negative_identity\\attempt-001\\workspace\\.aster\\eval-sessions\\turn5\\trace.jsonl",
+        "turn6": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_negative_identity\\attempt-001\\workspace\\.aster\\eval-sessions\\turn6\\trace.jsonl",
+        "turn7": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_negative_identity\\attempt-001\\workspace\\.aster\\eval-sessions\\turn7\\trace.jsonl",
+        "turn8": "D:\\MIniClaw\\.aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_negative_identity\\attempt-001\\workspace\\.aster\\eval-sessions\\turn8\\trace.jsonl"
+      },
+      "workspace_changes": {
+        "created": [],
+        "modified": [],
+        "deleted": []
+      }
+    }
+  ],
+  "original_result": ".aster\\evals\\hard-campaign-v1\\run\\cases\\hard_v1_negative_identity\\result.json",
+  "classification": "Needs trace review; run-health failures alone do not establish an Agent defect."
+}

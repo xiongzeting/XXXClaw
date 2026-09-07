@@ -1,0 +1,5 @@
+{
+  "suite": "fresh-retained-replacement-v1.json",
+  "sha256": "6c381bac8342304f960694fad326a6eecc3815388ba5178366f4ea8f0f05c4a0",
+  "policy": "New validation replacement frozen before first run; original suite and report preserved."
+}

@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "name": "boundary-retained-v1",
+  "cases": [],
+  "partition_policy": "current-round-partitions-v1",
+  "status": "retired; cases moved to development/test; no new holdout"
+}
