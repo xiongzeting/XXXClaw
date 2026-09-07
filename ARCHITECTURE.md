@@ -47,14 +47,12 @@ In particular:
 
 ## Repository layout
 
-The current physical tree is documented in [docs/PROJECT_TREE.md](docs/PROJECT_TREE.md). The dependency graph above describes package boundaries rather than file placement.
+The dependency graph above describes package boundaries rather than file placement.
 
 - `src/MiniClaw/`: `llm`, `agent`, `coding_agent`, `platforms`, `trace`, `evaluation`, and `benchmark`.
-- `docs/notes`, `docs/interview`, `docs/plans`: technical notes, interview material, and proposed work; see the [document index](docs/README.md).
 - `scripts/launch`, `scripts/development`, `scripts/benchmarks`: operational helpers; see [script usage](scripts/README.md).
 - `tests/` and `evals/`: regression tests and evaluation definitions, fixtures, baselines, and fixed splits.
-- `frontend/architecture/`, `docker/runtime/`, and `external/benchmarks/`: visualization assets, runtime image, and third-party benchmark resources.
-- `.aster/`, `benchmark-results/`, and `.codex-research/`: local runtime, experiment, and research artifacts.
+- `frontend/architecture/` and `docker/runtime/`: visualization assets and runtime image. External benchmark resources are downloaded locally when needed.
 
 ## Packages
 
