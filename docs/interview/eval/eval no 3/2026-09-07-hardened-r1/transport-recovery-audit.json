@@ -1,0 +1,77 @@
+{
+  "events": [
+    {
+      "case_id": "version_resolution_r3",
+      "event_id": "0db4743a-3d5a-4a42-bbc2-b976e4204183",
+      "timestamp": "2026-09-07T14:16:34.929Z",
+      "details": {
+        "request_id": "206dbc6b-bff3-4577-acee-63441da7358b",
+        "phase": "attempt_failed",
+        "attempt": 1,
+        "route_index": 0,
+        "retry_index": 0,
+        "provider": "primary",
+        "model": "gpt-5.6-luna",
+        "error_code": "MODEL_TOTAL_TIMEOUT",
+        "error": "[MODEL_TOTAL_TIMEOUT] model stream exceeded 120 seconds",
+        "status_code": null,
+        "retryable": true,
+        "emitted_output": false,
+        "buffered_output_discarded": false,
+        "tools_executed_in_request": false
+      }
+    },
+    {
+      "case_id": "version_resolution_r3",
+      "event_id": "26b68eab-1c76-4789-abbf-b12702fe20dd",
+      "timestamp": "2026-09-07T14:16:34.931Z",
+      "details": {
+        "request_id": "206dbc6b-bff3-4577-acee-63441da7358b",
+        "phase": "retry_scheduled",
+        "attempt": 1,
+        "next_attempt": 2,
+        "provider": "primary",
+        "model": "gpt-5.6-luna",
+        "delay_ms": 471,
+        "error_code": "MODEL_TOTAL_TIMEOUT"
+      }
+    },
+    {
+      "case_id": "debug_async_duplicate_delivery",
+      "event_id": "95916411-4665-40c4-820e-27f78447b1b4",
+      "timestamp": "2026-09-07T14:13:55.735Z",
+      "details": {
+        "request_id": "1fa6ba4f-af49-4e97-a26a-a06ed76eaa23",
+        "phase": "attempt_failed",
+        "attempt": 1,
+        "route_index": 0,
+        "retry_index": 0,
+        "provider": "primary",
+        "model": "gpt-5.6-luna",
+        "error_code": "MODEL_TOTAL_TIMEOUT",
+        "error": "[MODEL_TOTAL_TIMEOUT] model stream exceeded 120 seconds",
+        "status_code": null,
+        "retryable": true,
+        "emitted_output": false,
+        "buffered_output_discarded": true,
+        "tools_executed_in_request": false
+      }
+    },
+    {
+      "case_id": "debug_async_duplicate_delivery",
+      "event_id": "8f4b9baa-c1e7-4a71-bb08-67f6b45d5ff4",
+      "timestamp": "2026-09-07T14:13:55.736Z",
+      "details": {
+        "request_id": "1fa6ba4f-af49-4e97-a26a-a06ed76eaa23",
+        "phase": "retry_scheduled",
+        "attempt": 1,
+        "next_attempt": 2,
+        "provider": "primary",
+        "model": "gpt-5.6-luna",
+        "delay_ms": 534,
+        "error_code": "MODEL_TOTAL_TIMEOUT"
+      }
+    }
+  ],
+  "note": "Logical request usage includes final replies; unreported transport attempt usage is not assumed free."
+}

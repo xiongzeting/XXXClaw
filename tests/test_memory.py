@@ -82,7 +82,7 @@ class WorkingContextTests(unittest.IsolatedAsyncioTestCase):
             artifact = result.details["context_artifact"]
             self.assertEqual((root / artifact["path"]).read_text(encoding="utf-8"), "x" * 100)
 
-    async def test_legacy_arm_skips_live_artifactization(self) -> None:
+    async def test_old_strategy_label_cannot_select_a_second_runtime_pipeline(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             context = self.make_context(root, strategy="legacy-summary-recent")
@@ -90,20 +90,19 @@ class WorkingContextTests(unittest.IsolatedAsyncioTestCase):
                 ToolInvocation("call-1", "bash", {}),
                 ToolResult("x" * 100),
             )
-            self.assertEqual(result.content, "x" * 100)
-            self.assertNotIn("context_artifact", result.details)
+            self.assertIn(ARTIFACT_MARKER, result.content)
+            self.assertIn("context_artifact", result.details)
 
-    async def test_legacy_arm_waits_for_hard_limit_and_only_summarizes(self) -> None:
+    async def test_progressive_pipeline_archives_and_summarizes_at_hard_pressure(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             context = self.make_context(
                 root,
-                strategy="legacy-summary-recent",
                 deterministic_semantic_tokens=1,
             )
             messages = [
-                ChatMessage(role="user", content="old request " * 20),
-                ChatMessage(role="assistant", content="old answer " * 20),
+                ChatMessage(role="user", content="old request " * 120),
+                ChatMessage(role="assistant", content="old answer " * 120),
                 ChatMessage(role="user", content="current request"),
                 ChatMessage(role="assistant", content="recent answer"),
             ]
@@ -115,14 +114,9 @@ class WorkingContextTests(unittest.IsolatedAsyncioTestCase):
 
             assert outcome is not None
             self.assertEqual(outcome.strategy, "model-summary")
-            self.assertEqual(outcome.details["archive"], None)
-            self.assertEqual(
-                outcome.details["layers_applied"],
-                ["recent-original", "model-summary"],
-            )
-            self.assertNotIn("Archived Source", outcome.messages[0].content)
-            artifact_root = root / ".aster" / "context-artifacts"
-            self.assertFalse(artifact_root.exists())
+            self.assertIsNotNone(outcome.details["archive"])
+            self.assertIn("closed-history-archive", outcome.details["layers_applied"])
+            self.assertIn("pipeline", outcome.details)
 
     async def test_compaction_is_append_only_and_recovers_checkpoint_plus_recent(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

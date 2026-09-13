@@ -1,0 +1,95 @@
+flowchart TD
+    A[AgentLoop 提交 ModelRequest] --> B[ModelProfile + messages + tools<br/>metadata + CancellationToken]
+    B --> C[OpenAICompatibleClient.stream]
+    C --> D[选择 Primary Route]
+    D --> E[attempt_started]
+    E --> F[构造 POST /chat/completions]
+    F --> G[model / messages / max_tokens<br/>stream=true / tools]
+    G --> H{DeepSeek?}
+    H -- 是 --> I[thinking.type=disabled]
+    H -- 否 --> J[通用请求]
+    I --> K[发送 HTTP 请求]
+    J --> K
+    K --> L{取消?}
+    L -- 是 --> ER1[completed aborted]
+    L -- 否 --> M[等待响应头]
+    M --> N{响应头超时?}
+    N -- 是 --> ER2[FIRST_TOKEN/TOTAL_TIMEOUT]
+    N -- 否 --> O{HTTP status >= 400?}
+    O -- 是 --> P[读取错误正文]
+    P --> Q{状态码可重试?}
+    Q -- 否 --> ER3[MODEL_HTTP_ERROR]
+    Q -- 是 --> R[读取 Retry-After]
+    O -- 否 --> S{Content-Type 是 SSE?}
+    S -- 否 --> ER4[MODEL_STREAM_UNSUPPORTED]
+    S -- 是 --> T[aiter_lines]
+    T --> U[_SSEDecoder 收集 data 行]
+    U --> V{普通事件或 DONE?}
+    V -- 普通事件 --> W[json.loads]
+    V -- DONE --> X{finish_reason 存在?}
+    W --> Y{JSON 合法且无 provider error?}
+    Y -- 否 --> ER5[SSE_INVALID_JSON/EVENT]
+    Y -- 是 --> Z[_StreamAccumulator]
+    Z --> ZA{文本 delta?}
+    ZA -- 是 --> ZB[累积文本并发 text_delta]
+    ZA -- 否 --> ZC[继续]
+    ZB --> ZD{Tool Call 分片?}
+    ZC --> ZD
+    ZD -- 是 --> ZE[按 index 累积 id/name/arguments]
+    ZD -- 否 --> ZF{usage?}
+    ZE --> ZF
+    ZF -- 是 --> ZG[记录 input/output/cached tokens]
+    ZF -- 否 --> ZH[继续]
+    ZG --> ZI[记录 finish_reason]
+    ZH --> ZI
+    ZI --> U
+    X -- 否 --> ER6[MODEL_STREAM_DISCONNECTED]
+    X -- 是 --> ZJ[排序并拼接 Tool Call 参数]
+    ZJ --> ZK{JSON 参数可解析?}
+    ZK -- 否 --> ER7[MODEL_TOOL_ARGUMENTS_INVALID]
+    ZK -- 是 --> ZL{结果是 object?}
+    ZL -- 否 --> ER8[MODEL_TOOL_ARGUMENTS_INVALID]
+    ZL -- 是 --> ZM[创建完整 ToolInvocation]
+    ZM --> ZN[归一化 stop_reason]
+    ZN --> ZO[写入 Provider / usage / latency metadata]
+    ZO --> ZP[attempt_succeeded]
+    ZP --> ZQ[提交缓冲事件]
+    ZQ --> ZR[completed AssistantReply]
+
+    R1[传输/超时失败] --> R2{已发布可见输出?}
+    R2 -- 是 --> R3[不重试、不切换]
+    R2 -- 否 --> R4{retryable?}
+    R4 -- 是 --> R5{仍有 retry 次数?}
+    R5 -- 是 --> R6[指数退避 + jitter + Retry-After]
+    R6 --> R7{退避期间取消?}
+    R7 -- 是 --> ER1
+    R7 -- 否 --> E
+    R5 -- 否 --> R8{还有 Fallback?}
+    R4 -- 否 --> R8
+    R8 -- 是 --> R9[fallback_selected<br/>切换 Provider / Model]
+    R9 --> E
+    R8 -- 否 --> R10[error + completed error]
+    R3 --> R10
+
+    ER2 --> R1
+    P --> R1
+    ER3 --> R1
+    ER4 --> R1
+    ER5 --> R1
+    ER6 --> R1
+    ER7 --> R1
+    ER8 --> R1
+    R --> R1
+    R10 --> END1[失败]
+    ER1 --> END2[取消]
+    ZR --> END3[成功]
+
+    classDef main fill:#123047,stroke:#42c8df,color:#eef7ff;
+    classDef decision fill:#3a2a16,stroke:#f3ac52,color:#fff0d0;
+    classDef exec fill:#302248,stroke:#ae91ff,color:#f7f0ff;
+    classDef error fill:#421f2b,stroke:#ff737d,color:#fff0f2;
+    classDef result fill:#17352d,stroke:#70d6a2,color:#effff5;
+    class A,B,C,D,E,F,G,I,J,K,M,T,U,W,Z,ZB,ZC,ZE,ZG,ZH,ZI,ZJ,ZM,ZN,ZO,ZP,ZQ,ZR,R1,R3,R6,R7,R9,R10 main;
+    class H,L,N,O,Q,S,V,X,Y,ZA,ZD,ZF,ZK,ZL,R2,R4,R5,R8 decision;
+    class P,R,ER1,ER2,ER3,ER4,ER5,ER6,ER7,ER8 error;
+    class ZM,ZP,ZQ,ZR,END1,END2,END3 result;

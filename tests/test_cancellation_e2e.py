@@ -24,8 +24,8 @@ from MiniClaw.coding_agent.runtime.execution import DockerCommandExecutor
 from MiniClaw.coding_agent.runtime.workspace import WorkspaceGuard
 from MiniClaw.coding_agent.tools.executor import ToolExecutor
 from MiniClaw.coding_agent.tools.write import WriteTool
-from MiniClaw.trace.analysis import generate_dashboard
-from MiniClaw.trace.store import read_trace_records
+from MiniClaw.evaluation.trace.analysis import generate_dashboard
+from MiniClaw.evaluation.trace.store import read_trace_records
 
 
 class OneReplyModelClient:
@@ -150,8 +150,7 @@ class EndToEndCancellationTests(unittest.IsolatedAsyncioTestCase):
                 await asyncio.Event().wait()
                 return result
 
-            executor = ToolExecutor()
-            executor.register(WriteTool(WorkspaceGuard(workspace)))
+            executor = ToolExecutor(tools=[WriteTool(WorkspaceGuard(workspace))])
             token = CancellationToken()
             with patch("MiniClaw.coding_agent.tools.atomic.asyncio.to_thread", side_effect=delayed_to_thread):
                 task = asyncio.create_task(

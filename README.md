@@ -1,116 +1,135 @@
 # MiniClaw
 
-MiniClaw 是一个使用 Python 实现的 coding agent 框架，面向本地代码助手开发、Agent 架构学习和工具调用安全验证。项目将模型通信、Agent 循环、工具执行、记忆、任务监督、审批、运行时隔离和评测拆成独立模块。
+<!-- current-eval-partition:start -->
+## 当前两轮题集口径（2026-09-06）
 
-## 主要能力
+第一轮：开发集 **15**、测试集 **15**。第二轮：开发集 **8**、测试集 **7**，另有 **5** 道旧题回归。原保留题按能力分组、稳定 ID 排序后交替分配，不按成绩挑题。两轮均已曝光；测试集用于内部验证，不冒充未见成绩。
 
-- 兼容 OpenAI 风格接口，支持 SSE、工具调用、超时、重试和模型回退。
-- 通用 `AgentLoop` 与 coding agent 解耦，可替换模型和工具宿主。
-- 提供 `read`、`write`、`edit`、`bash`、`grep`、`search` 工具，并校验路径和参数。
-- 支持主机执行、Docker 执行、Direct 工作区和 Snapshot 工作区。
-- 对文件修改、命令、网络访问和敏感路径提供 `allow / ask / deny` 审批策略。
-- 提供 Working、Episodic、Semantic、Procedural 四层记忆和混合召回。
-- 支持 Goal 任务状态机、验收条件、验证证据、独立评审和中断恢复。
-- 记录统一 JSONL Trace，追踪模型、Token、费用、延迟、工具、审批和任务状态。
-- 提供离线 Eval，分别检查结果、过程、效率、安全和可靠性。
+**当前不创建对比保留集。** 等用户明确要求 MiniClaw / Codex 最终对比时，再生成新的任务族。
 
-## 架构
+可执行划分以 `evals/current-round-partitions.json`、`round1-*-current.json`、`round2-*-current.json` 及 active portfolio v5/v6 为准。下一轮使用 `evals/next-quality-limits-v1.json`，缓存命中率（%）与费用估算（USD）作为效率观察项进入逐题报告，**不设硬门槛，不计入五维分数**。费用按缓存输入、未缓存输入、输出各自的配置费率估算，不是服务商账单；缺失数据标为未采集。
+
+历史冻结 snapshot、原始结果和 ZIP 保留原分层与原分数。报告正文涉及旧分层的执行记录属于历史口径，不是当前题集配置。当前分类只重组题目，未重跑模型或改变单题成绩。
+
+归档中的资料清单和核对记录记录的是归档时的哈希；本次更新的可读说明与报告不再对应原哈希。原始清单不覆盖，冻结 JSON、ZIP 及原始评分仍按原清单追溯。
+<!-- current-eval-partition:end -->
+
+MiniClaw is a small Python coding-agent framework. Its tool contracts closely follow pi while using a Python-native implementation.
 
 ```text
-llm                 模型协议、SSE、超时、重试与回退
-  ↑
-agent               通用 AgentLoop、事件和工具宿主协议
-  ↑
-coding_agent        工具、记忆、Goal、审批、Runtime 和指令加载
-  ├─ tools           文件、命令、搜索和工具管理
-  ├─ memory          上下文、长期记忆、压缩和召回
-  ├─ goal            任务状态、验收和外层监督
-  ├─ approval        风险识别和用户审批
-  ├─ runtime         工作区映射、主机/Docker 执行
-  └─ instructions    AGENTS.md / CLAUDE.md 规则加载
+MiniClaw.llm                 ≈ pi-ai
+  provider-neutral model types, SSE transport, retry and fallback
 
-platforms / cli / trace / evaluation / benchmark
+MiniClaw.agent               ≈ pi-agent-core
+  reusable model/tool loop, events, and the abstract tool-host protocol
+
+MiniClaw.coding_agent        ≈ pi-coding-agent
+  assistant/session composition
+  ├─ tools                   one ToolExecutor boundary, read, bash, edit, write, grep, search
+  ├─ memory                  working, episodic, semantic, and procedural memory
+  ├─ goal                    persistent state, verification, judge, supervision
+  ├─ runtime                 workspace mapping and host/Docker execution
+  ├─ approval                dangerous-operation policy and user decisions
+  └─ instructions            layered project-rule discovery and injection
+
+MiniClaw.platforms / trace / benchmark
+  product entry adapters, observability/Eval, and offline evaluation
 ```
 
-`llm` 不知道文件和任务策略；`AgentLoop` 只依赖抽象工具协议；`coding_agent` 负责组装具体服务；`trace` 只记录脱敏观察结果，不参与执行决策。
+This is a package dependency hierarchy, not the chronological request flow. At runtime the coding assistant assembles one fixed tool set and passes its executor into the generic AgentLoop; AgentLoop sends normalized requests to the LLM layer and invokes tools only through the abstract protocol. Memory, context compaction, Goal supervision, approval, instructions, and Runtime remain outside the generic loop and are assembled by the coding assistant. Slack remains outside the current version.
 
-## 目录结构
+## 项目目录与文档
+
+[文档总导航](docs/README.md) · [完整项目树](docs/PROJECT_TREE.md) · [脚本用法](scripts/README.md)
 
 ```text
 MiniClaw/
-├─ src/MiniClaw/           核心 Python 包
-├─ tests/                  单元测试和集成测试
-├─ evals/                  评测套件、夹具、基线和固定划分
-├─ scripts/                构建、验证、评测和辅助脚本
-├─ frontend/architecture/  架构可视化页面
-├─ docker/runtime/         Docker 运行时镜像
-├─ ARCHITECTURE.md         模块依赖和设计约束
-├─ pyproject.toml          包配置和可选依赖
-└─ .github/workflows/      CI 工作流
+├─ README.md / ARCHITECTURE.md / pyproject.toml
+├─ docs/                    notes/ 技术笔记、interview/ 面试资料、plans/ 改造规划
+├─ src/MiniClaw/             核心 Python 包
+├─ tests/                   回归测试
+├─ evals/                   评测套件、样例、基线与固定数据划分
+├─ scripts/                 launch/、development/、benchmarks/
+├─ frontend/architecture/   架构页面、SVG 和预览图
+├─ docker/runtime/          运行镜像
+└─ .github/workflows/       CI 与 Eval 工作流
 ```
 
-本仓库不包含 `docs/` 文档归档，也不包含本地运行时数据、实验结果、调研缓存或外部 benchmark 源码。外部 benchmark 需要时，可使用 `scripts/benchmarks/download_benchmarks.ps1` 下载到本地 `external/benchmarks/`。
+外部 benchmark 源码与数据不随仓库发布；如需运行对应评测，请按 `scripts/benchmarks/download_benchmarks.ps1` 下载到 `external/benchmarks/`。运行时数据、实验结果和本地调研记录均为可再生内容，不纳入版本控制。
 
-## 安装
+编号文档已归档到 `docs/notes/`，原“重点”资料位于 `docs/interview/`。以下命令均从项目根目录运行。
 
-要求 Python 3.11 或更高版本：
+## Included
+
+- environment-selected OpenAI, DeepSeek, and native Anthropic provider profiles
+- native OpenAI-compatible SSE with incremental text and fragmented Tool Call assembly
+- connect, first-token, idle, and total model timeouts
+- end-to-end cancellation across LLM streams, approvals, tools, host process trees, Docker containers, compaction, and Goal attempts
+- retryable 429/5xx/network handling with exponential backoff and jitter
+- explicit ordered provider/model fallback routes
+- asynchronous agent event stream
+- multiple tool calls per assistant turn
+- one session-scoped ToolExecutor built from a fixed tool set (no runtime registration or role filtering)
+- recursive tool argument validation and optional execution timeout
+- workspace path boundary checks
+- host and Docker bash runtimes with direct or per-session Snapshot workspaces
+- execution-time `allow / ask / deny` approval policy with fail-closed timeout
+- multi-capability shell/file/memory risk classification and normalized project-scoped allowlist
+- CLI and Feishu approvals recorded in unified Trace
+- Docker CPU/memory/PID/network/read-only-root limits and sensitive-path masking
+- layered `AGENTS.md`/`CLAUDE.md` project instructions with target-scoped discovery
+- target-scoped dynamic instruction injection and first-write refresh protection
+- `read`, `bash`, `edit`, `write`, `grep`, and shell-free `search` tools, implemented as separate Python modules
+- durable `run-state.json` transitions plus interrupted Tool Call protocol repair after process restart
+- append-only JSONL transcript storage with hard compaction: structured continuation summary, recent 1/10 original tail, and bounded hash-checked recovery reads; no closed-history or old-tool archive pass
+- memory layers: Working Context, Episodic, user-confirmed Semantic (short index plus topic files), and program-managed evidence
+- persistent BM25 + exact code-symbol recall + local BGE-M3 embeddings in FAISS HNSW, weighted RRF, status/time/confidence-aware reranking, and bounded BGE reranking
+- retrieval evidence is injected as explicitly untrusted user-level context; automatic recall uses a bounded 4.5k-token budget, while explicit deep search may use 15k; system policy and separately loaded SKILL.md instructions remain isolated
+- persistent memory-conflict workflow plus cross-process write locking
+- evaluation profile: 40k hard trigger, 8KB large-tool artifact threshold, 256-character artifact summary; soft-trigger configuration is no longer part of the runtime
+- persistent pi-style Goal state machine with attempt/time/cost limits
+- outer Goal supervisor: a natural model stop ends one attempt, not the task
+- fresh-verification completion gate, exact criterion evidence, and optional independent judge
+- per-conversation Goal commands in CLI and Feishu
+- persistent Feishu delivery outbox with idempotency keys, bounded retry, and separate artifact notices
+- unified per-session `trace.jsonl` for model, Token, estimated cost, latency, tools, approvals, Goal, and Compaction
+- one-command Eval Case extraction from real failures
+- safe model-boundary replay with model, system prompt, and tool-definition overrides
+- deterministic failure clustering, regression alerts, and HTML/Markdown/JSON quality-cost dashboards
+- interactive CLI
+- offline unit tests with a scripted model
+
+## Run
 
 ```powershell
+cd D:\MIniClaw
 python -m pip install -e .
-```
-
-可选依赖：
-
-```powershell
-python -m pip install -e ".[feishu]"      # 飞书适配器
-python -m pip install -e ".[retrieval]"   # 向量召回
-python -m pip install -e ".[benchmark]"   # 外部评测
-python -m pip install -e ".[all]"         # 全部组件
-```
-
-## 模型配置
-
-复制 `.env.example` 为 `.env`，填入实际配置。`.env` 已被 Git 忽略，禁止提交真实密钥：
-
-```text
-MINICLAW_PROVIDER=primary
-MINICLAW_PRIMARY_BASE_URL=https://your-openai-compatible-endpoint/v1
-MINICLAW_PRIMARY_API_KEY=your-key
-MINICLAW_PRIMARY_MODEL=your-model
-```
-
-也可以切换 DeepSeek：
-
-```powershell
-$env:MINICLAW_PROVIDER = "deepseek"
-$env:MINICLAW_DEEPSEEK_API_KEY = "your-key"
-```
-
-常用可靠性参数：
-
-```text
-MINICLAW_LLM_TOTAL_TIMEOUT=120
-MINICLAW_LLM_CONNECT_TIMEOUT=10
-MINICLAW_LLM_FIRST_TOKEN_TIMEOUT=60
-MINICLAW_LLM_IDLE_TIMEOUT=30
-MINICLAW_LLM_MAX_RETRIES=2
-MINICLAW_LLM_FALLBACKS=primary:backup-model,deepseek:deepseek-chat
-```
-
-## 启动助手
-
-```powershell
+python -m unittest discover -s tests -v
 python -m MiniClaw.cli --workspace D:\your-project
 ```
 
-首次使用 Docker 前构建镜像：
+The CLI automatically loads `./.env` when present. Process environment variables still take precedence. Install optional integrations only when needed:
+
+```powershell
+python -m pip install -e ".[feishu]"
+python -m pip install -e ".[benchmark]"
+python -m pip install -e ".[all]"
+```
+
+Docker + Direct is the default runtime combination. Build the configured image before starting MiniClaw for the first time:
 
 ```powershell
 docker build -f docker/runtime/Dockerfile -t miniclaw-runtime:py311 docker/runtime
 python -m MiniClaw.cli --workspace D:\your-project
 ```
 
-不希望修改真实项目时使用 Snapshot：
+Verify Docker mounts, Direct persistence, secret masking, timeout, and cleanup without calling an LLM:
+
+```powershell
+python -m MiniClaw.coding_agent.runtime.smoke --image miniclaw-runtime:py311
+```
+
+Use a conversation-local workspace copy when real project files must not be modified:
 
 ```powershell
 python -m MiniClaw.cli --workspace D:\your-project `
@@ -118,53 +137,230 @@ python -m MiniClaw.cli --workspace D:\your-project `
   --workspace-mode snapshot
 ```
 
-只有 `bash` 会进入 Docker；文件和搜索工具在 Python Runtime 中执行，并统一经过 WorkspaceGuard。Snapshot 模式会先复制工作区，后续修改只发生在副本中。
+Only `bash` enters Docker. `read`, `write`, `edit`, and `grep` stay in the Python host process and use the same effective workspace through `WorkspaceGuard`. The default Direct mode bind-mounts the real project; Snapshot mode seeds `.aster/.../sandbox/workspace` once and keeps later task changes there. Use `--sandbox host` only when explicitly debugging without Docker.
 
-## Goal 和审批
+The default provider is the OpenAI-compatible endpoint configured by:
+
+```text
+MINICLAW_PROVIDER=primary
+MINICLAW_PRIMARY_BASE_URL=https://ai.zxcoding.top/v1
+MINICLAW_PRIMARY_MODEL=gpt-5.6-luna
+```
+
+The model transport now uses real SSE. Configure reliability independently:
+
+```text
+MINICLAW_LLM_TOTAL_TIMEOUT=120
+MINICLAW_LLM_CONNECT_TIMEOUT=10
+MINICLAW_LLM_FIRST_TOKEN_TIMEOUT=60
+MINICLAW_LLM_IDLE_TIMEOUT=30
+MINICLAW_LLM_MAX_RETRIES=5
+MINICLAW_LLM_RETRY_BASE_SECONDS=1
+MINICLAW_LLM_RETRY_MAX_SECONDS=32
+MINICLAW_LLM_RETRY_JITTER_RATIO=0
+```
+
+Optional fallbacks are explicit and ordered. This example retries the primary route, then tries another model on the same provider, then DeepSeek:
+
+```text
+MINICLAW_LLM_FALLBACKS=primary:backup-model,deepseek:deepseek-chat
+MINICLAW_DEEPSEEK_API_KEY=...
+```
+
+Retries and fallbacks occur only before user-visible model output. Once a text delta has been emitted, MiniClaw fails the interrupted request instead of replaying it and duplicating text or tool decisions. Each logical request produces one cost-bearing `model.request`; individual attempts are `model.transport` Trace events.
+
+Cancellation is end to end. Feishu `/cancel` and `/goal cancel`, or `Ctrl+C` during a CLI run, stop the active SSE request, approval wait, Tool Call, host process tree, or Docker container. Remaining Tool Calls are recorded as cancelled and are never started. Built-in `write` and `edit` stage data in a temporary file and commit with an atomic replace only after a final cancellation check.
+
+Project instructions are loaded in increasing priority from `~/.miniclaw`, the effective workspace root, and activated nested directories. `read` and `grep` activate nearby rules for the next model turn. If a first `write` or `edit` discovers a local instruction file that the model has not seen, MiniClaw performs no mutation, refreshes the system prompt, and asks the model to retry. The current user request remains a separate highest-priority user message. Configure discovery with:
+
+```text
+MINICLAW_INSTRUCTIONS_ENABLED=true
+MINICLAW_INSTRUCTIONS_TOKEN_BUDGET=12000
+MINICLAW_AGENT_DIRS=
+```
+
+Within each directory, MiniClaw follows pi's first-match order: `AGENTS.md`, `AGENTS.MD`, `CLAUDE.md`, `CLAUDE.MD`. Every injected resolution is recorded as `instructions.injected` with source path, scope, hash, estimated tokens, and included/truncated/omitted status.
+
+Switch to DeepSeek without changing code:
+
+```powershell
+$env:MINICLAW_PROVIDER = "deepseek"
+$env:MINICLAW_DEEPSEEK_API_KEY = "your-key"
+python -m MiniClaw.cli --workspace D:\your-project
+```
+
+See `.env.example` for every supported environment variable. MiniClaw uses only `MINICLAW_*` names and never prints API keys.
+
+Set `MINICLAW_PROVIDER=anthropic` with `MINICLAW_ANTHROPIC_API_KEY` to use the native Anthropic Messages API. OpenAI uses `MINICLAW_PROVIDER=openai` and the `MINICLAW_PRIMARY_*` settings; DeepSeek uses `MINICLAW_PROVIDER=deepseek` and the `MINICLAW_DEEPSEEK_*` settings.
+
+Run a minimal real-provider check without starting the interactive assistant:
+
+```powershell
+python -m MiniClaw.llm.smoke
+python -m MiniClaw.llm.smoke --provider deepseek
+```
+
+Use the migrated MiniClaw dotenv file for model and Feishu credentials:
+
+```powershell
+$env:PYTHONPATH = "D:\MIniClaw\src"
+python -m MiniClaw.llm.smoke --env-file D:\MIniClaw\.env
+python -m MiniClaw.platforms.feishu.cli --workspace D:\MIniClaw --env-file D:\MIniClaw\.env
+```
+
+The Feishu adapter uses the official SDK long connection and `MINICLAW_FEISHU_*` environment names. Incoming messages still execute through MiniClaw's own `OpenAICompatibleClient`, `AgentLoop`, tools, and four-layer memory. Sessions are isolated under `.aster/feishu/sessions/<conversation>/`.
+
+Start a supervised Goal from the CLI or Feishu:
 
 ```text
 /goal 修复登录流程
 验收条件：
 - 正常凭据可以登录
 - 错误密码被拒绝
-- 测试全部通过
+- 完整测试通过
 ```
 
-使用 `/goal status`、`/goal resume`、`/goal cancel` 管理任务。危险操作默认需要审批；自动化环境可设置 `MINICLAW_APPROVAL_POLICY=deny`。
+Use `/goal status`, `/goal resume`, and `/goal cancel` to manage the persisted Goal. Goal state is saved beside the conversation transcript as `goal.json`.
 
-## Trace 和评测
+Dangerous operations use `ask` by default. CLI and Feishu show a six-character approval ID; reply with `批准 ABC123` or `拒绝 ABC123`. Set `MINICLAW_APPROVAL_POLICY=deny` for unattended fail-closed execution or `allow` only in a trusted environment. Project exceptions live in `.miniclaw/approval.json`:
+
+```json
+{
+  "policy": "ask",
+  "timeout_seconds": 300,
+  "allowlist": [
+    {
+      "tool": "bash",
+      "risk": "network-access",
+      "command_glob": "git fetch origin *"
+    },
+    {
+      "tool": "write",
+      "risk": "file-overwrite",
+      "path_glob": "docs/**"
+    }
+  ]
+}
+```
+
+Allowlist fields are combined with AND. Keep rules narrow; changing the approval file itself is classified as a critical operation.
+
+Trace and Eval commands:
 
 ```powershell
-python -m MiniClaw.llm.smoke
+# Convert old pi-style tool-calls.jsonl / model-requests.jsonl directories.
+python -m MiniClaw.trace.cli migrate D:\trace-data
+
+# Turn the latest real failure in one session into a portable Eval Case.
 python -m MiniClaw.trace.cli eval-case D:\session --out D:\evals\failure.json
+
+# Replay recorded model boundaries with a different model/prompt/tool definition set.
+python -m MiniClaw.trace.cli replay D:\session --env-file C:\path\to\.env --model another-model --prompt D:\prompt.txt --tools D:\tools.json --out D:\replay.json
+
+# Build quality/cost reports and compare with a previous summary.
+python -m MiniClaw.trace.cli report D:\trace-data --out D:\dashboard --baseline D:\previous\summary.json
+```
+
+Replay never executes recorded tools. It replays each recorded model decision against the exact sanitized context, which makes model and prompt comparisons safe but does not replace full workspace integration tests.
+
+End-to-end Eval commands execute the real `CodingAssistant`, model, AgentLoop, tools, Goal,
+Memory, WorkspaceGuard, ApprovalGate, Docker runtime, and Trace recorder. The grader separates
+five dimensions instead of reducing everything to one success bit:
+
+- `outcome`: final answer, files, commands, JSON, regex, or an optional independent LLM rubric
+- `process`: Tool Calls, Goal state, instruction injection, memory retrieval, compaction, and event order
+- `efficiency`: Agent/auxiliary requests, Token, cost, TTFT, latency, tool calls, cache, and wall time
+- `safety`: workspace diff, forbidden side effects, approval decisions, sensitive paths, and Docker isolation
+- `reliability`: repeated-run pass rate plus controlled retry, fallback, cancellation, and restart recovery
+
+```powershell
+# Four fast integration cases.
 python -m MiniClaw.evaluation.cli evals\smoke.json --env-file .env
+
+# Ten regression cases derived from representative benchmark failures and safety probes.
 python -m MiniClaw.evaluation.cli evals\regression.json --env-file .env
+
+# System resilience: all compaction layers, 429/network retry, provider fallback,
+# ask/timeout approval, Docker cancellation, and Goal restart/resume.
+python -m MiniClaw.evaluation.cli evals\resilience.json --env-file .env
+
+# One composed 22-case gate. It fails if a required dimension or capability is missing.
 python -m MiniClaw.evaluation.cli evals\full.json --env-file .env --jobs 4
+
+# Select cases, compare a baseline, or save a new baseline.
+python -m MiniClaw.evaluation.cli evals\regression.json --case memory_multihop_failure --baseline evals\baselines\previous.json
+python -m MiniClaw.evaluation.cli evals\smoke.json --repeat 3 --env-file .env
+python -m MiniClaw.evaluation.cli evals\regression.json --save-baseline evals\baselines\gpt-5.6-luna-regression.json
 ```
 
-评测会检查：最终结果、工具和任务过程、Token/费用/延迟、安全边界，以及重试、恢复、取消后的可靠性。完整评测可能调用模型并产生费用，请先确认 API 配额。
+`evals/smoke.json` is the quick gate. `evals/regression.json` keeps benchmark provenance
+(`benchmark`, source case, and failure signature) while rebuilding each selected failure as
+a reproducible workspace task. Unlike model-boundary replay, these cases execute real side
+effects inside an isolated copied fixture and grade both the final state and the trace.
+`evals/full.json` composes all suites and declares a required capability matrix; a complete run
+cannot silently pass when, for example, no cancellation or compaction case was actually present.
 
-## 测试
+The versioned Eval portfolio follows a production-style four-track split: blocking regression,
+non-blocking development/challenge, frozen held-out, and production Trace canaries. The current
+`evals/splits/v1/manifest.json` declares 22 regression cases, 172 development executions, and 80
+previously unexposed held-out questions. Selections are explicit ID files rather than fresh random
+samples, and the manifest locks upstream commits and dataset hashes.
 
 ```powershell
-python -m pip install pytest
-python -m pytest -q
+# Validate that frozen files exist and development/held-out leakage checks remain zero.
+python -m MiniClaw.evaluation.splits validate evals\splits\v1\manifest.json --project-root .
+
+# Print the exact adapter commands for each track.
+python -m MiniClaw.evaluation.splits commands evals\splits\v1\manifest.json --track regression
+python -m MiniClaw.evaluation.splits commands evals\splits\v1\manifest.json --track development
+python -m MiniClaw.evaluation.splits commands evals\splits\v1\manifest.json --track heldout
 ```
 
-也可以使用标准库测试发现器：
+Do not repeatedly inspect and tune against the held-out IDs. Once a held-out result is opened for
+case-level diagnosis, move the representative failure into regression and rotate a fresh unseen
+question into the next split version. See `31.Eval数据划分与持续闭环.md` for the complete policy.
 
-```powershell
-python -m unittest discover -s tests -v
-```
+Cases may run repeatedly and report `pass_rate`, `pass_at_k`, `pass_all`, and `stable`. Efficiency
+budgets distinguish main Agent requests from memory/compaction/Judge requests. Reports also count
+live large-result artifacts, transcript archives, model summaries, saved
+Token, retries, fallbacks, cancellations, approval outcomes, Goal attempts, and workspace changes.
+See `29.端到端Eval.md` for the complete check, budget, fault-injection, and report contract.
 
-## 架构可视化
+## Architecture viewer
+
+Run the dedicated interactive frontend for the complete SVG system map:
 
 ```powershell
 python -m MiniClaw.frontend
 ```
 
-访问 `http://127.0.0.1:8765/`，可查看模块关系、缩放、拖动和 SVG 下载。
+Then open `http://127.0.0.1:8765/`. The viewer supports module focus, wheel zoom, drag pan, minimap navigation, fullscreen, keyboard controls, and SVG download. The standalone image is `frontend/architecture/miniclaw-architecture.svg`.
 
-## 许可证
+If the package is not installed, set the source directory for the current shell:
 
-项目使用 MIT License，元数据位于 `pyproject.toml`。
+```powershell
+$env:PYTHONPATH = "D:\MIniClaw\src"
+```
+
+## Design rules
+
+1. `llm` is the lowest reusable layer: it knows provider protocols but not agents, files, or coding policy.
+2. `agent` depends on `llm` and an abstract tool-host protocol, never on `coding_agent` or a concrete tool class.
+3. `coding_agent` is the product layer corresponding to pi-coding-agent; it owns the assistant composition root and all coding-specific services.
+4. `coding_agent.tools` owns concrete tool contracts and execution policy but does not decide task completion.
+5. `coding_agent.memory` never rewrites the durable transcript; compacted context is only a model-facing view.
+6. `trace` observes product boundaries but must never decide model or tool behavior.
+7. New reliability features must have an isolated test before entering the default path.
+8. Project instructions are resolved by `coding_agent.instructions`; `AgentLoop` only consumes a dynamic system-prompt provider.
+9. Retrieved history is evidence, never policy: it is budgeted separately, injected below the system role, and traced exactly as rendered.
+
+See `3.记忆与压缩.md` for the memory architecture and compaction evaluation settings.
+See `5.长期记忆检索.md` for hybrid retrieval and conflict resolution.
+See [`docs/memory-final-upgrade.md`](docs/memory-final-upgrade.md) for the final interview-oriented memory boundary and pipeline.
+See `6.Goal与外层监督.md` for Goal persistence, verification, and outer-loop supervision.
+See `7.Trace与Eval数据闭环.md` for unified traces, failure-derived Evals, replay, clustering, and dashboards.
+See `8.Runtime与Docker.md` for Runtime ownership, workspace modes, Docker isolation, configuration, and limitations.
+See `9.危险操作审批.md` for risk categories, CLI/Feishu interaction, allowlists, timeout behavior, and Trace events.
+See `10.SSE流式与模型容错.md` for SSE parsing, cancellation, timeout, retry, fallback, and Trace accounting.
+See `11.端到端取消与中断.md` for process/container termination, atomic file commits, Goal cancellation, and Trace semantics.
+See `12.项目指令自动加载.md` for instruction hierarchy, scoped activation, budgeting, cache invalidation, write protection, and Trace fields.

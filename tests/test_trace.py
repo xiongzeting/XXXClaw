@@ -19,10 +19,10 @@ from MiniClaw.llm.types import (
 )
 from MiniClaw.coding_agent.memory.config import MemoryConfig
 from MiniClaw.coding_agent.runtime import RuntimeSettings
-from MiniClaw.trace.analysis import create_eval_case, generate_dashboard, migrate_legacy_traces
-from MiniClaw.trace.replay import replay_trace
-from MiniClaw.trace.store import TraceRecorder, read_trace_records
-from MiniClaw.trace.model_client import TracingModelClient
+from MiniClaw.evaluation.trace.analysis import create_eval_case, generate_dashboard, migrate_legacy_traces
+from MiniClaw.evaluation.trace.replay import replay_trace
+from MiniClaw.evaluation.trace.store import TraceRecorder, read_trace_records
+from MiniClaw.evaluation.trace.model_client import TracingModelClient
 
 
 class ScriptedModelClient:

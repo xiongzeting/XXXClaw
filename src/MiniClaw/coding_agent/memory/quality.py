@@ -30,13 +30,24 @@ def preference_evidence(users: list[str], quote: str = "") -> str | None:
         if memory_write_disallowed(user):
             continue
         if quote:
-            if normalized(quote) in normalized(user) and _PREFERENCE.search(quote):
+            # Models often preserve provenance as prose, e.g. ``用户原话：
+            # “以后都用中文回答我。”``.  Validate the quoted inner text
+            # against the real user turn instead of rejecting that harmless
+            # wrapper; never accept the wrapper unless its contents occur in
+            # the actual user message.
+            candidates = [quote]
+            candidates.extend(re.findall(r'[“「『"]([^”」』"]+)[”」』"]', quote))
+            candidates.extend(re.findall(r'(?:原话|原文|用户说|user said)\s*[:：]\s*(.+)', quote, re.I))
+            for candidate in candidates:
+                candidate = candidate.strip()
+                if not candidate or normalized(candidate) not in normalized(user) or not _PREFERENCE.search(candidate):
+                    continue
                 # All writers retain the same original explicit directive,
                 # including when extraction quotes only its payload.
                 for line in user.splitlines():
-                    if re.match(r'^\s*(?:记住|remember)\s*(?:\[preference\])?\s*[:：]', line, re.I) and normalized(quote) in normalized(line):
+                    if re.match(r'^\s*(?:记住|remember)\s*(?:\[preference\])?\s*[:：]', line, re.I) and normalized(candidate) in normalized(line):
                         return line.strip()
-                return quote
+                return candidate
         elif _PREFERENCE.search(user) and len(user) <= 2000:
             return user
     return None

@@ -22,7 +22,7 @@ from MiniClaw.coding_agent.approval import load_approval_settings
 from MiniClaw.platforms.feishu.config import FeishuSettings
 from MiniClaw.platforms.feishu.models import FeishuInboundMessage, build_conversation
 from MiniClaw.platforms.feishu.router import FeishuAssistantRouter
-from MiniClaw.trace.store import read_trace_records
+from MiniClaw.evaluation.trace.store import read_trace_records
 
 
 class LocalTransport:

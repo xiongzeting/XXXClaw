@@ -30,7 +30,7 @@ from MiniClaw.platforms.feishu.models import FeishuInboundMessage, build_convers
 from MiniClaw.platforms.feishu.router import FeishuAssistantRouter
 from MiniClaw.coding_agent.runtime import RuntimeSettings
 from MiniClaw.coding_agent.tools import ToolExecutor, WorkspaceGuard, WriteTool
-from MiniClaw.trace.store import read_trace_records
+from MiniClaw.evaluation.trace.store import read_trace_records
 
 
 class ScriptedModelClient:
@@ -175,8 +175,10 @@ class ApprovalGateTests(unittest.IsolatedAsyncioTestCase):
             path = Path(directory, "existing.txt")
             path.write_text("old", encoding="utf-8")
             gate = ApprovalGate(Path(directory), ApprovalSettings(policy="deny"))
-            executor = ToolExecutor(preflights=[gate.authorize])
-            executor.register(WriteTool(WorkspaceGuard(directory)))
+            executor = ToolExecutor(
+                tools=[WriteTool(WorkspaceGuard(directory))],
+                preflights=[gate.authorize],
+            )
 
             result = await executor.execute(
                 ToolInvocation("1", "write", {"path": "existing.txt", "content": "new"})
@@ -201,8 +203,10 @@ class ApprovalGateTests(unittest.IsolatedAsyncioTestCase):
                 handler=approve,
                 recorder=lambda phase, _request, decision: records.append((phase, decision)),
             )
-            executor = ToolExecutor(preflights=[gate.authorize])
-            executor.register(WriteTool(WorkspaceGuard(directory)))
+            executor = ToolExecutor(
+                tools=[WriteTool(WorkspaceGuard(directory))],
+                preflights=[gate.authorize],
+            )
             result = await executor.execute(
                 ToolInvocation("1", "write", {"path": "existing.txt", "content": "new"})
             )

@@ -105,6 +105,10 @@ class QueryTracker:
         self.history_limit = history_limit
         self._attempts: list[SearchAttempt] = []
 
+    def reset(self) -> None:
+        """Start a fresh run-local search history."""
+        self._attempts.clear()
+
     def cached(self, scope: str, query: str, limit: int) -> SearchAttempt | None:
         normalized = normalize_query(query)
         for attempt in reversed(self._attempts):

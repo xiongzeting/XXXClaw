@@ -1,0 +1,22 @@
+{
+  "timezones": {
+    "a": "UTC"
+  },
+  "events": [
+    {
+      "tenant": "a",
+      "id": "e",
+      "revision": 1,
+      "time": "2026-09-01T01:00:00Z",
+      "amount": 2
+    }
+  ],
+  "queries": [
+    {
+      "query_id": "q",
+      "tenant": "a",
+      "start": "2026-09-01",
+      "end": "2026-09-02"
+    }
+  ]
+}

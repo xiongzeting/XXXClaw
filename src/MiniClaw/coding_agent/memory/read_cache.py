@@ -6,6 +6,7 @@ tool role, and are reused only after hashing the current workspace file.
 from __future__ import annotations
 
 import hashlib
+import uuid
 from pathlib import Path
 from dataclasses import asdict
 
@@ -13,18 +14,66 @@ from MiniClaw.llm.types import ChatMessage, ToolInvocation
 
 
 class ReadSnapshotCache:
-    def __init__(self, workspace: Path, budget_bytes: int):
+    def __init__(self, workspace: Path, budget_bytes: int, max_entries: int = 5):
         self.workspace = workspace.resolve()
         self.budget_bytes = budget_bytes
+        self.max_entries = max(1, int(max_entries))
         self.entries: dict[str, dict] = {}
+        # A compacted read is replayed once so the next request can continue
+        # from the last known file contents.  It is not injected on every
+        # request; the raw session and the artifact remain the source of truth.
+        self._replayed: dict[str, str] = {}
 
     def restore(self, entry: dict) -> None:
         if not isinstance(entry, dict) or not isinstance(entry.get("path"), str):
             return
         self.entries.pop(entry["path"], None)
         self.entries[entry["path"]] = entry
-        while len(self.entries) > 16:
+        self._replayed.pop(entry["path"], None)
+        while len(self.entries) > self.max_entries:
             self.entries.pop(next(iter(self.entries)))
+
+    def reset_replay(self) -> None:
+        """Allow one fresh replay after the active conversation is compacted."""
+        self._replayed.clear()
+
+    def capture_paths(self, paths: list[str]) -> list[dict]:
+        """Capture a few key files for the first request after compaction.
+
+        This is a bounded recovery snapshot, not a new model-visible tool
+        call. Hashes are checked again when the snapshot is projected.
+        """
+        captured: list[dict] = []
+        for raw in paths:
+            if len(captured) >= self.max_entries:
+                break
+            try:
+                path = (self.workspace / raw).resolve()
+                relative = path.relative_to(self.workspace).as_posix()
+                if relative.startswith(".aster/") or not path.is_file():
+                    continue
+                data = path.read_bytes()
+                if len(data) > min(self.budget_bytes, 1024 * 1024):
+                    continue
+                content = data.decode("utf-8", errors="replace")
+                digest = hashlib.sha256(data).hexdigest()
+                call = ToolInvocation(
+                    f"recovery-read-{uuid.uuid4().hex[:12]}",
+                    "read",
+                    {"path": relative},
+                )
+                entry = {
+                    "path": relative,
+                    "sha256": digest,
+                    "call": asdict(call),
+                    "content": content,
+                    "recovery": True,
+                }
+                self.restore(entry)
+                captured.append({"path": relative, "sha256": digest, "bytes": len(data)})
+            except (OSError, ValueError):
+                continue
+        return captured
 
     def observe(self, call, result) -> dict | None:
         if call.name != "read" or result.is_error or result.details.get("image"):
@@ -67,12 +116,26 @@ class ReadSnapshotCache:
             except (OSError, ValueError):
                 invalidated.append(relative)
                 continue
+            if self._replayed.get(relative) == item["sha256"]:
+                continue
             call = ToolInvocation(**item["call"])
             replay.extend([ChatMessage(role="assistant", tool_calls=[call]),
                            ChatMessage(role="tool", name="read", tool_call_id=call.call_id, content=content)])
             budget -= size
             reused.append({"path": relative, "sha256": item["sha256"], "bytes": size})
+            self._replayed[relative] = item["sha256"]
         for relative in invalidated:
             self.entries.pop(relative, None)
-        return [*replay, *messages], {"read_snapshots": reused, "invalidated_read_paths": invalidated,
-                                    "snapshot_bytes": self.budget_bytes - budget}
+            self._replayed.pop(relative, None)
+        # Keep the compacted checkpoint first. Replayed read evidence is a
+        # recovery layer between the checkpoint/manifest and recent original.
+        if replay and messages:
+            projected = [messages[0], *replay, *messages[1:]]
+        else:
+            projected = [*replay, *messages]
+        return projected, {"read_snapshots": reused, "invalidated_read_paths": invalidated,
+                                    "snapshot_bytes": self.budget_bytes - budget,
+                                    "read_replay_skipped": sum(
+                                        1 for relative, item in self.entries.items()
+                                        if self._replayed.get(relative) == item.get("sha256")
+                                    )}

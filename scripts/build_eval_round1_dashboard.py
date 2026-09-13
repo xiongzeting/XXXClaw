@@ -116,6 +116,8 @@ def main():
         for script in ('round2-data.js', 'round2.js'):
             html=html.replace(f'<script src="{script}"></script>', '<script>'+(OUT/script).read_text(encoding='utf-8')+'</script>')
         (OUT/'dashboard.html').write_text(html,encoding='utf-8')
+        from eval3_hardened.publish import embed_dashboard
+        embed_dashboard(OUT)
     print('30 cases / 161 phases exported; original 7, corrected 11; strict dimension counts verified.')
 
 if __name__=='__main__':

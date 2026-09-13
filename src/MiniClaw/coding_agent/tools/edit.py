@@ -27,10 +27,7 @@ class EditTool:
     boundary: WorkspaceGuard
 
     name = "edit"
-    description = (
-        "Replace one or more unique text blocks in a workspace file. All edits match the original "
-        "file and must not overlap. Preserves UTF-8 BOM and the file's CRLF/LF style."
-    )
+    description = "按唯一 oldText 替换工作区文件内容；不唯一、重叠或不匹配则整批失败。"
     input_schema = {
         "type": "object",
         "properties": {

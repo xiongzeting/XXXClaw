@@ -5,7 +5,7 @@ from .archive import (
     ArchiveParentHit,
     StableFactIngestor,
 )
-from .config import MemoryConfig, load_memory_config
+from .config import ACTIVE_COMPACTION_POLICY, MemoryConfig, load_memory_config
 from .manager import MemoryManager
 from .retrieval import (
     CrossEncoderReranker,
@@ -20,17 +20,22 @@ from .retrieval import (
     search_memory_documents,
 )
 from .semantic import MemoryConflict, MemoryConflictError
-from .working import CompactionOutcome, WorkingContext, estimate_context_tokens
+from .tools import MemoryTool
+from .working import COMPACTION_FLOW, COMPACTION_PIPELINE, CompactionOutcome, WorkingContext, estimate_context_tokens
 
 __all__ = [
     "ArchiveMemoryHit",
     "ArchiveMemoryIndex",
     "ArchiveMemoryRecord",
     "ArchiveParentHit",
+    "ACTIVE_COMPACTION_POLICY",
+    "COMPACTION_PIPELINE",
+    "COMPACTION_FLOW",
     "CompactionOutcome",
     "CrossEncoderReranker",
     "MemoryConfig",
     "MemoryManager",
+    "MemoryTool",
     "MemoryConflict",
     "MemoryConflictError",
     "MemoryDocument",

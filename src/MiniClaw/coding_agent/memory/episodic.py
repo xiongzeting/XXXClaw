@@ -39,6 +39,7 @@ class EpisodicMemoryStore:
         *,
         summary: str = "",
         status: str = "active",
+        supersedes: str = "",
     ) -> None:
         users = [message.content for message in messages if message.role == "user" and message.content]
         assistants = [message.content for message in messages if message.role == "assistant" and message.content and not is_context_update(message)]
@@ -56,7 +57,8 @@ class EpisodicMemoryStore:
                 started = match.group(1).strip()
         content = (
             f"# Session {_safe_session_id(session_id)}\n\n"
-            f"- Started: {started}\n- Updated: {_now()}\n- Status: {status}\n\n{body.rstrip()}\n"
+            f"- Started: {started}\n- Updated: {_now()}\n- Status: {status}\n"
+            f"- Supersedes: {supersedes}\n\n{body.rstrip()}\n"
         )
         path.write_text(content, encoding="utf-8")
 

@@ -533,6 +533,33 @@ class HybridRetrievalTests(unittest.TestCase):
         latest = next(hit for hit in hits if hit.document.record_id == "deployment_9")
         self.assertEqual(latest.superseded_record_ids, ("deployment_4",))
 
+    def test_expired_high_authority_record_cannot_hide_current_record(self) -> None:
+        documents = [
+            MemoryDocument(
+                "expired-signed",
+                "fact",
+                "database port is 7777",
+                canonical_key="database-port",
+                authority="user_confirmed",
+                revision=9,
+                valid_until="2020-01-01T00:00:00Z",
+            ),
+            MemoryDocument(
+                "current-lab",
+                "fact",
+                "database port is 5432",
+                canonical_key="database-port",
+                authority="inferred",
+                revision=1,
+                valid_from="2020-01-01T00:00:00Z",
+                valid_until="2099-01-01T00:00:00Z",
+            ),
+        ]
+
+        hits = HybridMemoryRetriever().search("database port", documents, 5)
+
+        self.assertEqual([hit.document.record_id for hit in hits], ["current-lab"])
+
     def test_unstructured_documents_are_not_collapsed(self) -> None:
         documents = [
             MemoryDocument("a", "fact", "project runtime is Docker", subject="runtime"),

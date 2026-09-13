@@ -13,6 +13,7 @@ from .env_file import merged_environment, read_env_file
 from .factory import create_model_client, model_profile_from_settings
 from .config import LLMFallbackSettings, LLMSettings, load_llm_settings
 from .openai_compatible import OpenAICompatibleClient, OpenAICompatibleRoute
+from .anthropic import AnthropicClient
 
 __all__ = [
     "AssistantReply",
@@ -33,5 +34,6 @@ __all__ = [
     "TokenUsage",
     "OpenAICompatibleClient",
     "OpenAICompatibleRoute",
+    "AnthropicClient",
     "load_llm_settings",
 ]

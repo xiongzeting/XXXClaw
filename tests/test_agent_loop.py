@@ -53,9 +53,7 @@ class AgentLoopTests(unittest.IsolatedAsyncioTestCase):
                     AssistantReply(content="Created result.txt."),
                 ]
             )
-            tool_executor = ToolExecutor()
-            for tool in create_coding_tools(directory):
-                tool_executor.register(tool)
+            tool_executor = ToolExecutor(tools=create_coding_tools(directory))
             loop = AgentLoop(model_client, ModelProfile("fake"), tool_executor)
 
             events = [event async for event in loop.run("Create the result file")]
@@ -128,7 +126,7 @@ class AgentLoopTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(events[-1].type, "run_finished")
         self.assertEqual(events[-1].details["stop_reason"], "aborted")
 
-    async def test_coding_assistant_injects_only_tools_available_to_active_role(self) -> None:
+    async def test_coding_assistant_uses_a_fixed_tool_set_and_optional_startup_filter(self) -> None:
         class ReviewNotesTool:
             name = "review_notes"
             description = "Record review notes"
@@ -148,11 +146,8 @@ class AgentLoopTests(unittest.IsolatedAsyncioTestCase):
                 profile=ModelProfile("fake"),
                 workspace=directory,
                 runtime_settings=RuntimeSettings(backend="host"),
-                role="reviewer",
-                role_tools={"reviewer": [ReviewNotesTool()]},
-                tool_role_policies={
-                    "reviewer": {"allow": ["read", "grep", "search", "review_notes"]}
-                },
+                extra_tools=[ReviewNotesTool()],
+                enabled_tool_names=["read", "grep", "search", "review_notes"],
             )
 
             events = [event async for event in assistant.run("review")]
@@ -160,7 +155,7 @@ class AgentLoopTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(events[-1].type, "run_finished")
             names = [definition["name"] for definition in model.requests[0].tools]
             self.assertEqual(names, ["read", "grep", "search", "review_notes"])
-            self.assertIn("Active role: reviewer", model.requests[0].messages[0].content)
+            self.assertNotIn("Active role:", model.requests[0].messages[0].content)
 
 
 if __name__ == "__main__":

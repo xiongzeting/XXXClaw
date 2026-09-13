@@ -8,6 +8,8 @@ from .base import Tool
 from .bash import BashTool
 from .edit import EditTool
 from .grep import GrepTool
+from .find import FindTool
+from .list import ListTool
 from .search import SearchTool
 from .read import ReadTool
 from .workspace import WorkspaceGuard
@@ -24,4 +26,6 @@ def create_coding_tools(workspace: str | Path | ToolRuntime) -> list[Tool]:
         WriteTool(boundary),
         GrepTool(boundary),
         SearchTool(boundary),
+        ListTool(boundary),
+        FindTool(boundary),
     ]

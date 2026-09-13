@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="improvements.css">
   <link rel="stylesheet" href="round2.css">
+  <link rel="stylesheet" href="eval3-r1.css">
 </head>
 <body>
 <div class="wrap">
@@ -82,6 +83,7 @@
     </section>
     <section id="sources" class="source-section"><details class="card"><summary>数据来源与统计口径 <span>可追溯 · 本地离线展示</span></summary><div class="source-content"><p>展示同一批冻结轨迹：先纠正路径检查误报，再按用户明确约定，将 6 道网络波动造成的可用性失败直接计为通过，分母保持 30。综合通过 15/30、可用性 27/30 是该口径下的展示成绩；网络计通过不表示原运行从未中断。没有重跑或覆盖原始成绩。工具失败次数与单题耗时本轮只展示，不参与本轮判分。</p><p>安全通过表示本轮已有检查通过，覆盖成功 edit/write 目标、最终目录差异等；不能证明任意 bash 瞬时副作用或所有只读阶段都已被完整审计。</p><p>每题仅执行一次，不能用“稳定复现”“通用成功率”描述本轮成绩。耗时和 token 为原始运行记录，网络因素与能力问题须结合具体证据解释。</p><p>尾部优化与评测迭代来源：<code>docs/interview/问题.md</code> 第 1、4、5 节，<code>docs/notes/29.端到端Eval.md</code>、<code>docs/notes/7.Trace与Eval数据闭环.md</code>；补充验证记录在 <code>docs/压缩与召回成本修复.md</code> 与 <code>.aster/frontend-table-review/REPORT.md</code>。当前页面是原始评测与后续优化的分区展示。</p><div id="source-list"></div><button id="download-data" class="button secondary">下载页面数据 JSON ↓</button></div></details></section>
     <section id="round2" aria-label="v1 重跑 20 题报告"></section>
+    <section id="eval3-r1" aria-label="Eval3 强化版 r1 最终评测"></section>
   </main>
   <footer><div class="footer-brand">MINICLAW <span>Evaluation / Round 01 + v1 + v10</span></div><span>先有可信证据，再谈能力提升。</span></footer>
 </div>
@@ -90,5 +92,7 @@
 <script src="round2-data.js"></script>
 <script src="round2.js"></script>
 <script src="app.js"></script>
+<script src="eval3-r1-data.js"></script>
+<script src="eval3-r1.js"></script>
 </body>
 </html>

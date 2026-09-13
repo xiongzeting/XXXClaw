@@ -1,0 +1,8 @@
+{
+  "case": "boundary_v1_atomic_batch_reservation",
+  "method": "deterministic fault injection on submitted code; readonly Docker workspace; writable temp data only",
+  "raw_score_changed": false,
+  "exit_code": 0,
+  "stdout": "{\"before\": {\"stock\": {\"A\": 10}, \"reservations\": []}, \"after_failure\": {\"stock\": {\"A\": 9}, \"reservations\": []}, \"after_retry\": {\"stock\": {\"A\": 8}, \"reservations\": [{\"request_id\": \"request-1\", \"lines\": [{\"sku\": \"A\", \"qty\": 1}]}]}, \"expected_stock_after_one_successful_request\": 9, \"observed_double_deduction\": true}\n",
+  "stderr": ""
+}

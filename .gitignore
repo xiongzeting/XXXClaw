@@ -15,3 +15,12 @@ external/benchmarks/.downloads/
 
 # Local agent workspaces and generated reports
 agent-*/
+
+# Local temporary test runs and generated experiment copies
+.tmp-tests/
+tmp/
+output/
+experiments/
+frontend/architecture/temp/
+.tmp-openclaw-*
+docs/temp/

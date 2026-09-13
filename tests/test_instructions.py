@@ -17,7 +17,7 @@ from MiniClaw.llm.types import (
     ToolInvocation,
 )
 from MiniClaw.coding_agent.runtime import RuntimeSettings
-from MiniClaw.trace.store import read_trace_records
+from MiniClaw.evaluation.trace.store import read_trace_records
 
 
 class ScriptedModelClient:

@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from .base import ToolResult
-from .truncate import DEFAULT_MAX_BYTES, DEFAULT_MAX_LINES, format_size, truncate_head
+from .truncate import DEFAULT_MAX_BYTES, format_size, truncate_head
 from .workspace import WorkspaceGuard
 
 
@@ -16,17 +16,16 @@ from .workspace import WorkspaceGuard
 class ReadTool:
     boundary: WorkspaceGuard
 
+    model_output_max_bytes = DEFAULT_MAX_BYTES
+
     name = "read"
-    description = (
-        "Read a workspace file. Text output keeps the first 2000 lines or 50KB, whichever "
-        "comes first. Use offset and limit to continue through large files."
-    )
+    description = "读取工作区文件；大文件用 offset 和 limit 分段读取。"
     input_schema = {
         "type": "object",
         "properties": {
-            "path": {"type": "string", "description": "Workspace-relative or in-workspace absolute path"},
-            "offset": {"type": "integer", "minimum": 1, "description": "First line, 1-indexed"},
-            "limit": {"type": "integer", "minimum": 1, "description": "Maximum lines to read"},
+            "path": {"type": "string"},
+            "offset": {"type": "integer", "minimum": 1},
+            "limit": {"type": "integer", "minimum": 1},
         },
         "required": ["path"],
         "additionalProperties": False,
@@ -58,14 +57,18 @@ class ReadTool:
         limit = arguments.get("limit")
         selected_lines = all_lines[start:] if limit is None else all_lines[start : start + int(limit)]
         selected = "\n".join(selected_lines)
-        truncation = truncate_head(selected)
+        truncation = truncate_head(
+            selected,
+            max_lines=2_000,
+            max_bytes=self.model_output_max_bytes,
+        )
         start_display = start + 1
         details: dict[str, Any] = {"path": str(path), "file_sha256": hashlib.sha256(raw).hexdigest()}
 
         if truncation.first_line_exceeds_limit:
             size = format_size(len(all_lines[start].encode("utf-8")))
             output = (
-                f"[Line {start_display} is {size}, exceeds {format_size(DEFAULT_MAX_BYTES)} limit. "
+                f"[Line {start_display} is {size}, exceeds {format_size(self.model_output_max_bytes)} limit. "
                 f"Use bash to inspect a bounded byte range of {arguments['path']}.]"
             )
             details["truncation"] = truncation.to_details()
@@ -81,7 +84,7 @@ class ReadTool:
             else:
                 notice = (
                     f"[Showing lines {start_display}-{end_display} of {len(all_lines)} "
-                    f"({format_size(DEFAULT_MAX_BYTES)} limit). Use offset={next_offset} to continue.]"
+                    f"({format_size(self.model_output_max_bytes)} limit). Use offset={next_offset} to continue.]"
                 )
             output = f"{output}\n\n{notice}"
             details["truncation"] = truncation.to_details()

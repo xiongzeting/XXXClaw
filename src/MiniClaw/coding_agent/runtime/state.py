@@ -22,6 +22,17 @@ RunStatus = Literal[
     "paused",
 ]
 _TERMINAL = {"completed", "failed", "cancelled", "interrupted", "paused"}
+_ALLOWED_TRANSITIONS: dict[str, set[str]] = {
+    "running": {"running", "waiting_model", "executing_tool", "finalizing", "completed", "failed", "cancelled", "paused", "interrupted"},
+    "waiting_model": {"waiting_model", "executing_tool", "finalizing", "completed", "failed", "cancelled", "paused", "interrupted"},
+    "executing_tool": {"executing_tool", "waiting_model", "finalizing", "completed", "failed", "cancelled", "paused", "interrupted"},
+    "finalizing": {"finalizing", "completed", "failed", "cancelled", "paused"},
+    "completed": {"completed"},
+    "failed": {"failed"},
+    "cancelled": {"cancelled"},
+    "interrupted": {"interrupted"},
+    "paused": {"paused"},
+}
 
 
 @dataclass(slots=True)
@@ -94,7 +105,10 @@ class RunStateStore:
         if not self.path.exists():
             return None
         try:
-            return RunState.from_dict(json.loads(self.path.read_text(encoding="utf-8")))
+            state = RunState.from_dict(json.loads(self.path.read_text(encoding="utf-8")))
+            if state.session_id != self.session_id:
+                return None
+            return state
         except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError):
             return None
 
@@ -141,33 +155,67 @@ class RunStateStore:
             state = self.read()
             if state is None:
                 raise RuntimeError("run state has not been started")
-            state.status = status
-            state.updated_at = _now()
-            for name, value in changes.items():
-                if not hasattr(state, name):
-                    raise ValueError(f"unknown run state field: {name}")
-                setattr(state, name, value)
-            self._persist(state)
-            return state
+            return self._transition_locked(state, status, changes)
 
     def tool_started(self, call_id: str, name: str) -> RunState:
-        return self.transition(
-            "executing_tool",
-            active_tool_call_id=call_id,
-            active_tool_name=name,
-        )
+        with MemoryFileLock(self.path):
+            state = self.read()
+            if state is None:
+                raise RuntimeError("run state has not been started")
+            if state.active_tool_call_id not in (None, call_id):
+                raise ValueError(
+                    "another tool call is already active: " + str(state.active_tool_call_id)
+                )
+            return self._transition_locked(
+                state,
+                "executing_tool",
+                {
+                    "active_tool_call_id": call_id,
+                    "active_tool_name": name,
+                },
+            )
 
     def tool_finished(self, call_id: str) -> RunState:
-        state = self.read()
-        completed = list(state.completed_tool_call_ids if state else ())
-        if call_id not in completed:
-            completed.append(call_id)
-        return self.transition(
-            "waiting_model",
-            active_tool_call_id=None,
-            active_tool_name=None,
-            completed_tool_call_ids=completed,
-        )
+        with MemoryFileLock(self.path):
+            state = self.read()
+            if state is None:
+                raise RuntimeError("run state has not been started")
+            if state.active_tool_call_id not in (None, call_id):
+                raise ValueError(
+                    f"tool call does not match active call: {call_id}"
+                )
+            completed = list(state.completed_tool_call_ids)
+            if call_id not in completed:
+                completed.append(call_id)
+            return self._transition_locked(
+                state,
+                "waiting_model",
+                {
+                    "active_tool_call_id": None,
+                    "active_tool_name": None,
+                    "completed_tool_call_ids": completed,
+                },
+            )
+
+    def _transition_locked(
+        self,
+        state: RunState,
+        status: RunStatus,
+        changes: dict[str, Any],
+    ) -> RunState:
+        allowed = _ALLOWED_TRANSITIONS.get(state.status, set())
+        if status not in allowed:
+            raise ValueError(
+                f"invalid run state transition: {state.status} -> {status}"
+            )
+        state.status = status
+        state.updated_at = _now()
+        for name, value in changes.items():
+            if not hasattr(state, name):
+                raise ValueError(f"unknown run state field: {name}")
+            setattr(state, name, value)
+        self._persist(state)
+        return state
 
     def _write(self, state: RunState) -> None:
         with MemoryFileLock(self.path):

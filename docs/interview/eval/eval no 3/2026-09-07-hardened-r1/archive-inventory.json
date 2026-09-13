@@ -1,0 +1,62 @@
+[
+  {
+    "path": "assistant-judged-report.json",
+    "bytes": 500024,
+    "sha256": "5c605950d12287c0deeb3d771b7e4cb980e3bee8086eae5b31a834f8c02f98e4"
+  },
+  {
+    "path": "assistant_judgments.json",
+    "bytes": 10101,
+    "sha256": "53cff9a5d0c8ac53fc84daa4bc8e7e44d38dd5f73b753ed371c572595cd26bea"
+  },
+  {
+    "path": "evidence-manifest.json",
+    "bytes": 439214,
+    "sha256": "0320db2a1d083619eb88bc18acd7888847ab309dede83f73f61004b2050a10a0"
+  },
+  {
+    "path": "evidence.zip",
+    "bytes": 10662570,
+    "sha256": "ab8c119ff144fd9fbb97ae9f15d30c44abd2f28f5a721fcb9e14449e77e2fb1c"
+  },
+  {
+    "path": "freeze.json",
+    "bytes": 37720,
+    "sha256": "52ba15ce2abbedd0420952f97c20650ffedda2fe4a29d8d130d292e04a1a602c"
+  },
+  {
+    "path": "program-corrections.json",
+    "bytes": 296400,
+    "sha256": "592f7f5ed966b8ba0dc14871819dd019a49f757b3681a73fa09ef621298bead0"
+  },
+  {
+    "path": "program-observations.json",
+    "bytes": 401931,
+    "sha256": "463645cb0b5db6d041cb2fb3a10309bcbeacbe6778a6d5cd197ddceb9b3c9d1e"
+  },
+  {
+    "path": "program-reviewed.json",
+    "bytes": 462074,
+    "sha256": "55062df4c45f1db12168ddbd5964d49065cda11367e4b0ca81b6122efa112444"
+  },
+  {
+    "path": "report.json",
+    "bytes": 1488603,
+    "sha256": "b426f70f6d077850a10b322a4bc1c04486c4498d483846c82550a72e6fed4c36"
+  },
+  {
+    "path": "run-status.json",
+    "bytes": 132,
+    "sha256": "bdce56159cb82501e49f5b11f24e1d991269bdf2c595a2f37d77ae16634adde0"
+  },
+  {
+    "path": "transport-recovery-audit.json",
+    "bytes": 2602,
+    "sha256": "6b67b28403e727f8f074ec1675501ae5e6b3aff6a782acd0f833efcdfcb8a3e6"
+  },
+  {
+    "path": "最终评测报告.md",
+    "bytes": 18626,
+    "sha256": "9f8312bc82223740f8cd15451955d0ba866f5f03ddf52dc23c344b8f300c6013"
+  }
+]

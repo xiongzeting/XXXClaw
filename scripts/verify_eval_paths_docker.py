@@ -13,7 +13,7 @@ from MiniClaw.coding_agent.assistant.coding import CodingAssistant
 from MiniClaw.coding_agent.runtime import RuntimeSettings
 from MiniClaw.evaluation.path_audit import audit_write_paths
 from MiniClaw.llm.types import AssistantReply, ModelEvent, ModelProfile, ToolInvocation
-from MiniClaw.trace.store import read_trace_records
+from MiniClaw.evaluation.trace.store import read_trace_records
 
 
 class FixedClient:

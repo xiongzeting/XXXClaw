@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import math
 from dataclasses import dataclass
 from typing import Literal, Mapping
 
@@ -27,6 +28,48 @@ class RuntimeSettings:
     default_command_timeout_seconds: float = 120.0
     max_command_timeout_seconds: float = 900.0
     max_capture_bytes: int = 10 * 1024 * 1024
+
+    def __post_init__(self) -> None:
+        self.validate()
+
+    def validate(self) -> None:
+        """Validate both environment-loaded and directly constructed settings."""
+
+        if self.backend not in {"host", "docker"}:
+            raise ValueError("backend must be host or docker")
+        if self.workspace_mode not in {"direct", "snapshot"}:
+            raise ValueError("workspace_mode must be direct or snapshot")
+        if self.docker_network not in {"none", "bridge"}:
+            raise ValueError("docker_network must be none or bridge")
+        if not isinstance(self.docker_image, str) or not self.docker_image.strip():
+            raise ValueError("docker_image must be non-empty")
+        positive_ints = {
+            "docker_memory_mb": self.docker_memory_mb,
+            "docker_pids_limit": self.docker_pids_limit,
+            "docker_tmpfs_mb": self.docker_tmpfs_mb,
+            "snapshot_max_bytes": self.snapshot_max_bytes,
+            "snapshot_max_files": self.snapshot_max_files,
+            "max_capture_bytes": self.max_capture_bytes,
+        }
+        for name, value in positive_ints.items():
+            if isinstance(value, bool) or int(value) <= 0:
+                raise ValueError(f"{name} must be a positive integer")
+        if not math.isfinite(float(self.docker_cpus)) or self.docker_cpus <= 0:
+            raise ValueError("docker_cpus must be a positive finite number")
+        for name, value in {
+            "default_command_timeout_seconds": self.default_command_timeout_seconds,
+            "max_command_timeout_seconds": self.max_command_timeout_seconds,
+        }.items():
+            if not math.isfinite(float(value)) or float(value) <= 0:
+                raise ValueError(f"{name} must be a positive finite number")
+        if self.default_command_timeout_seconds > self.max_command_timeout_seconds:
+            raise ValueError("default command timeout cannot exceed the maximum timeout")
+        if self.docker_memory_mb < 64:
+            raise ValueError("docker_memory_mb must be at least 64")
+        if self.docker_pids_limit < 16:
+            raise ValueError("docker_pids_limit must be at least 16")
+        if self.docker_tmpfs_mb < 16:
+            raise ValueError("docker_tmpfs_mb must be at least 16")
 
     @property
     def sandbox(self) -> str:

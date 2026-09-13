@@ -25,7 +25,6 @@ miniclaw-feishu = "MiniClaw.platforms.feishu.cli:main"
 miniclaw-trace = "MiniClaw.trace.cli:main"
 miniclaw-runtime-smoke = "MiniClaw.coding_agent.runtime.smoke:main"
 miniclaw-eval = "MiniClaw.evaluation.cli:main"
-miniclaw-eval-splits = "MiniClaw.evaluation.splits:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -20,6 +20,11 @@ from .truncate import DEFAULT_MAX_BYTES, format_size, truncate_tail
 from .workspace import WorkspaceGuard
 
 
+# Bound successful command output; error text remains the tool's original
+# diagnostic so the model can correct the actual failure.
+MODEL_OUTPUT_MAX_BYTES = DEFAULT_MAX_BYTES
+
+
 BashExecution = CommandExecution
 BashOperations = CommandExecutor
 LocalBashOperations = HostCommandExecutor
@@ -32,9 +37,7 @@ class BashTool:
 
     name = "bash"
     _description = (
-        "Run a shell command in the workspace. stdout and stderr are merged; the last 2000 lines "
-        "or 50KB are returned. timeout is measured in seconds and cannot exceed 900. "
-        "Return normal command output and errors; no special verification JSON is required."
+        "在工作区执行命令并返回受限输出。"
     )
 
     @property
@@ -44,13 +47,10 @@ class BashTool:
             environment = "Executes POSIX sh in the Linux container. "
         elif os.name == "nt":
             environment = (
-                "Windows host: executes cmd.exe, NOT Bash or PowerShell. Do not use pwd, ls -la, "
-                "/dev/null or semicolon-separated cmd commands. For PowerShell work, write a "
-                ".ps1 file and wait for write success before executing it with the "
-                "detected pwsh.exe -File. "
+                "Windows 主机使用 cmd.exe，NOT Bash or PowerShell；复杂命令先读取项目内相关说明。"
             )
         else:
-            environment = "Executes /bin/sh on the host. "
+            environment = "主机使用 /bin/sh。"
         return environment + self._description
     input_schema = {
         "type": "object",
@@ -60,7 +60,7 @@ class BashTool:
                 "type": "number",
                 "minimum": 0.001,
                 "maximum": 900,
-                "description": "Command timeout in seconds (maximum 900).",
+                "description": "命令超时时间，单位为秒，最多 900 秒。",
             },
         },
         "required": ["command"],
@@ -82,7 +82,7 @@ class BashTool:
         stdout = execution.stdout if separated else execution.output
         stderr = execution.stderr if separated else b""
         full_output = execution.output.decode("utf-8", errors="replace")
-        truncation = truncate_tail(full_output)
+        truncation = truncate_tail(full_output, max_bytes=MODEL_OUTPUT_MAX_BYTES)
         details: dict[str, Any] = {
             "exit_code": execution.exit_code,
             "stdout": stdout.decode("utf-8", errors="replace"),
@@ -91,7 +91,10 @@ class BashTool:
             **execution.details,
         }
         output = truncation.content or "(no output)"
-        if truncation.truncated:
+        capture_truncated = bool(execution.details.get("capture_truncated"))
+        if capture_truncated:
+            details["capture_truncated"] = True
+        if truncation.truncated and execution.exit_code == 0:
             output_dir = self.boundary.internal_path(".aster/tool-output")
             await asyncio.to_thread(output_dir.mkdir, parents=True, exist_ok=True)
             output_path = output_dir / f"bash-{uuid.uuid4().hex}.log"
@@ -111,10 +114,16 @@ class BashTool:
             else:
                 notice = (
                     f"[Showing lines {start_line}-{end_line} of {truncation.total_lines} "
-                    f"({format_size(DEFAULT_MAX_BYTES)} limit). Full output: {relative_output}]"
+                    f"({format_size(MODEL_OUTPUT_MAX_BYTES)} limit). Full output: {relative_output}]"
                 )
             output = f"{output}\n\n{notice}"
+        elif capture_truncated:
+            output = (
+                f"{output}\n\n[Runtime kept only the last "
+                f"{format_size(len(execution.output))} of the command output.]"
+            )
         if execution.exit_code != 0:
+            output = full_output or "(no output)"
             output = f"{output}\n\nCommand exited with code {execution.exit_code}"
         return ToolResult(content=output, is_error=execution.exit_code != 0, details=details)
 

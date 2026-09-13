@@ -49,6 +49,10 @@ _EXPLICIT_MEMORY = re.compile(
     r"(?:\s*\[(preference|project|environment|fact)\])?\s*[:：]\s*(.+?)\s*$",
     re.IGNORECASE,
 )
+_EXPLICIT_PREFERENCE = re.compile(
+    r"^\s*(?:我?以后(?:都|一定)|从今以后|以后请|from\s+now\s+on)\s*(.+?)\s*$",
+    re.IGNORECASE,
+)
 
 
 def _now() -> str:
@@ -80,6 +84,8 @@ class ArchiveMemoryHit:
     bm25_rank: int | None
     vector_rank: int | None
     deterministic_score: float
+    exact_score: float = 0.0
+    exact_rank: int | None = None
     cross_encoder_score: float | None = None
     superseded_record_ids: tuple[str, ...] = ()
 
@@ -98,6 +104,8 @@ class ArchiveParentHit:
     bm25_rank: int | None
     vector_rank: int | None
     deterministic_score: float
+    exact_score: float = 0.0
+    exact_rank: int | None = None
     cross_encoder_score: float | None = None
     superseded_record_ids: tuple[str, ...] = ()
 
@@ -107,7 +115,11 @@ class ArchiveParentHit:
 
 
 class ArchiveMemoryIndex:
-    """Persistent hybrid index over compressed transcript and tool artifacts."""
+    """Legacy recovery index retained for old data, not active memory recall.
+
+    New compactions do not write this index. It remains readable only for
+    compatibility with previously generated sessions.
+    """
 
     def __init__(
         self,
@@ -135,10 +147,19 @@ class ArchiveMemoryIndex:
         call_blocks: dict[str, str] = {}
         pending_block = ""
         for message_index, message in enumerate(messages):
-            # Memory-tool responses are derived views of this same index.  If
-            # they are indexed again, repeated archive_search calls recursively
+            # Memory-tool responses are derived views of this same index. If
+            # they are indexed again, repeated archive lookups recursively
             # embed prior JSON results and eventually crowd out source evidence.
-            if is_context_update(message) or (message.role == "tool" and message.name == "memory"):
+            if (
+                is_context_update(message)
+                or message.role == "tool" and message.name in {"memory", "skill"}
+                or (
+                    message.role == "assistant"
+                    and message.tool_calls
+                    and not message.content.strip()
+                    and all(call.name in {"memory", "skill"} for call in message.tool_calls)
+                )
+            ):
                 continue
             if message.role == "user":
                 pending_block = ""
@@ -326,6 +347,7 @@ class ArchiveMemoryIndex:
             documents,
             expanded_limit,
             use_cross_encoder=use_cross_encoder,
+            use_vector=False,
         )
         expanded_queries: list[str] = []
         if _RECENCY_MEMORY_QUERY.search(query):
@@ -350,6 +372,7 @@ class ArchiveMemoryIndex:
                     documents,
                     expanded_limit,
                     use_cross_encoder=use_cross_encoder,
+                    use_vector=False,
                 ):
                     current = best_by_record.get(hit.document.record_id)
                     if current is None or hit.score > current.score:
@@ -372,6 +395,8 @@ class ArchiveMemoryIndex:
                 vector_score=hit.vector_score,
                 bm25_rank=hit.bm25_rank,
                 vector_rank=hit.vector_rank,
+                exact_score=hit.exact_score,
+                exact_rank=hit.exact_rank,
                 deterministic_score=hit.deterministic_score,
                 cross_encoder_score=hit.cross_encoder_score,
                 superseded_record_ids=hit.superseded_record_ids,
@@ -425,6 +450,11 @@ class ArchiveMemoryIndex:
 
         selected: list[ArchiveParentHit] = []
         selected_keys: set[tuple[str, str, str, int]] = set()
+        grouped_hits: dict[tuple[str, str, str, int], list[ArchiveMemoryHit]] = {}
+        for child in child_hits:
+            grouped_hits.setdefault(self._parent_key(child.record), []).append(child)
+        for values in grouped_hits.values():
+            values.sort(key=lambda child: child.score, reverse=True)
         for hit in child_hits:
             key = self._parent_key(hit.record)
             if key in selected_keys:
@@ -471,12 +501,18 @@ class ArchiveMemoryIndex:
                     parent_id=f"archive_parent_{parent_digest[:20]}",
                     anchor=hit.record,
                     records=expanded,
-                    score=hit.score,
+                    score=(
+                        0.6 * grouped_hits[key][0].score
+                        + 0.3 * (grouped_hits[key][1].score if len(grouped_hits[key]) > 1 else 0.0)
+                        + 0.1 * min(1.0, len(grouped_hits[key]) / 3.0)
+                    ),
                     rrf_score=hit.rrf_score,
                     bm25_score=hit.bm25_score,
                     vector_score=hit.vector_score,
                     bm25_rank=hit.bm25_rank,
                     vector_rank=hit.vector_rank,
+                    exact_score=hit.exact_score,
+                    exact_rank=hit.exact_rank,
                     deterministic_score=hit.deterministic_score,
                     cross_encoder_score=hit.cross_encoder_score,
                     superseded_record_ids=hit.superseded_record_ids,
@@ -649,10 +685,11 @@ class StableFactIngestor:
                 continue
             for line in message.content.splitlines():
                 match = _EXPLICIT_MEMORY.match(line)
-                if not match:
+                preference_match = _EXPLICIT_PREFERENCE.match(line) if not match else None
+                if not match and not preference_match:
                     continue
-                category = (match.group(1) or "fact").casefold()
-                content = match.group(2).strip()
+                category = (match.group(1) if match else "preference") or "fact"
+                content = (match.group(2) if match else preference_match.group(1)).strip()
                 if historical_state_claim(content):
                     stats['rejected'] += 1
                     continue

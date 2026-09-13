@@ -42,11 +42,15 @@ _MEASUREMENT_RE = re.compile(
     re.IGNORECASE,
 )
 _NUMERIC_RESULT_RE = re.compile(r"(?:\b\d+\s*/\s*\d+\b|\b\d+(?:\.\d+)?\s*%|\b\d+(?:\.\d+)?\s*(?:ms|s|秒|毫秒)\b)", re.IGNORECASE)
+_DERIVED_TOOL_NAMES = frozenset({"memory", "skill"})
 
 
 @dataclass(slots=True, frozen=True)
 class MemoryConsolidationConfig:
     enabled: bool = False
+    # Zero keeps maintenance disabled; production deployments can set a
+    # message watermark to run model-driven memory GC during long sessions.
+    gc_interval_messages: int = 100
     max_input_chars: int = 24_000
     max_facts: int = 6
     min_fact_confidence: float = 0.90
@@ -106,6 +110,9 @@ def load_consolidation_config(
     env = os.environ if environment is None else environment
     return MemoryConsolidationConfig(
         enabled=_boolean(env, "MINICLAW_MEMORY_CONSOLIDATION_ENABLED", False),
+        gc_interval_messages=_integer(
+            env, "MINICLAW_MEMORY_GC_INTERVAL_MESSAGES", 100, 0, 100_000
+        ),
         max_input_chars=_integer(
             env, "MINICLAW_MEMORY_CONSOLIDATION_MAX_INPUT_CHARS", 24_000, 4_000, 100_000
         ),
@@ -157,7 +164,11 @@ def deterministic_episode_summary(
     files: list[str] = []
     evidence: list[str] = []
     for message in messages:
+        if message.role == "tool" and message.name in _DERIVED_TOOL_NAMES:
+            continue
         for call in message.tool_calls:
+            if call.name in _DERIVED_TOOL_NAMES:
+                continue
             arguments = json.dumps(call.arguments, ensure_ascii=False, separators=(",", ":"))
             calls.append(f"- {call.name}: {_compact(arguments, 500)}")
             files.extend(_PATH_RE.findall(arguments))
@@ -207,11 +218,13 @@ class MemoryConsolidator:
         messages: list[ChatMessage],
         *,
         status: str,
+        maintenance: bool = False,
+        allow_semantic_facts: bool = False,
         cancellation_token: CancellationToken | None = None,
     ) -> ConsolidationResult:
         deterministic = deterministic_episode_summary(messages, status=status)
         result = ConsolidationResult(summary=deterministic)
-        if not self.config.enabled or status != "completed":
+        if not self.config.enabled or (status != "completed" and not maintenance):
             return result
         transcript = self._transcript(messages)
         try:
@@ -230,7 +243,11 @@ class MemoryConsolidator:
         factual_sources = [m.content for m in messages if (
             m.role == "user" or m.role == "tool" and m.name not in {"memory", "skill", "goal", "goal_complete"}
         ) and "miniclaw-managed-memory:" not in m.content and "<retrieved_memory>" not in m.content]
-        for value in list(payload.get("facts") or [])[: self.config.max_facts]:
+        # Semantic memory is user-owned durable preference/fact memory. Model
+        # extraction from ordinary tool output is disabled unless the user
+        # explicitly asked to remember something in this delta.
+        fact_values = list(payload.get("facts") or []) if allow_semantic_facts else []
+        for value in fact_values[: self.config.max_facts]:
             if not isinstance(value, dict):
                 result.facts_rejected += 1
                 continue
@@ -350,7 +367,49 @@ class MemoryConsolidator:
             )
             if stored is not None:
                 result.procedure_candidates += 1
+        if maintenance:
+            # GC actions are deliberately revision-protected and confidence
+            # gated. A stale model response therefore becomes a harmless
+            # rejected action instead of deleting a newer user decision.
+            updated = deleted = rejected_actions = 0
+            for value in list(payload.get("updates") or [])[: self.config.max_facts]:
+                if not isinstance(value, dict):
+                    rejected_actions += 1
+                    continue
+                try:
+                    confidence = float(value.get("confidence", 0.0))
+                    expected = int(value["expectedRevision"])
+                    record_id = str(value["recordId"])
+                    category = str(value["category"])
+                    content = str(value["content"])
+                    if confidence < 0.95:
+                        raise ValueError("low confidence")
+                    self.semantic.update_record(record_id, expected, content, category)
+                    updated += 1
+                except (KeyError, TypeError, ValueError):
+                    rejected_actions += 1
+            for value in list(payload.get("deletions") or [])[: self.config.max_facts]:
+                if not isinstance(value, dict):
+                    rejected_actions += 1
+                    continue
+                try:
+                    confidence = float(value.get("confidence", 0.0))
+                    expected = int(value["expectedRevision"])
+                    record_id = str(value["recordId"])
+                    category = str(value["category"])
+                    if confidence < 0.95:
+                        raise ValueError("low confidence")
+                    self.semantic.forget(category, record_id=record_id, expected_revision=expected)
+                    deleted += 1
+                except (KeyError, TypeError, ValueError):
+                    rejected_actions += 1
+            result.details.update({
+                "gc_updated": updated,
+                "gc_deleted": deleted,
+                "gc_rejected": rejected_actions,
+            })
         result.details = {
+            **result.details,
             "facts_returned": len(payload.get("facts") or []),
             "procedures_returned": len(payload.get("procedures") or []),
         }
@@ -359,12 +418,16 @@ class MemoryConsolidator:
     def _transcript(self, messages: list[ChatMessage]) -> str:
         rendered: list[str] = []
         for message in messages:
+            if message.role == "tool" and message.name in _DERIVED_TOOL_NAMES:
+                continue
             if message.tool_calls:
                 calls = [
                     {"name": call.name, "arguments": call.arguments}
                     for call in message.tool_calls
+                    if call.name not in _DERIVED_TOOL_NAMES
                 ]
-                rendered.append(f"[{message.role}] tool_calls={json.dumps(calls, ensure_ascii=False)}")
+                if calls:
+                    rendered.append(f"[{message.role}] tool_calls={json.dumps(calls, ensure_ascii=False)}")
             if message.content:
                 limit = 2_500 if message.role == "tool" else 4_000
                 rendered.append(f"[{message.role}:{message.name or ''}] {_compact(message.content, limit)}")
@@ -398,7 +461,8 @@ class MemoryConsolidator:
                         "Assistant assertions and outputs of memory/skill tools are not new factual evidence. "
                         "File existence, game features and task completion belong in dated episode summaries, not stable facts. "
                         "Compare with existing semantic memory and omit paraphrases, translations, and duplicates. "
-                        "A procedure must be reusable, supported by an exact evidence quote, and include at least two steps."
+                        "A procedure must be reusable, supported by an exact evidence quote, and include at least two steps. "
+                        "For maintenance, updates and deletions must include exact recordId, category, expectedRevision, and confidence >= 0.95."
                     ),
                 ),
                 ChatMessage(
@@ -407,7 +471,7 @@ class MemoryConsolidator:
                         "Return this schema: {\"episode_summary\":string,\"facts\":[{\"category\":"
                         "\"preference|project|environment|fact\",\"content\":string,\"evidence\":"
                         "string,\"confidence\":number}],\"procedures\":[{\"title\":string,"
-                        "\"steps\":[string],\"evidence\":string,\"confidence\":number}]}. "
+                        "\"steps\":[string],\"evidence\":string,\"confidence\":number}],\"updates\":[{\"recordId\":string,\"category\":string,\"expectedRevision\":number,\"content\":string,\"confidence\":number}],\"deletions\":[{\"recordId\":string,\"category\":string,\"expectedRevision\":number,\"confidence\":number}]}. "
                         "The evidence value must be an exact quote from the transcript.\n\n"
                         f"<existing_semantic_memory>\n{self.semantic.read()}\n</existing_semantic_memory>\n\n"
                         f"<transcript>\n{transcript}\n</transcript>"

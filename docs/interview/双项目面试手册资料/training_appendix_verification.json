@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "original_30_chapters_preserved": true,
+  "added_chapter": 31,
+  "added_subsections": 9,
+  "duplicate_csv_hash_matches": true,
+  "all_local_links_exist": true,
+  "document_sha256": "c386d0ebae09ab9b44fd7af2247cacba154e091cf3c0e72dc55e4678ea93f477",
+  "scope": "Appendix sources, numeric aggregation, links and formatting. Existing illustrative examples unchanged; not rerun."
+}

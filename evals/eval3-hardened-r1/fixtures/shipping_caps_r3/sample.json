@@ -1,0 +1,10 @@
+{
+  "packages": [
+    {
+      "id": "a",
+      "weight_g": 1001,
+      "zone": "local",
+      "fragile": false
+    }
+  ]
+}

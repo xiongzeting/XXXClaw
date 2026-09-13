@@ -91,5 +91,9 @@ def format_artifact_reference(artifact: ContextArtifact, include_preview: bool =
         f"SHA-256: {artifact.sha256}",
     ]
     if include_preview:
-        lines.extend(["", "Preview:", artifact.preview])
+        lines.extend([
+            "",
+            "Summary (not the full result; use read on Full result for exact content):",
+            artifact.preview,
+        ])
     return "\n".join(lines)

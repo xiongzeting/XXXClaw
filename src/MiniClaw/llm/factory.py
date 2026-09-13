@@ -1,11 +1,23 @@
 from __future__ import annotations
 
 from .config import LLMSettings
+from .client import ModelClient
 from .openai_compatible import OpenAICompatibleClient, OpenAICompatibleRoute
+from .anthropic import AnthropicClient
 from .types import ModelProfile
 
 
-def create_model_client(settings: LLMSettings) -> OpenAICompatibleClient:
+def create_model_client(settings: LLMSettings) -> ModelClient:
+    if settings.provider == "anthropic":
+        return AnthropicClient(
+            api_key=settings.api_key,
+            base_url=settings.base_url,
+            model_id=settings.model_id,
+            timeout_seconds=settings.timeout_seconds,
+            max_retries=settings.max_retries,
+            retry_base_seconds=settings.retry_base_seconds,
+            retry_max_seconds=settings.retry_max_seconds,
+        )
     return OpenAICompatibleClient(
         api_key=settings.api_key,
         base_url=settings.base_url,

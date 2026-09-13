@@ -16,7 +16,7 @@ class WriteTool:
     boundary: WorkspaceGuard
 
     name = "write"
-    description = "Write UTF-8 content to a workspace file, creating parent directories and replacing existing content."
+    description = "写入或覆盖工作区内的 UTF-8 文件，必要时创建父目录。"
     input_schema = {
         "type": "object",
         "properties": {

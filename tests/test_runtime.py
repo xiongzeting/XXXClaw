@@ -204,9 +204,7 @@ class WorkspaceRuntimeTests(unittest.IsolatedAsyncioTestCase):
                 "factory",
                 RuntimeSettings(backend="host", default_command_timeout_seconds=5),
             )
-            executor = ToolExecutor()
-            for tool in create_coding_tools(runtime):
-                executor.register(tool)
+            executor = ToolExecutor(tools=create_coding_tools(runtime))
             result = await executor.execute(
                 ToolInvocation("bash-1", "bash", {"command": "echo runtime-ok"})
             )
@@ -226,9 +224,7 @@ class WorkspaceRuntimeTests(unittest.IsolatedAsyncioTestCase):
                 "grep",
                 RuntimeSettings(backend="host"),
             )
-            executor = ToolExecutor()
-            for tool in create_coding_tools(runtime):
-                executor.register(tool)
+            executor = ToolExecutor(tools=create_coding_tools(runtime))
             result = await executor.execute(
                 ToolInvocation("grep-1", "grep", {"pattern": "needle"})
             )

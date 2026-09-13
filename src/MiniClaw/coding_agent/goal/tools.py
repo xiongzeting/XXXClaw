@@ -18,10 +18,7 @@ class GoalTool:
     store: GoalStore
 
     name = "goal"
-    description = (
-        "Inspect or update the persisted long-running goal. Use checkpoint for material progress, "
-        "waiting_for_user only when a user decision is unavoidable, and failed only for a genuine terminal failure."
-    )
+    description = "查看或更新用户明确要求的长期任务状态。"
     input_schema = {
         "type": "object",
         "properties": {
@@ -73,11 +70,27 @@ class GoalCompleteTool:
     judge: GoalJudge | None = None
 
     name = "goal_complete"
-    description = "Submit the final answer for the active goal and stop execution. Saved for later review; this does not certify correctness."
+    description = "提交长期任务最终回答并结束；提交不等于正确性验收。"
     input_schema = {'type':'object','properties':{'final_result':{'type':'string'}},
                     'required':['final_result'],'additionalProperties':False}
 
     async def execute(self, arguments, cancellation_token=None):
+        if self.store.read() is None:
+            return ToolResult(
+                content="No active Goal exists. The completion was not submitted.",
+                is_error=True,
+                details={
+                    "goal_status": "none",
+                    "error": {
+                        "code": "GOAL_NOT_ACTIVE",
+                        "stage": "execution",
+                        "message": "no active Goal exists",
+                        "retryable": False,
+                        "not_started": True,
+                        "uncertain_side_effect": False,
+                    },
+                },
+            )
         state = self.store.submit_completion(arguments['final_result'])
         return ToolResult(content='Final answer submitted for later review: ' + state.final_result,
                           details={'status':state.status,'judge_status':'pending','completion_basis':'model_submission'})

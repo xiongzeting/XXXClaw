@@ -26,7 +26,7 @@ from MiniClaw.llm.config import load_llm_settings
 from MiniClaw.llm.factory import create_model_client, model_profile_from_settings
 from MiniClaw.llm.types import ChatMessage, ModelProfile, ModelRequest
 from MiniClaw.llm.recovery import is_network_error
-from MiniClaw.trace.store import read_trace_records, usage_dict
+from MiniClaw.evaluation.trace.store import read_trace_records, usage_dict
 
 from .models import EVAL_DIMENSIONS, EvalCase, EvalCheck, EvalSuite
 from .recovery import recovered_run_ids, with_network_recovery
@@ -44,10 +44,12 @@ ADDITIVE_METRICS = OBSERVATION_FIELDS + tuple('verification_' + kind + '_feedbac
     "memory_tokens", "compaction_tokens",
     "tool_calls", "tool_errors", "tool_cancelled", "tool_blocked",
     "approval_requests", "approval_allowed", "approval_denied", "approval_timed_out",
-    "memory_retrievals", "memory_injected_items", "memory_consolidations",
+    "memory_retrievals", "memory_injected_items", "semantic_context_injections", "memory_consolidations",
     "memory_facts_written", "memory_conflicts", "instruction_injections",
     "instruction_sources", "goal_completed_runs", "compaction_attempts", "compactions",
     "compaction_failures", "compaction_aborted", "compaction_deferred", "tokens_saved_by_compaction",
+    "phase_handoff_compactions", "soft_compactions", "hard_compactions",
+    "phase_handoff_tokens_saved", "soft_compaction_tokens_saved", "hard_compaction_tokens_saved",
     "input_tokens", "output_tokens", "cached_tokens", "total_tokens", "duration_ms",
     "judge_requests", "judge_input_tokens", "judge_output_tokens", "judge_total_tokens",
     "judge_duration_ms",
@@ -249,6 +251,10 @@ async def _run_case_attempt(
     env.setdefault("MINICLAW_APPROVAL_POLICY", "allow")
     env.setdefault("MINICLAW_GOAL_JUDGE_ENABLED", "false")
     phases: dict[str, dict[str, Any]] = {}
+    # Shared-session cases must keep one CodingAssistant alive across phases.
+    # Reconstructing it per phase reloads the transcript and rebuilds the
+    # request prefix, which defeats provider prompt caching.
+    assistant_cache: dict[str, CodingAssistant] = {}
     case_started_at = _utc_now()
     case_started = time.perf_counter()
     case_error = ""
@@ -265,6 +271,7 @@ async def _run_case_attempt(
                     env,
                     provider,
                     model_id,
+                    assistant_cache=assistant_cache,
                 )
     except Exception as exc:
         case_error = f"{type(exc).__name__}: {exc}"
@@ -364,6 +371,7 @@ async def _run_phase(
     environment: Mapping[str, str],
     provider: str | None,
     model_id: str | None,
+    assistant_cache: dict[str, CodingAssistant] | None = None,
 ) -> dict[str, Any]:
     settings = load_llm_settings(provider=provider, model_id=model_id, environment=environment)
     session_key = "shared" if case.session_mode == "shared" else phase_id
@@ -389,7 +397,20 @@ async def _run_phase(
             if approval_response == "timeout":
                 return False
             return approval_response == "approve"
-    assistant = CodingAssistant(
+    # Fault-injection/approval phases need their own transport or handler;
+    # ordinary shared phases reuse the assistant and its append-only loop.
+    phase_has_isolation_control = bool(
+        injected_statuses or injected_disconnects or mock_success_text is not None
+        or approval_response is not None
+    )
+    cache_key = (
+        session_key
+        if case.session_mode == "shared" and assistant_cache is not None and not phase_has_isolation_control
+        else ""
+    )
+    assistant = assistant_cache.get(cache_key) if cache_key else None
+    if assistant is None:
+        assistant = CodingAssistant(
         model_client=model_client,
         profile=model_profile_from_settings(settings),
         workspace=workspace,
@@ -403,11 +424,13 @@ async def _run_phase(
         trace_provider=settings.provider,
         memory_user_scope="eval-user",
         memory_channel_scope=f"eval-{case.id}",
-        tool_role_policies=(
-            {"coding": {"allow": [name.strip() for name in environment["MINICLAW_EVAL_TOOL_ALLOWLIST"].split(",") if name.strip()]}}
+        enabled_tool_names=(
+            [name.strip() for name in environment["MINICLAW_EVAL_TOOL_ALLOWLIST"].split(",") if name.strip()]
             if environment.get("MINICLAW_EVAL_TOOL_ALLOWLIST") else None
         ),
-    )
+        )
+        if cache_key:
+            assistant_cache[cache_key] = assistant
     if bool(control.get("resume_goal")):
         assistant.goal_store.resume()
     if case.goal is not None and phase_index == 0:
@@ -940,6 +963,18 @@ def _aggregate_metrics(trace_records: Mapping[str, list[dict[str, Any]]]) -> dic
                 if isinstance(artifact, dict):
                     metrics["live_tool_artifacts"] += 1
                     metrics["live_tool_artifact_bytes"] += int(artifact.get("byte_size") or 0)
+                else:
+                    # Tool traces serialize the delivered artifact reference
+                    # as the result string rather than copying the internal
+                    # context_artifact detail. Recover the authoritative byte
+                    # size from that stable marker so report metrics match the
+                    # trace and the actual artifact spill.
+                    result_text = data.get("result")
+                    if isinstance(result_text, str) and result_text.startswith("[MiniClaw context artifact]"):
+                        match = re.search(r"UTF-8 bytes:\s*(\d+)", result_text)
+                        metrics["live_tool_artifacts"] += 1
+                        if match:
+                            metrics["live_tool_artifact_bytes"] += int(match.group(1))
             elif event_type == "approval.requested":
                 metrics["approval_requests"] += 1
             elif event_type == "approval.decision":
@@ -950,6 +985,8 @@ def _aggregate_metrics(trace_records: Mapping[str, list[dict[str, Any]]]) -> dic
             elif event_type == "memory.retrieval":
                 metrics["memory_retrievals"] += 1
                 metrics["memory_injected_items"] += int(data.get("injected_count") or 0)
+            elif event_type == "memory.semantic_context":
+                metrics["semantic_context_injections"] += bool(data.get("injected"))
             elif event_type == "memory.consolidation":
                 metrics["memory_consolidations"] += 1
                 metrics["memory_facts_written"] += int(data.get("facts_written") or 0)
@@ -961,9 +998,28 @@ def _aggregate_metrics(trace_records: Mapping[str, list[dict[str, Any]]]) -> dic
                 metrics["compaction_attempts"] += 1
             elif event_type == "compaction.completed":
                 metrics["compactions"] += 1
-                metrics["tokens_saved_by_compaction"] += int(data.get("tokens_saved") or 0)
+                saved = int(data.get("tokens_saved") or 0)
+                metrics["tokens_saved_by_compaction"] += saved
+                reason = str(data.get("reason") or (data.get("details") or {}).get("reason") or "")
+                if reason == "phase_boundary":
+                    metrics["phase_handoff_compactions"] += 1
+                    metrics["phase_handoff_tokens_saved"] += saved
+                elif reason == "soft":
+                    metrics["soft_compactions"] += 1
+                    metrics["soft_compaction_tokens_saved"] += saved
+                elif reason == "hard":
+                    metrics["hard_compactions"] += 1
+                    metrics["hard_compaction_tokens_saved"] += saved
                 details = data.get("details") or {}
-                metrics["archived_tool_artifacts"] += len(details.get("tool_artifacts") or [])
+                # ``tool_artifacts`` in the new hard-compaction details are
+                # recoverable context artifacts, not the deleted old-tool
+                # archive layer.  Keep the legacy metric strictly tied to the
+                # removed archive payload so new runs report zero here.
+                legacy_archive = details.get("archive")
+                if isinstance(legacy_archive, dict):
+                    metrics["archived_tool_artifacts"] += len(
+                        legacy_archive.get("tool_artifacts") or []
+                    )
                 metrics["history_archives"] += bool(details.get("archive"))
                 strategy = str(data.get("strategy") or details.get("strategy") or "")
                 metrics["model_summary_compactions"] += strategy == "model-summary"
@@ -991,6 +1047,12 @@ def _aggregate_metrics(trace_records: Mapping[str, list[dict[str, Any]]]) -> dic
         for process in completed_process:
             metrics["compactions"] += int(process.get("compactions") or 0)
             metrics["tokens_saved_by_compaction"] += int(process.get("tokens_saved_by_compaction") or 0)
+            for key in (
+                "phase_handoff_compactions", "soft_compactions", "hard_compactions",
+                "phase_handoff_tokens_saved", "soft_compaction_tokens_saved",
+                "hard_compaction_tokens_saved",
+            ):
+                metrics[key] += int(process.get(key) or 0)
     metrics["max_goal_attempts"] = goal_attempts
     recovered = recovered_run_ids([record for records in trace_records.values() for record in records])
     metrics["network_recovered_runs"] = len(recovered)

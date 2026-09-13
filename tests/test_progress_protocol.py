@@ -89,10 +89,17 @@ class VersionedProgressTests(unittest.TestCase):
 
 
 class GoalAvailabilityTests(unittest.TestCase):
-    def test_goal_completion_only_available_with_explicit_goal(self):
+    def test_goal_completion_is_state_gated_at_request_boundary(self):
         with tempfile.TemporaryDirectory() as directory:
             assistant = recovery_helpers.RecoveryTests().assistant(None, directory)
-            self.assertNotIn("goal_complete", assistant.tool_executor.available_names())
+            self.assertIn("goal_complete", assistant.tool_executor.available_names())
+            self.assertNotIn(
+                "goal_complete",
+                [item["name"] for item in assistant._request_tools()],
+            )
             assistant.create_goal("deliver", ["verified"])
             assistant._build_system_prompt()
-            self.assertIn("goal_complete", assistant.tool_executor.available_names())
+            self.assertIn(
+                "goal_complete",
+                [item["name"] for item in assistant._request_tools()],
+            )

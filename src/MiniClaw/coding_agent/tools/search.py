@@ -23,15 +23,12 @@ class SearchTool:
     boundary: WorkspaceGuard
 
     name = "search"
-    description = (
-        "List workspace files matching a glob pattern. Protected paths are excluded. "
-        "Use path to select a search root and includeDirectories to include matching directories."
-    )
+    description = "按 glob 查找工作区路径；受保护路径自动排除。"
     input_schema = {
         "type": "object",
         "properties": {
-            "pattern": {"type": "string", "description": "Glob such as **/*.py or src/**"},
-            "path": {"type": "string", "description": "Workspace-relative search root"},
+            "pattern": {"type": "string"},
+            "path": {"type": "string"},
             "includeDirectories": {"type": "boolean"},
             "limit": {"type": "integer", "minimum": 1, "maximum": MAX_SEARCH_LIMIT},
         },

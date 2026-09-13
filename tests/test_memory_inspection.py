@@ -35,6 +35,21 @@ class MemoryInspectionTests(unittest.IsolatedAsyncioTestCase):
         )
         self.tool = self.manager.tools()[0]
 
+    async def test_diagnostics_action_exposes_read_only_pipeline_state(self):
+        result = await self.tool.execute({'action': 'diagnostics'})
+        payload = json.loads(result.content)
+        self.assertIn('retrieval', payload)
+        self.assertIn('render', payload)
+        self.assertEqual(payload['memoryVersion'], 0)
+        payload['render']['rendered_count'] = 999
+        self.assertNotEqual(self.manager.last_render_stats['rendered_count'], 999)
+
+    def test_model_visible_memory_actions_are_minimal(self):
+        self.assertEqual(
+            self.tool.input_schema['properties']['action']['enum'],
+            ['search', 'remember', 'replace', 'forget'],
+        )
+
     async def test_read_filters_category_and_honors_limit(self):
         for category in ('preference', 'project', 'environment', 'fact'):
             self.manager.semantic.remember(category, f'unique_{category}')
@@ -63,6 +78,7 @@ class MemoryInspectionTests(unittest.IsolatedAsyncioTestCase):
             return [item]
 
         self.manager.retrieve = retrieve
+        self.tool.retrieve_provider = retrieve
         first = self.manager.prompt_context('database')
         self.manager.active_messages = [
             ChatMessage(role='tool', name='shell', content='ERROR repeated output ' * 200),
@@ -201,6 +217,30 @@ class MemoryInspectionTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn('conflictNote', result['auxiliary'])
         inspected = json.loads((await self.tool.execute({'action': 'inspect', 'module': 'procedural'})).content)
         self.assertEqual(list(inspected['modules']), ['procedural'])
+
+    async def test_auto_search_reuses_same_run_query_and_reports_progress(self):
+        calls = []
+        item = RetrievedMemoryItem(
+            source='semantic', record_id='auto-1', content='database uses PostgreSQL',
+            fused_score=0.9, metadata={'category': 'project'},
+        )
+
+        def retrieve(query, limit):
+            calls.append((query, limit))
+            return [item]
+
+        self.manager.retrieve = retrieve
+        self.tool.retrieve_provider = retrieve
+        first = json.loads((await self.tool.execute({
+            'action': 'search', 'source': 'auto', 'query': 'database', 'limit': 1,
+        })).content)
+        second = json.loads((await self.tool.execute({
+            'action': 'search', 'source': 'auto', 'query': 'database', 'limit': 1,
+        })).content)
+
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(first[0]['recordId'], 'auto-1')
+        self.assertEqual(second[-1]['_searchMeta']['status'], 'cache_hit')
 
     async def test_preference_write_requires_user_quote_and_preserves_its_meaning(self):
         self.manager.append(ChatMessage(role='assistant', content='I prefer unnecessary clarification.'))

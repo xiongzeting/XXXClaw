@@ -1,0 +1,21 @@
+{
+  "date": "2026-09-07",
+  "sources": [
+    {"url":"https://raw.githubusercontent.com/badlogic/pi-mono/main/README.md","file":"pi-mono-README.md","status":"downloaded","bytes":6789},
+    {"url":"https://arxiv.org/abs/1706.03762","purpose":"Transformer原论文","status":"reference"},
+    {"url":"https://arxiv.org/abs/1707.06347","purpose":"PPO原论文","status":"reference"},
+    {"url":"https://arxiv.org/abs/2203.02155","purpose":"InstructGPT RLHF","status":"reference"},
+    {"url":"https://arxiv.org/abs/2305.18290","purpose":"DPO原论文","status":"reference"},
+    {"url":"https://arxiv.org/abs/2402.03300","purpose":"DeepSeekMath GRPO","status":"reference"},
+    {"url":"https://arxiv.org/abs/2104.09864","purpose":"RoPE","status":"reference"},
+    {"url":"https://arxiv.org/abs/2205.14135","purpose":"FlashAttention","status":"reference"},
+    {"url":"https://arxiv.org/abs/2309.06180","purpose":"PagedAttention vLLM","status":"reference"},
+    {"url":"https://arxiv.org/abs/2106.09685","purpose":"LoRA","status":"reference"},
+    {"url":"https://arxiv.org/abs/2210.03629","purpose":"ReAct","status":"reference"},
+    {"url":"https://arxiv.org/abs/2005.11401","purpose":"RAG","status":"reference"},
+    {"url":"https://huggingface.co/BAAI/bge-m3","purpose":"BGE-M3模型卡","status":"reference"},
+    {"url":"https://verl.readthedocs.io/en/latest/","purpose":"veRL官方文档","status":"reference"},
+    {"url":"https://docs.vllm.ai/en/latest/","purpose":"vLLM官方文档","status":"reference"},
+    {"url":"https://docs.pytorch.org/docs/stable/","purpose":"PyTorch官方文档","status":"reference"}
+  ]
+}

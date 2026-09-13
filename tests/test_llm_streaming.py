@@ -11,8 +11,8 @@ import httpx
 from MiniClaw.llm.cancellation import CancellationToken
 from MiniClaw.llm.openai_compatible import OpenAICompatibleClient, OpenAICompatibleRoute
 from MiniClaw.llm.types import ChatMessage, ModelProfile, ModelRequest
-from MiniClaw.trace.model_client import TracingModelClient, reset_active_run, set_active_run
-from MiniClaw.trace.store import TraceRecorder, read_trace_records
+from MiniClaw.evaluation.trace.model_client import TracingModelClient, reset_active_run, set_active_run
+from MiniClaw.evaluation.trace.store import TraceRecorder, read_trace_records
 
 
 class DelayedStream(httpx.AsyncByteStream):

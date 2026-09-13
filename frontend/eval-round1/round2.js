@@ -11,13 +11,16 @@
   const options=obj=>Object.entries(obj).map(([k,v])=>`<option value="${k}">${esc(v)}</option>`).join('');
   const download=(name,type,content)=>{const u=URL.createObjectURL(new Blob([content],{type})),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};
   const first=document.getElementById('round2');
-  first.insertAdjacentHTML('afterend','<section id="round3" aria-label="新版 20 题 Eval 报告"></section>');
-  data.batches.forEach((batch,index)=>{
+  const batches=data.batches.filter(batch=>batch.version!=='eval3');
+  if(batches.length>1) first.insertAdjacentHTML('afterend','<section id="round3" aria-label="新版 20 题 Eval 报告"></section>');
+  batches.forEach((batch,index)=>{
     const id=index?'round3':'round2', root=document.getElementById(id), rows=batch.cases, t=batch.totals;
+    const displayLabel=batch.label;
+    root.setAttribute('aria-label',displayLabel);
     const $=suffix=>document.getElementById(id+'-'+suffix);
     const heading=(title,note='')=>`<div class="section-heading"><div><h2>${title}</h2><p class="lead">${note}</p></div></div>`;
     root.innerHTML=`<header class="hero"><div class="eyebrow">MINICLAW / 20 TASKS / ${esc(batch.version.toUpperCase())}</div>
-      <div class="hero-grid"><div><h2>${esc(batch.label)}<br>20 题完整复测</h2><p>结果由本助手逐题复核，其他四维由程序评分。<br>原有第一轮 30 题保留；这里展示本次独立重跑。</p></div><div class="hero-score"><div>五维全部通过</div><strong>${batch.passed}<span>/ 20</span></strong><p>${batch.passed*5}% · 每题所有计分维度通过</p></div></div>
+      <div class="hero-grid"><div><h2>${esc(displayLabel)}<br>20 题完整复测</h2><p>结果由本助手逐题复核，其他四维由程序评分。<br>原有第一轮 30 题保留；这里展示已归档批次。</p></div><div class="hero-score"><div>五维全部通过</div><strong>${batch.passed}<span>/ 20</span></strong><p>${batch.passed*5}% · 每题所有计分维度通过</p></div></div>
       <div class="hero-meta"><span><i></i> 20 / 20 已完成</span><span>gpt-5.6-luna</span><span>20 路并行</span><span>Windows + Docker</span><span>已曝光回归 · 每题一次</span></div></header>
       <nav class="round2-nav"><a href="#${id}-dimensions">五维结果</a><a href="#${id}-cost">消耗指标</a><a href="#${id}-cases">逐题结论</a><a href="#${id}-updates">重要改动</a></nav>
       <div class="insight"><span class="insight-icon">i</span><div><strong>判断的是实际交付，不是模型自称“已完成”。</strong><p>${esc(data.judge_method)}。${esc(data.limits)}</p></div></div>
@@ -47,7 +50,8 @@
   const review=data.improvement_review;
   if(review){
     const field=(label,value)=>`<p><strong>${label}：</strong>${esc(value)}</p>`;
-    document.getElementById('round3').insertAdjacentHTML('beforeend',`<div id="effective-changes" class="round2-block">
+    (document.getElementById('round3')||first).insertAdjacentHTML('afterend','<section id="effective-review" aria-label="有效改动复盘"></section>');
+    document.getElementById('effective-review').insertAdjacentHTML('beforeend',`<div id="effective-changes" class="round2-block">
       <div class="section-heading"><div><div class="eyebrow muted">EVIDENCE REVIEW / V1–V9</div><h2>${esc(review.title)}</h2><p class="lead">${esc(review.lead)}</p></div></div>
       <article class="card"><h3>本次组合改动的实测变化</h3><p>结果 16/20 → 18/20；效率 6/20 → 16/20。以下降幅属于两版整体对比。</p><div class="table-scroll"><table class="matrix"><thead><tr><th>指标</th><th>v1 · 20 路</th><th>新版 v10 · 20 路</th><th>下降</th></tr></thead><tbody>${review.metrics.map(m=>`<tr><td>${esc(m.label)}</td><td>${m.label.includes('USD')?m.before.toFixed(6):fmt(m.before)}</td><td>${m.label.includes('USD')?m.after.toFixed(6):fmt(m.after)}</td><td>${m.reduction_percent.toFixed(2)}%</td></tr>`).join('')}</tbody></table></div>${field('多通过的两题',review.result_explanation)}</article>
       <div class="grid two round2-block">${review.items.map(x=>`<article class="card finding" data-effective-rank="${x.rank}"><h3><span class="priority p1">${x.rank}</span>${esc(x.title)}</h3><p class="subtle">${esc(x.version)} · ${esc(x.status)}</p>${field('原来',x.before)}${field('修改',x.change)}${field('为什么',x.why)}${field('效果',x.evidence)}<div class="direction">${field('限制',x.limit)}</div></article>`).join('')}</div>

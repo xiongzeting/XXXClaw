@@ -65,10 +65,10 @@ class SimpleSubmissionTests(unittest.IsolatedAsyncioTestCase):
             events=[e async for e in a.run('请正常回答')]
             self.assertEqual(len(self.client.requests),1)
             defs={x['name']:x for x in a.tool_executor.definitions()}
-            self.assertLessEqual(set(defs),{'write','bash','read','edit','grep','search','memory','goal','goal_complete','skill'})
+            self.assertLessEqual(set(defs),{'write','bash','read','edit','grep','search','ls','find','memory','goal','goal_complete'})
             self.assertEqual(set(defs['bash']['parameters']['properties']),{'command','timeout'})
             self.assertNotIn('task_checkpoint',a.loop.system_prompt)
-            packet=json.loads(next((p/'submissions').glob('*.json')).read_text())
+            packet=json.loads(next((p/'submissions').glob('*.json')).read_text(encoding='utf-8'))
             self.assertEqual(packet['final_answer'],'已经完成。详见 solution.py。')
             self.assertEqual(packet['judge_status'],'pending')
 
@@ -98,9 +98,7 @@ class SimpleSubmissionTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual((Path(d)/'answer.txt').read_text().strip(),'hello')
             self.assertNotIn('verification_plan',r.details)
 
-    async def test_new_tool_registration_rejected(self):
+    async def test_tool_set_is_fixed_after_construction(self):
         with tempfile.TemporaryDirectory() as d:
             a=self.assistant(d,[])
-            class Extra:
-                name='new_tool'
-            with self.assertRaises(ValueError):a.tool_executor.register(Extra())
+            self.assertFalse(hasattr(a.tool_executor, 'register'))

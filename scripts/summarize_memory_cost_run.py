@@ -9,7 +9,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'src'))
 from MiniClaw.llm.types import ChatMessage, ModelProfile, ModelRequest, ToolInvocation
-from MiniClaw.trace.model_client import _input_token_breakdown
+from MiniClaw.evaluation.trace.model_client import _input_token_breakdown
 
 
 def summarize(report_path):

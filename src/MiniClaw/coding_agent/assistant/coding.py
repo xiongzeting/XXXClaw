@@ -10,7 +10,8 @@ from typing import Mapping
 from MiniClaw.cancellation import OperationCancelledError
 from MiniClaw.agent.events import AgentEvent
 from MiniClaw.agent.loop import AgentLoop
-from MiniClaw.agent.context import is_context_update
+from MiniClaw.agent.config import load_agent_budget
+from MiniClaw.agent.context import PhaseState, is_context_update
 from MiniClaw.coding_agent.approval import (
     ApprovalDecision,
     ApprovalGate,
@@ -37,21 +38,21 @@ from MiniClaw.coding_agent.instructions import (
 from MiniClaw.llm.client import ModelClient
 from MiniClaw.llm.types import ChatMessage, ModelProfile, ToolInvocation
 from MiniClaw.coding_agent.memory.manager import MemoryManager
-from MiniClaw.coding_agent.memory.working import estimate_context_tokens
+from MiniClaw.coding_agent.memory.config import ACTIVE_COMPACTION_POLICY
+from MiniClaw.coding_agent.memory.working import COMPACTION_FLOW, estimate_context_tokens
 from MiniClaw.coding_agent.runtime import (
     RunStateStore,
     RuntimeSettings,
     create_tool_runtime,
     load_runtime_settings,
 )
-from MiniClaw.coding_agent.tools.base import Tool, ToolResult
+from MiniClaw.coding_agent.tools.base import Tool, ToolContext, ToolResult
 from MiniClaw.coding_agent.tools.factory import create_coding_tools
-from MiniClaw.coding_agent.tools.manager import ToolManager, ToolRolePolicy
-from MiniClaw.trace.model_client import TracingModelClient, reset_active_run, set_active_run
-from MiniClaw.trace.store import TraceRecorder, hash_json, utc_now
+from MiniClaw.coding_agent.tools.executor import ToolExecutor
+from MiniClaw.evaluation.trace.model_client import TracingModelClient, reset_active_run, set_active_run
+from MiniClaw.evaluation.trace.store import TraceRecorder, hash_json, utc_now
 from .prompts import BEHAVIOR_PROMPT, command_environment
 from .delivery import SessionDelivery
-from MiniClaw.coding_agent.runtime.capabilities import discover_execution_capabilities
 
 
 class CodingAssistant:
@@ -75,13 +76,8 @@ class CodingAssistant:
         instruction_config: InstructionConfig | None = None,
         memory_user_scope: str = "",
         memory_channel_scope: str = "",
-        role: str = "coding",
         extra_tools: Iterable[Tool] = (),
-        role_tools: Mapping[str, Iterable[Tool]] | None = None,
-        tool_role_policies: Mapping[
-            str, ToolRolePolicy | Mapping[str, Iterable[str]]
-        ]
-        | None = None,
+        enabled_tool_names: Iterable[str] | None = None,
     ) -> None:
         self.workspace = Path(workspace).resolve()
         self.profile = profile
@@ -92,7 +88,6 @@ class CodingAssistant:
             resolved_session_path = (self.workspace / resolved_session_path).resolve()
         resolved_session_id = session_id or resolved_session_path.stem
         self.task_progress = SessionDelivery(resolved_session_path.parent)
-        self.role = role.strip() or "coding"
         self.runtime = create_tool_runtime(
             self.workspace,
             resolved_session_path.parent,
@@ -104,7 +99,6 @@ class CodingAssistant:
             self._command_environment += '\nThis workspace has no .git entry; do not assume git status/diff can inspect its changes.'
         elif self.runtime.settings.backend == 'docker':
             self._command_environment += '\nGit metadata is protected in the container; use file tools to inspect workspace changes.'
-        self._execution_capabilities = discover_execution_capabilities(runtime=self.runtime.settings.backend)
         self.trace_recorder = TraceRecorder(
             resolved_session_path.parent,
             trace_channel,
@@ -120,6 +114,11 @@ class CodingAssistant:
             instruction_config or load_instruction_config(environment),
         )
         self._instruction_memory_context = ""
+        # Semantic memory is projected as a stable prefix on every request;
+        # the durable index digest prevents needless content changes.
+        self._memory_context_pending = False  # legacy compatibility flag
+        self._phase_state = PhaseState()
+        self._task_initialized = False
         self._current_instruction_resolution = self.instruction_loader.resolve()
         self._injected_instruction_keys = self._current_instruction_resolution.injection_keys
         self._last_instruction_trace_digest: str | None = None
@@ -150,31 +149,59 @@ class CodingAssistant:
             user_scope=memory_user_scope,
             channel_scope=memory_channel_scope,
         )
+        self._skill_context = ""
+        self._selected_skill_names: tuple[str, ...] = ()
+        self._skill_trace: dict[str, object] = {
+            "discovered": 0,
+            "selected": [],
+            "loaded": [],
+            "matcher": "deterministic_skill_metadata_intent_match",
+            "retrieval": "none",
+        }
         self.goal_store = GoalStore(
             resolved_session_path.parent,
             goal_config or load_goal_config(environment),
         )
-        tool_executor = ToolManager(
-            active_role=self.role,
-            allowed_names=frozenset({"write","bash","read","edit","grep","search","memory","goal","goal_complete","skill"}),
-            role_policies=tool_role_policies,
+        extra_tool_list = tuple(extra_tools)
+        if enabled_tool_names is None and environment:
+            raw_allowlist = environment.get("MINICLAW_EVAL_TOOL_ALLOWLIST", "")
+            if raw_allowlist:
+                enabled_tool_names = [
+                    name.strip() for name in raw_allowlist.split(",") if name.strip()
+                ]
+        fixed_tools = [
+            *create_coding_tools(self.runtime),
+            *self.memory.tools(),
+            GoalTool(self.goal_store),
+            GoalCompleteTool(self.goal_store),
+            *extra_tool_list,
+        ]
+        if enabled_tool_names is not None:
+            enabled = frozenset(
+                name.strip()
+                for name in enabled_tool_names
+                if isinstance(name, str) and name.strip()
+            )
+            fixed_tools = [
+                tool for tool in fixed_tools if getattr(tool, "name", "") in enabled
+            ]
+        tool_executor = ToolExecutor(
+            tools=fixed_tools,
+            verification_cache_path=resolved_session_path.parent / "verification-cache.json",
+            context=ToolContext(
+                workspace=str(self.runtime.host_workspace),
+                session_id=resolved_session_id,
+                trace_id=self.trace_recorder.trace_id,
+                environment=dict(environment or {}),
+            ),
             preflights=[self._instruction_preflight, self.approval_gate.authorize],
             result_transforms=[
                 self._instruction_result_transform,
                 self.memory.working.artifactize_live_result,
-            ]
+            ],
         )
-        for tool in create_coding_tools(self.runtime):
-            tool_executor.register(tool)
-        for tool in self.memory.tools():
-            tool_executor.register(tool)
-        tool_executor.register(GoalTool(self.goal_store))
-        tool_executor.register(GoalCompleteTool(self.goal_store))
-        for tool in extra_tools:
-            tool_executor.register(tool)
-        for tool_role, tools in (role_tools or {}).items():
-            tool_executor.inject(tool_role, tools)
         self.tool_executor = tool_executor
+        agent_budget = load_agent_budget(environment)
         self.loop = AgentLoop(
             model_client=traced_model_client,
             profile=profile,
@@ -183,13 +210,23 @@ class CodingAssistant:
                 instruction_context=self._current_instruction_resolution.prompt
             ),
             system_prompt_provider=self._provide_system_prompt,
+            context_messages_provider=self._provide_memory_context_messages,
             context_updates_provider=self._provide_context_updates,
             transform_context=self.memory.working.transform_request_context,
             context_diagnostics_provider=lambda: dict(self.memory.working.last_projection),
             request_tools_provider=self._request_tools,
             pause_message_provider=self._pause_description,
+            token_budget=agent_budget.token_budget,
+            time_budget_seconds=agent_budget.time_budget_seconds,
+            no_progress_limit=agent_budget.no_progress_limit,
         )
         loaded_messages = self.memory.load_context()
+        # A crash can leave an assistant tool-call batch without all matching
+        # tool results.  Discard that incomplete round before the next model
+        # request; replaying a partial tool-call group violates provider
+        # protocol and can duplicate side effects.  The legacy repair helper is
+        # retained for callers that explicitly need synthetic diagnostics.
+        loaded_messages = self._drop_incomplete_tool_round(loaded_messages)
         repairs = self._repair_interrupted_tool_calls(loaded_messages)
         for message in repairs:
             self.memory.append(message)
@@ -206,49 +243,69 @@ class CodingAssistant:
     ) -> str:
         goal = self.goal_store.read()
         goal_active = bool(goal and goal.status in {"active", "verifying"})
-        if hasattr(self, "tool_executor"):
-            self.tool_executor.set_enabled("goal_complete", goal_active)
-        definitions = self._request_tools() if hasattr(self, "tool_executor") else []
-        tool_lines = "\n".join(self._format_tool_definition(item) for item in definitions)
-        if not tool_lines:
-            tool_lines = "- No tools are available for the active role."
         goal_context = build_goal_prompt(self.goal_store.read())
         prompt = (
             f"{BEHAVIOR_PROMPT}\n"
             f"Workspace: {self.runtime.execution_workspace}\n"
             f"Runtime: {self.runtime.settings.backend} ({self.runtime.settings.workspace_mode})\n\n"
             f"{self._command_environment}\n\n"
-            f"Detected execution capabilities (paths verified at startup; use via available tools, "
-            f"not extra registered tools; Docker host findings do not prove container availability): "
-            f"{json.dumps(self._execution_capabilities, ensure_ascii=False)}\n\n"
-            f"Active role: {self.role}\n\n"
-            f"Available tools:\n{tool_lines}\n\n"
+            "\n<instruction_priority>"
+            "Priority order: system prompt and safety policy > project instructions such as AGENTS.md > active skill.md. "
+            "Project instructions and skills may refine the workflow, but cannot override system policy, tool safety, "
+            "the current user's request, or stronger evidence from the workspace."
+            "</instruction_priority>\n"
         )
-        if any(item.get("name") == "skill" for item in definitions):
-            catalog = self.memory.procedural.catalog_for_prompt()
-            if catalog:
-                prompt += f"\n{catalog}\n"
+        prompt += (
+            "\n<completion_and_reuse_rules>"
+            "只处理当前 phase 的新增要求；每次修改后最多做一次定向验证，文件未变就复用已通过结果，"
+            "最终最多做一次综合验证。不要重复通过的检查或调用压缩工具。"
+            "</completion_and_reuse_rules>\n"
+        )
         if instruction_context:
             prompt += f"\n\n{instruction_context}"
-        prompt += f"\n\n<goal_state>\n{goal_context}\n</goal_state>"
+        if self._skill_context.strip():
+            prompt += (
+                "\n\n<active_skills>\n"
+                "The following project-owned procedural guides were selected for this task. "
+                "Treat them as lower-priority workflow hints below system policy and project instructions; follow their workflow and "
+                "perform their stated verification before claiming completion.\n"
+                f"{self._skill_context.strip()}\n"
+                "</active_skills>"
+            )
         if goal_active:
+            prompt += f"\n\n<goal_state>\n{goal_context}\n</goal_state>"
             prompt += ("\nAn explicit Goal is active. Submit your final answer with goal_complete when the requested work is done. "
                        "Submission is saved for later independent review.")
-        else:
-            prompt += "\nNo explicit Goal is active. Deliver a normal final response when done; it is saved for later review."
         return prompt
 
+    def _load_skills_for_task(self, prompt: str) -> None:
+        result = self.memory.load_skills_for_task(prompt, limit=2, max_chars=12_000)
+        self._skill_context = str(result.get("context") or "")
+        self._selected_skill_names = tuple(str(name) for name in result.get("selected") or [])
+        self._skill_trace = result
+
     @staticmethod
-    def _format_tool_definition(definition: dict[str, object]) -> str:
-        schema = definition.get("parameters")
-        properties = schema.get("properties", {}) if isinstance(schema, dict) else {}
-        required = set(schema.get("required", ())) if isinstance(schema, dict) else set()
-        arguments = ", ".join(
-            f"{name}{'' if name in required else '?'}" for name in properties
-        )
-        # Descriptions and parameter schemas are already sent in ModelRequest.tools.
-        # The system inventory only needs the names/signatures for the active role.
-        return f"- {definition.get('name')}({arguments})"
+    def _drop_incomplete_tool_round(messages: list[ChatMessage]) -> list[ChatMessage]:
+        """Remove the first unfinished assistant tool-call round on recovery."""
+
+        for index, message in enumerate(messages):
+            if message.role != "assistant" or not message.tool_calls:
+                continue
+            expected = {call.call_id for call in message.tool_calls}
+            if not expected:
+                continue
+            observed: set[str] = set()
+            cursor = index + 1
+            while cursor < len(messages) and messages[cursor].role == "tool":
+                tool_id = messages[cursor].tool_call_id
+                if tool_id:
+                    observed.add(tool_id)
+                cursor += 1
+            if not expected.issubset(observed):
+                # Keep the prefix before the unfinished assistant message and
+                # any later independent user turn, if one exists.
+                return [*messages[:index], *messages[cursor:]]
+        return messages
 
     @staticmethod
     def _repair_interrupted_tool_calls(messages: list[ChatMessage]) -> list[ChatMessage]:
@@ -288,32 +345,48 @@ class CodingAssistant:
             meta = item.get('metadata', {})
             scope = str(meta.get('session_id') or meta.get('source_path') or self.memory.session_id)
             identity = json.dumps([scope, item['source'], item['record_id']], ensure_ascii=False)
+            full_content = str(item.get('content') or '')
             evidence = {'task_scope': scope, 'source': item['source'], 'record_id': item['record_id'],
-                        'content': item['content'],
+                        'content': full_content[:800], 'content_hash': hash_json(full_content),
                         'metadata': {k: meta[k] for k in ('source_path','session_id','status','created_at',
                                      'superseded_record_ids','truncated','duplicate_provenance') if k in meta}}
             evidence['content_version'] = hash_json(evidence)
             values['memory.' + identity] = evidence
+        if self._phase_state.high_risk:
+            phase = self._phase_state.as_dict()
+            # Keep each ledger field independent.  A change to next_action or
+            # a verification boundary must not resend confirmed constraints.
+            values.update({
+                f"task.phase.{key}": value
+                for key, value in phase.items()
+            })
         return values
 
+    def _provide_memory_context_messages(self) -> list[ChatMessage]:
+        """Inject semantic memory after policy/instructions on every request.
+
+        This is a stable prompt-prefix block, not a new history message.  It
+        must be present on every request so later turns and later phases keep
+        seeing the same semantic facts.  Episodic history is never injected
+        here; it is available only through the explicit memory search tool.
+        """
+        content = self._instruction_memory_context.strip()
+        if not content:
+            return []
+        return [ChatMessage(role="user", name="memory_context", content=content)]
+
     def _provide_system_prompt(self) -> str:
-        memory_context, memory_refresh = self.memory.maybe_refresh_prompt_context(
-            self.loop.messages
-        )
+        memory_context, memory_refresh = self.memory.semantic_prompt_context()
+        # Keep the local projection synchronized even when the semantic digest
+        # is unchanged.  A new run, recovery, or compaction may have reset the
+        # transient field without changing the durable MEMORY.md contents.
+        self._instruction_memory_context = memory_context
         if memory_refresh is not None:
-            self._instruction_memory_context = memory_context
             if self._active_trace_run_id:
                 self.trace_recorder.record(
-                    "memory.retrieval",
+                    "memory.semantic_context",
                     {
                         **memory_refresh,
-                        "items": [
-                            {
-                                **item,
-                                "content": str(item.get("content") or "")[:500],
-                            }
-                            for item in self.memory.retrieval_trace()
-                        ],
                     },
                     run_id=self._active_trace_run_id,
                 )
@@ -443,7 +516,13 @@ class CodingAssistant:
         )
 
     def _request_tools(self):
-        return self.tool_executor.definitions()
+        # The executor owns a fixed tool set.  Completion is the only
+        # state-dependent definition: hide it until a Goal exists, while the
+        # request binding rejects a hand-written hidden call.
+        definitions = self.tool_executor.definitions()
+        if self.goal_store.read() is None:
+            return [item for item in definitions if item.get("name") != "goal_complete"]
+        return definitions
 
     def _pause_description(self):
         return "\n执行预算已用尽，对话和工具结果已保存。任务未确认完成；恢复时先核对当前文件，继续未完成工作。"
@@ -586,13 +665,27 @@ class CodingAssistant:
 
     async def _run_once(self, prompt: str, *, network_recovery_of: str | None = None,
                         start_turn: int = 1) -> AsyncIterator[AgentEvent]:
-        self.instruction_loader.begin_run()
-        self._instruction_memory_context = self.memory.prompt_context(prompt)
-        initial_instructions = self.instruction_loader.resolve()
-        self._current_instruction_resolution = initial_instructions
-        self._injected_instruction_keys = initial_instructions.injection_keys
-        self._last_instruction_trace_digest = None
-        self.loop.system_prompt = self._build_system_prompt(initial_instructions.prompt)
+        # Phase changes share one append-only assistant/session.  Keep the
+        # immutable instruction/tool prefix byte-stable so provider prompt
+        # caching can survive the phase boundary.
+        self._phase_state.begin(prompt)
+        if not self._task_initialized:
+            self.instruction_loader.begin_run()
+            # Episodic automatic recall is intentionally disabled.  Semantic
+            # memory is projected by _provide_system_prompt() as a stable
+            # context block after project instructions and skills.
+            self.memory.clear_automatic_recall()
+            self._instruction_memory_context = ""
+            self._memory_context_pending = False
+            self._load_skills_for_task(prompt)
+            initial_instructions = self.instruction_loader.resolve()
+            self._current_instruction_resolution = initial_instructions
+            self._injected_instruction_keys = initial_instructions.injection_keys
+            self._last_instruction_trace_digest = None
+            self.loop.system_prompt = self._build_system_prompt(initial_instructions.prompt)
+            self._task_initialized = True
+        else:
+            initial_instructions = self._current_instruction_resolution
         run_id = self.trace_recorder.new_run_id()
         self._active_trace_run_id = run_id
         run_state_error = ""
@@ -604,13 +697,12 @@ class CodingAssistant:
         started = time.perf_counter()
         goal_before = self.goal_store.read()
         last_goal_hash = hash_json(goal_before.to_dict() if goal_before else None)
-        definitions = self.tool_executor.definitions()
+        definitions = self._request_tools()
         self.trace_recorder.record(
             "run.started",
             {
                 "request": prompt,
                 "network_recovery_of": network_recovery_of,
-                "role": self.role,
                 "provider": getattr(self.model_client, "provider", "openai-compatible"),
                 "model": self.profile.model_id,
                 "system_prompt_sha256": hash_json(self.loop.system_prompt),
@@ -630,6 +722,7 @@ class CodingAssistant:
                     "used_tokens": initial_instructions.used_tokens,
                     "source_count": len(initial_instructions.sources),
                 },
+                "skills": dict(self._skill_trace),
                 "recovery": (
                     self.recovered_run_state.to_dict()
                     if self.recovered_run_state
@@ -641,19 +734,16 @@ class CodingAssistant:
             run_id=run_id,
             timestamp=started_at,
         )
+        semantic_context, _ = self.memory.semantic_prompt_context()
         self.trace_recorder.record(
-            "memory.retrieval",
+            "memory.semantic_context",
             {
-                "query": prompt,
-                "injected_count": self.memory.last_rendered_count,
-                **self.memory.last_render_stats,
-                "items": [
-                    {
-                        **item,
-                        "content": str(item.get("content") or "")[:500],
-                    }
-                    for item in self.memory.retrieval_trace()
-                ],
+                "source": "semantic",
+                "injected": bool(semantic_context.strip()),
+                "content_chars": len(semantic_context),
+                "entry_count": sum(
+                    len(values) for values in self.memory.semantic.entries().values()
+                ),
             },
             run_id=run_id,
         )
@@ -665,7 +755,6 @@ class CodingAssistant:
             run_id=run_id,
         )
         token = set_active_run(run_id)
-        tool_starts: dict[str, tuple[str, float]] = {}
         final_text = ""
         artifacts: list[dict[str, object]] = []
         stop_reason = "aborted"
@@ -679,32 +768,80 @@ class CodingAssistant:
                     self._transition_run_state("waiting_model", turn=turn)
                 elif event.type == "tool_started" and event.tool_call:
                     self._tool_run_state_started(event.tool_call.call_id, event.tool_call.name)
-                    tool_starts[event.tool_call.call_id] = (utc_now(), time.perf_counter())
                 elif event.type == "tool_finished" and event.tool_call:
                     self._tool_run_state_finished(event.tool_call.call_id)
                     artifacts = self._collect_artifacts(artifacts, event)
-                    tool_started_at, tool_started = tool_starts.pop(
-                        event.tool_call.call_id,
-                        (utc_now(), time.perf_counter()),
+                    self._phase_state.observe_tool(
+                        event.tool_call.name,
+                        event.tool_call.arguments,
+                        event.tool_result or "",
+                        is_error=event.is_error,
                     )
+                    execution_trace = (event.details or {}).get("trace")
+                    trace_events = (
+                        execution_trace.get("events", [])
+                        if isinstance(execution_trace, dict)
+                        else []
+                    )
+                    first_event = trace_events[0] if trace_events else {}
+                    last_event = trace_events[-1] if trace_events else {}
+                    execution_details = event.details or {}
+                    execution_status = execution_details.get("status")
+                    error_value = execution_details.get("error")
+                    error_code = (
+                        error_value.get("code")
+                        if isinstance(error_value, dict)
+                        else ""
+                    )
+                    status = (
+                        "cancelled"
+                        if execution_details.get("cancelled")
+                        else "blocked"
+                        if execution_details.get("instructions_refresh_required")
+                        or error_code in {
+                            "POLICY_DENIED",
+                            "APPROVAL_REQUIRED",
+                            "APPROVAL_DENIED",
+                            "APPROVAL_TIMEOUT",
+                            "APPROVAL_UNAVAILABLE",
+                            "APPROVAL_CALL_CHANGED",
+                            "TOOL_UNAVAILABLE",
+                        }
+                        else "error"
+                        if event.is_error
+                        else "success"
+                    )
+                    compact_execution = {
+                        "status": execution_status,
+                        "phase": (event.details or {}).get("phase", "delivered"),
+                        "started": (event.details or {}).get("started", False),
+                        "not_started": (event.details or {}).get("not_started", False),
+                        "retry_count": (event.details or {}).get("retry_count", 0),
+                        "uncertain_side_effect": (event.details or {}).get(
+                            "uncertain_side_effect", False
+                        ),
+                        "delivery_count": (event.details or {}).get("delivery_count", 1),
+                        "events": [
+                            {
+                                key: item[key]
+                                for key in ("phase", "attempt", "duration_ms")
+                                if key in item
+                            }
+                            for item in trace_events
+                            if isinstance(item, dict)
+                        ],
+                    }
                     self.trace_recorder.record(
                         "tool.call",
                         {
                             "tool_call_id": event.tool_call.call_id,
                             "tool_name": event.tool_call.name,
-                            "status": (
-                                "cancelled"
-                                if event.details and event.details.get("cancelled")
-                                else "blocked"
-                                if event.details
-                                and event.details.get("instructions_refresh_required")
-                                else "error"
-                                if event.is_error
-                                else "success"
-                            ),
-                            "started_at": tool_started_at,
-                            "completed_at": utc_now(),
-                            "duration_ms": round((time.perf_counter() - tool_started) * 1000),
+                            "status": status,
+                            "started_at": first_event.get("started_at") or utc_now(),
+                            "completed_at": last_event.get("ended_at") or utc_now(),
+                            "duration_ms": execution_trace.get("duration_ms", 0)
+                            if isinstance(execution_trace, dict)
+                            else 0,
                             "arguments": event.tool_call.arguments,
                             "result": (
                                 event.tool_result
@@ -718,7 +855,7 @@ class CodingAssistant:
                                 if event.details and event.details.get("cancelled")
                                 else None
                             ),
-                            "details": event.details,
+                            "execution": compact_execution,
                         },
                         run_id=run_id,
                     )
@@ -743,24 +880,64 @@ class CodingAssistant:
                         # Retained in session and request Trace, not a chat reply.
                         continue
                 elif event.type == "turn_finished":
-                    provider_tokens = event.usage.input_tokens if event.usage else 0
-                    tokens_before = provider_tokens or estimate_context_tokens(self.loop.messages)
-                    trigger_tokens = (
-                        self.memory.config.hard_trigger_tokens
-                        if self.memory.config.strategy == "legacy-summary-recent"
-                        else self.memory.config.soft_trigger_tokens
+                    # Long sessions can accumulate contradictory or obsolete
+                    # facts before the run reaches a natural final response.
+                    # When configured, let the memory model perform a bounded
+                    # maintenance pass between turns; this does not alter the
+                    # live prompt or replay tool calls.
+                    gc_result = await self.memory.maybe_gc(
+                        self.loop.messages,
+                        cancellation_token=self.loop.cancellation_token,
                     )
+                    if gc_result is not None:
+                        self.trace_recorder.record(
+                            "memory.gc",
+                            {
+                                "facts_written": gc_result.facts_written,
+                                "conflicts": gc_result.conflicts,
+                                "model_used": gc_result.model_used,
+                                "model_error": gc_result.model_error or None,
+                                "details": gc_result.details,
+                            },
+                            run_id=run_id,
+                        )
+                    provider_tokens = event.usage.input_tokens if event.usage else 0
+                    cumulative_tokens = (
+                        self.memory.record_model_input(provider_tokens)
+                        if provider_tokens
+                        else self.memory.working.cumulative_input_tokens
+                    )
+                    # Compaction is triggered by the current request size,
+                    # not by the sum of earlier requests.  The cumulative
+                    # ledger remains diagnostic-only for cost reporting.
+                    tokens_before = provider_tokens or estimate_context_tokens(self.loop.messages)
+                    # Only the current provider request can trigger compaction.
+                    # The cumulative/pressure ledgers remain diagnostics; no
+                    # No soft archive pass runs between hard compactions.
+                    trigger_tokens = self.memory.config.hard_trigger_tokens
+                    pressure_tokens = self.memory.working.pressure_input_tokens
                     compaction_attempted = (
                         self.memory.config.enabled
-                        and tokens_before > trigger_tokens
+                        and provider_tokens >= trigger_tokens
                     )
                     if compaction_attempted:
+                        yield AgentEvent(
+                            type="compaction_started",
+                            details={
+                                "tokens_before": tokens_before,
+                                "trigger_tokens": trigger_tokens,
+                                "policy": ACTIVE_COMPACTION_POLICY,
+                            },
+                        )
                         self.trace_recorder.record(
                             "compaction.started",
                             {
                                 "tokens_before": tokens_before,
-                                "soft_trigger_tokens": self.memory.config.soft_trigger_tokens,
+                                "cumulative_input_tokens": cumulative_tokens,
+                                "pressure_input_tokens": pressure_tokens,
                                 "hard_trigger_tokens": self.memory.config.hard_trigger_tokens,
+                                "compaction_policy": ACTIVE_COMPACTION_POLICY,
+                                "flow": list(COMPACTION_FLOW),
                             },
                             run_id=run_id,
                         )
@@ -775,12 +952,19 @@ class CodingAssistant:
                                 self.loop.messages,
                                 provider_tokens,
                                 active_token,
+                                cumulative_input_tokens=cumulative_tokens,
+                                pressure_input_tokens=provider_tokens,
                             )
                         )
                     except OperationCancelledError as exc:
                         compaction_cancelled = True
                         outcome = None
                         if compaction_attempted:
+                            yield AgentEvent(
+                                type="compaction_aborted",
+                                text="上下文压缩已取消",
+                                details={"tokens_before": tokens_before, "reason": str(exc)},
+                            )
                             self.trace_recorder.record(
                                 "compaction.aborted",
                                 {
@@ -793,6 +977,12 @@ class CodingAssistant:
                             compaction_cancellation_recorded = True
                     except Exception as exc:
                         if compaction_attempted:
+                            yield AgentEvent(
+                                type="compaction_failed",
+                                text="上下文压缩失败",
+                                details={"tokens_before": tokens_before, "error": f"{type(exc).__name__}: {exc}"},
+                                is_error=True,
+                            )
                             self.trace_recorder.record(
                                 "compaction.failed",
                                 {
@@ -805,6 +995,26 @@ class CodingAssistant:
                         raise
                     if outcome:
                         self.loop.messages = outcome.messages
+                        # Semantic memory is a stable request-prefix block and
+                        # is projected again on the next request.  It is not
+                        # copied into the compacted transcript; episodic memory
+                        # remains explicit-only through memory.search.
+                        memory_reload = {"performed": False, "reason": "semantic_prefix_projection"}
+                        yield AgentEvent(
+                            type="compaction_completed",
+                            details={
+                                "tokens_before": outcome.tokens_before,
+                                "tokens_after": outcome.estimated_tokens_after,
+                                "tokens_saved": max(
+                                    0,
+                                    outcome.details.get(
+                                        "estimated_history_tokens_saved",
+                                        outcome.tokens_before - outcome.estimated_tokens_after,
+                                    ),
+                                ),
+                                "strategy": outcome.strategy,
+                            },
+                        )
                         self.trace_recorder.record(
                             "compaction.completed",
                             {
@@ -821,6 +1031,7 @@ class CodingAssistant:
                                     ),
                                 ),
                                 "details": outcome.details,
+                                "memory_reload": memory_reload,
                             },
                             run_id=run_id,
                         )
@@ -839,6 +1050,11 @@ class CodingAssistant:
                             run_id=run_id,
                         )
                     elif compaction_attempted:
+                        yield AgentEvent(
+                            type="compaction_deferred",
+                            text="上下文压缩已延后",
+                            details={"tokens_before": tokens_before},
+                        )
                         self.trace_recorder.record(
                             "compaction.deferred",
                             {
@@ -891,6 +1107,8 @@ class CodingAssistant:
                             },
                             run_id=run_id,
                         )
+                        if outcome.details.get("reason") == "hard":
+                            self.memory.working.reset_pressure_window()
                     metrics = self.trace_recorder.run_metrics(run_id)
                     event.details = {
                         **(event.details or {}),

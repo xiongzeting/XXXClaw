@@ -1,0 +1,83 @@
+flowchart TD
+    A[用户任务进入 CodingAssistant]
+    A --> B[创建或恢复 AgentLoop]
+    B --> C[创建本轮 CancellationToken]
+    C --> D{同一 Agent 是否正在运行?}
+    D -- 是 --> ER1[返回 agent is already running]
+    D -- 否 --> E[追加 user message]
+    E --> F[刷新 system prompt / ContextJournal / Memory]
+    F --> G[投影当前请求上下文]
+    G --> H[获取本轮工具定义]
+    H --> I[绑定 request tool names]
+    I --> J[构造 ModelRequest]
+    J --> K[ModelClient.stream]
+    K --> L{收到哪类 ModelEvent?}
+    L -- text_delta --> M[转发文本事件]
+    M --> K
+    L -- error --> ER2[记录模型错误事件]
+    L -- completed --> N[取得 AssistantReply]
+    N --> O{reply 是否 aborted?}
+    O -- 是 --> P[保存 partial assistant<br/>run_finished aborted]
+    O -- 否 --> Q{reply.error 是否存在?}
+    Q -- 是 --> ER3[结束本次 Attempt]
+    Q -- 否 --> R{是否有 final guard?}
+    R -- 是 --> S[检查最终回复和验收状态]
+    S --> T{检查阻塞?}
+    T -- 是 --> U[追加 COMPLETION_CHECK 反馈]
+    U --> F
+    T -- 否 --> V[保存 assistant message]
+    R -- 否 --> V
+    V --> W{reply.tool_calls 是否为空?}
+    W -- 是 --> X[自然停止]
+    W -- 否 --> Y[按模型顺序处理 Tool Calls]
+    Y --> Z{Token 是否已取消?}
+    Z -- 是 --> CA[补齐当前及剩余 Tool Result<br/>cancelled / not_started]
+    Z -- 否 --> AB{当前工具是否只读且可并行?}
+    AB -- 是 --> AC[合并连续只读调用<br/>read grep search ls find]
+    AB -- 否 --> AD[只取当前调用<br/>write edit bash memory goal]
+    AC --> AE[asyncio.gather 执行批次]
+    AD --> AE
+    AE --> AF{ToolCancelledError?}
+    AF -- 是 --> CA
+    AF -- 否 --> AG[按原始调用顺序 zip 结果]
+    AG --> AH[生成 role=tool<br/>保留 tool_call_id]
+    AH --> AI[tool_finished + message_added]
+    AI --> AJ{批次是否还有调用?}
+    AJ -- 是 --> AB
+    AJ -- 否 --> AK[turn_finished]
+    AK --> AL[WorkingContext 持久化消息]
+    AL --> AM[PhaseState / Memory GC / usage 统计]
+    AM --> AN{达到压缩阈值?}
+    AN -- 是 --> AO[artifact / archive / checkpoint]
+    AN -- 否 --> AP[继续下一轮]
+    AO --> AP
+    AP --> AQ{达到 max_turns?}
+    AQ -- 否 --> F
+    AQ -- 是 --> AR[budget_exhausted<br/>paused / resumable]
+    X --> AS[run_finished stop]
+    P --> AT[统一收尾]
+    CA --> AU[run_finished aborted]
+    AR --> AV[统一收尾]
+    ER1 --> AT
+    ER2 --> AT
+    ER3 --> AT
+    AS --> AT
+    AU --> AT
+    AV --> AT
+    AT --> AW[清除运行状态和 request tool names]
+    AX[GoalSupervisor 在 AgentLoop 外部]
+    AX --> AY[一次 AgentLoop = 一个 Attempt]
+    AY --> AZ{Goal 仍 active / verifying?}
+    AZ -- 是 --> BA[生成 continuation prompt]
+    BA --> B
+    AZ -- 否 --> BB[Goal 进入终态或等待用户]
+    classDef main fill:#123047,stroke:#42c8df,color:#eef7ff;
+    classDef decision fill:#3a2a16,stroke:#f3ac52,color:#fff0d0;
+    classDef exec fill:#302248,stroke:#ae91ff,color:#f7f0ff;
+    classDef error fill:#421f2b,stroke:#ff737d,color:#fff0f2;
+    classDef result fill:#17352d,stroke:#70d6a2,color:#effff5;
+    class A,B,C,E,F,G,H,I,J,K,N,V,Y,AH,AI,AK,AL,AM,AP,AT,AW,AX,AY,BA main;
+    class D,L,O,Q,R,T,W,Z,AB,AF,AJ,AN,AQ,AZ decision;
+    class AC,AD,AE,AG,AO,AR exec;
+    class ER1,ER2,ER3,P,CA,AU error;
+    class M,S,U,X,AS,AV,BB result;

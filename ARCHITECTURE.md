@@ -47,12 +47,14 @@ In particular:
 
 ## Repository layout
 
-The dependency graph above describes package boundaries rather than file placement.
+The current physical tree is documented in [docs/PROJECT_TREE.md](docs/PROJECT_TREE.md). The dependency graph above describes package boundaries rather than file placement.
 
 - `src/MiniClaw/`: `llm`, `agent`, `coding_agent`, `platforms`, `trace`, `evaluation`, and `benchmark`.
+- `docs/notes`, `docs/interview`, `docs/plans`: technical notes, interview material, and proposed work; see the [document index](docs/README.md).
 - `scripts/launch`, `scripts/development`, `scripts/benchmarks`: operational helpers; see [script usage](scripts/README.md).
 - `tests/` and `evals/`: regression tests and evaluation definitions, fixtures, baselines, and fixed splits.
-- `frontend/architecture/` and `docker/runtime/`: visualization assets and runtime image. External benchmark resources are downloaded locally when needed.
+- `frontend/architecture/`, `docker/runtime/`, and `external/benchmarks/`: visualization assets, runtime image, and third-party benchmark resources.
+- `.aster/`, `benchmark-results/`, and `.codex-research/`: local runtime, experiment, and research artifacts.
 
 ## Packages
 
@@ -80,21 +82,23 @@ The agent loop has a turn limit, a context-transform hook, and a dynamic system-
 
 ### `coding_agent.tools`
 
-Owns role-aware tool registration and the execution boundary through `ToolManager`:
+Owns the single tool execution boundary through `ToolExecutor`:
 
 ```text
-lookup
-→ argument preparation
-→ recursive JSON-schema validation
-→ project-instruction and approval preflights
-→ optional executor timeout
-→ exception normalization
-→ final safety-net output limit
+receive
+→ prepare and validate
+→ policy / approval preflight
+→ execute with bounded retry or cancellation
+→ normalize and bound the result
+→ deliver once
 ```
 
 `WorkspaceGuard` prevents file tools from resolving paths outside one repository, follows existing path components to stop symlink escape, and applies dynamic `read/write/search/execute` policy on every access. Newly created `.env`, credential and internal `.aster` paths are protected without restarting the Runtime; Artifact outputs are exposed read-only, while `.git` writes remain Bash-only. Docker recomputes sensitive mask mounts for every command. Each tool owns its pi-style, purpose-specific output policy: `read` keeps the head, `bash` keeps the tail and saves complete oversized output, and `grep` caps matches, bytes, and individual line length. `bash` delegates command execution to the session Runtime rather than choosing host or Docker itself.
 
-`ToolManager` keeps global and role-scoped tools in one session registry. Product entry points may inject additional tools for a named role, apply allow/deny policies, disable tools dynamically, or unregister them. Only tools visible to the active role are included in model definitions and the generated system prompt.
+The coding assistant assembles the fixed tool collection once and passes it to
+`ToolExecutor`. The executor exposes definitions and performs name lookup, but
+it has no runtime registration, role-scoped injection, or dynamic enable/disable
+surface. This keeps composition and execution as two clearly separated jobs.
 
 ### `coding_agent.runtime`
 
@@ -172,19 +176,30 @@ One natural model stop is one Goal attempt. The outer `GoalSupervisor` starts an
 
 ### `coding_agent.memory`
 
-Owns four lifecycles without adding product policy to `AgentLoop`:
+Owns the memory lifecycles without adding product policy to `AgentLoop`:
 
-- Working Context: append-only JSONL, artifacts, archive checkpoints, and model-summary fallback;
+- Working Context: append-only JSONL with one hard-only progressive compaction pipeline
+  (`trigger → safe cut → prepare artifacts → checkpoint → atomic commit → recover`).
+  A successful tool result at or above 8 KiB is immediately stored as one
+  content-addressed Artifact; the model receives only a short reference and preview.
+  There is no soft-trigger pass, closed-history archive, or old-tool archive. At the
+  40K-token hard mark, the runtime keeps the most recent one tenth of the pre-compaction
+  request as original text and keeps a bounded structured checkpoint (normally about 5K
+  tokens). Tool Call–Tool Result pairs are never split; errors remain verbatim and the
+  append-only Trace is never deleted;
 - Episodic Memory: one Markdown checkpoint per session;
 - Semantic Memory: explicit stable facts with secret/transient/conflict rejection;
-- Procedural Memory: skill catalog in the prompt, full resources loaded only on demand.
+- Procedural workflow routing is adjacent to memory, but deliberately not a
+  memory-retrieval source: the skill catalog is matched first and the selected
+  `SKILL.md` is loaded at run start and after each committed compaction only.
 
-`memory(action="overview")` reports these four modules with counts and bounded samples;
-`memory(action="inspect", module=...)` inspects one module. `preference`, `project`,
-`environment`, and `fact` are Semantic categories, selected by `memory(action="read",
-category=..., limit=...)`. Archive indexes, evidence ledgers, and conflict logs are
-supporting records rather than extra core modules. An empty conflict log means no
-registered pending conflicts, not a full consistency audit.
+The model-visible `memory` contract is intentionally four actions:
+`search`, `remember`, `replace`, and `forget`. `search` is the unified recall
+entry for Semantic and Episodic; only Semantic facts can be changed.
+`preference`, `project`, `environment`, and `fact` are categories inside
+Semantic. Archive indexes, evidence ledgers, and conflict logs are supporting
+records rather than extra core modules. Legacy inspection/source-specific
+actions remain only as non-public compatibility paths.
 
 New preference writes require an exact explicit user quote and preserve that quote
 instead of an assistant paraphrase. Automatic consolidation rejects assistant-only
@@ -196,20 +211,36 @@ language contradictions and cross-language equivalence are not guaranteed to be
 detected. Reviewed cleanup retains originals and a per-entry audit outside active
 Semantic memory.
 
-Each source retrieves independently, then cross-source RRF and final reranking combine lexical,
-dense, exact-symbol, status, confidence, and query-sensitive freshness signals. Archive JSONL parsing,
+The short explanation of the recall pipeline is:
+
+```text
+入口 → 准备 → 分源召回 → 各源排序 → 各源过滤
+     → 合并 → 统一重排 → 等价内容去重 → 按预算返回
+```
+
+Semantic uses exact-symbol/BM25/vector recall; Episodic uses BM25/vector.
+Procedural skills never enter this pool. Each source retrieves independently, then
+cross-source fusion and final reranking combine lexical, dense, exact-symbol,
+status, confidence, and query-sensitive freshness signals. Archive JSONL parsing,
 BM25 state, embeddings, and FAISS HNSW indexes are persistent. Once an ANN scope is synchronized,
 steady-state searches encode only the new query and search the on-disk index; the caller's document
 scope remains a hard result boundary.
 
-The ranked candidate list is not copied into the prompt wholesale. A diversity-aware allocator selects
-at most twelve excerpts, gives each a minimum share, applies source-specific caps, and redistributes the
-remaining 15k Token budget. Trace distinguishes pre-budget `ranked_count` from the exact model-visible
-`rendered_count`, including per-excerpt truncation metadata. Retrieved history is wrapped as explicitly
-untrusted user-level evidence; only product rules, project instructions, and Goal state occupy the system
-message.
+The ranked candidate list is not copied into the prompt wholesale. Automatic
+recall uses a short 4.5k-token budget because it may be present on every model
+turn; explicit memory searches can use the larger diagnostic budget. A
+diversity-aware allocator selects at most twelve excerpts, and Trace distinguishes
+pre-budget `ranked_count` from the exact model-visible `rendered_count`. Retrieved
+history is untrusted user-level evidence; system policy and selected workflow
+instructions remain separate.
 
-The evaluation profile uses an 80k soft trigger, 100k hard trigger, 30k post-compaction target, 20k recent-message budget, and 4.5k deterministic semantic budget. Reserve is derived from the model output limit and context window; smaller windows scale all watermarks down safely.
+The evaluation profile uses a 40K hard trigger, an 8 KiB large-tool artifact threshold,
+and a 256-character artifact preview. The post-compaction original tail is one tenth of
+the pre-compaction provider request. Unchanged Read results are replayed once after a
+compaction when the file hash still matches, then are not injected again; artifact reads
+are never artifactized a second time.
+
+The concise, current interview explanation is maintained in `docs/memory-final-upgrade.md`.
 
 ### `trace`
 
@@ -217,7 +248,7 @@ The evaluation profile uses an 80k soft trigger, 100k hard trigger, 30k post-com
 
 ### End-to-end cancellation
 
-One attempt-scoped `CancellationToken` is shared by AgentLoop, LLM requests, ToolManager, approval waits, Goal Judge, Compaction, and Host/Docker command execution. Host commands run in their own process group and cancellation kills the process tree. Docker cancellation removes the named container before reaping the local Docker CLI process. AgentLoop synthesizes cancelled Tool results for the active and all remaining calls, so no later call is executed and the persisted message history remains protocol-valid. Built-in write/edit use staged atomic replacement to prevent a cancelled background write from committing after the user has already stopped the task.
+One attempt-scoped `CancellationToken` is shared by AgentLoop, LLM requests, the single `ToolExecutor`, approval waits, Goal Judge, Compaction, and Host/Docker command execution. Host commands run in their own process group and cancellation kills the process tree. Docker cancellation removes the named container before reaping the local Docker CLI process. AgentLoop synthesizes cancelled Tool results for the active and all remaining calls, so no later call is executed and the persisted message history remains protocol-valid. Built-in write/edit use staged atomic replacement to prevent a cancelled background write from committing after the user has already stopped the task.
 
 Trace records `run.cancelled`, cancelled model transport/request events, `tool.call status=cancelled`, a `cancelled` Goal terminal state, and `run.completed status=cancelled`. Dashboard failure/error rates exclude deliberate user cancellations.
 
@@ -240,7 +271,10 @@ The public names and main argument contracts follow pi:
 | `grep` | Search through ripgrep with regex/literal, glob, case, context, and match-limit options |
 | `search` | List matching files/directories without granting shell execution; protected paths are excluded |
 
-The coding product also registers memory, skill, `goal`, and `goal_complete` tools. Role policy may expose only the subset appropriate for the current assistant role.
+The coding product adds `memory`, `skill`, `goal`, and `goal_complete` to the
+startup-built fixed collection. An optional startup name allowlist can produce
+a smaller collection for an evaluation or constrained product mode; execution
+does not change its tool set at runtime.
 
 ## Deferred features
 

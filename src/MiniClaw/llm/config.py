@@ -11,6 +11,8 @@ DEFAULT_PRIMARY_BASE_URL = "https://ai.zxcoding.top/v1"
 DEFAULT_PRIMARY_MODEL = "gpt-5.6-luna"
 DEFAULT_DEEPSEEK_BASE_URL = "https://api.deepseek.com/v1"
 DEFAULT_DEEPSEEK_MODEL = "deepseek-v4-flash"
+DEFAULT_ANTHROPIC_BASE_URL = "https://api.anthropic.com"
+DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-4-20250514"
 
 
 @dataclass(slots=True, frozen=True)
@@ -36,10 +38,10 @@ class LLMSettings:
     connect_timeout_seconds: float = 10.0
     first_token_timeout_seconds: float = 60.0
     idle_timeout_seconds: float = 30.0
-    max_retries: int = 2
-    retry_base_seconds: float = 0.5
-    retry_max_seconds: float = 8.0
-    retry_jitter_ratio: float = 0.2
+    max_retries: int = 5
+    retry_base_seconds: float = 1.0
+    retry_max_seconds: float = 32.0
+    retry_jitter_ratio: float = 0.0
     input_cost_per_million: float = 0.0
     output_cost_per_million: float = 0.0
     cached_input_cost_per_million: float = 0.0
@@ -115,6 +117,7 @@ def load_llm_settings(
         "openai-compatible": "primary",
         "zxcoding": "primary",
         "deepseek": "deepseek",
+        "anthropic": "anthropic",
     }
     normalized = aliases.get(selected)
     if normalized is None:
@@ -138,7 +141,7 @@ def load_llm_settings(
             "MINICLAW_MODEL",
         ) or DEFAULT_PRIMARY_MODEL
         missing_key_name = "MINICLAW_PRIMARY_API_KEY"
-    else:
+    elif normalized == "deepseek":
         api_key = _first_value(env, "MINICLAW_DEEPSEEK_API_KEY")
         resolved_base_url = (
             base_url
@@ -151,6 +154,19 @@ def load_llm_settings(
             or DEFAULT_DEEPSEEK_MODEL
         )
         missing_key_name = "MINICLAW_DEEPSEEK_API_KEY"
+    else:
+        api_key = _first_value(env, "MINICLAW_ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY")
+        resolved_base_url = (
+            base_url
+            or _first_value(env, "MINICLAW_ANTHROPIC_BASE_URL")
+            or DEFAULT_ANTHROPIC_BASE_URL
+        )
+        resolved_model = (
+            model_id
+            or _first_value(env, "MINICLAW_ANTHROPIC_MODEL")
+            or DEFAULT_ANTHROPIC_MODEL
+        )
+        missing_key_name = "MINICLAW_ANTHROPIC_API_KEY"
 
     if not api_key:
         raise ValueError(f"{missing_key_name} is required for provider {normalized}")
@@ -166,10 +182,10 @@ def load_llm_settings(
     idle_timeout = _positive_number(
         env, "MINICLAW_LLM_IDLE_TIMEOUT", min(30.0, timeout)
     )
-    max_retries = _non_negative_integer(env, "MINICLAW_LLM_MAX_RETRIES", 2)
-    retry_base = _positive_number(env, "MINICLAW_LLM_RETRY_BASE_SECONDS", 0.5)
-    retry_max = _positive_number(env, "MINICLAW_LLM_RETRY_MAX_SECONDS", 8.0)
-    retry_jitter = _non_negative_number(env, "MINICLAW_LLM_RETRY_JITTER_RATIO", 0.2)
+    max_retries = _non_negative_integer(env, "MINICLAW_LLM_MAX_RETRIES", 5)
+    retry_base = _positive_number(env, "MINICLAW_LLM_RETRY_BASE_SECONDS", 1.0)
+    retry_max = _positive_number(env, "MINICLAW_LLM_RETRY_MAX_SECONDS", 32.0)
+    retry_jitter = _non_negative_number(env, "MINICLAW_LLM_RETRY_JITTER_RATIO", 0.0)
     if retry_jitter > 1:
         raise ValueError("MINICLAW_LLM_RETRY_JITTER_RATIO must be between 0 and 1")
     if retry_base > retry_max:
@@ -188,6 +204,8 @@ def load_llm_settings(
         raise ValueError("MINICLAW_MAX_OUTPUT_TOKENS must be below MINICLAW_CONTEXT_WINDOW")
 
     fallbacks = _load_fallbacks(env, normalized, resolved_model, api_key, resolved_base_url)
+    if normalized == "anthropic" and fallbacks:
+        raise ValueError("Anthropic native client does not support mixed-protocol fallbacks")
 
     return LLMSettings(
         provider=normalized,
@@ -244,6 +262,8 @@ def _load_fallbacks(
         provider = aliases.get(provider_name.strip().lower())
         if provider is None:
             raise ValueError(f"Unknown fallback provider in item {position}: {provider_name}")
+        if provider == "anthropic":
+            raise ValueError("Anthropic native client cannot be used as an OpenAI-compatible fallback")
         if not separator or not model_name.strip():
             model_name = DEFAULT_PRIMARY_MODEL if provider == "primary" else DEFAULT_DEEPSEEK_MODEL
         model_name = model_name.strip()
@@ -261,14 +281,21 @@ def _load_fallbacks(
                 "MINICLAW_PRIMARY_BASE_URL",
                 "MINICLAW_BASE_URL",
             ) or DEFAULT_PRIMARY_BASE_URL
-        else:
+        elif provider == "deepseek":
             api_key = _first_value(env, "MINICLAW_DEEPSEEK_API_KEY")
             base_url = _first_value(env, "MINICLAW_DEEPSEEK_BASE_URL") or DEFAULT_DEEPSEEK_BASE_URL
+        else:
+            api_key = _first_value(env, "MINICLAW_ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY")
+            base_url = _first_value(env, "MINICLAW_ANTHROPIC_BASE_URL") or DEFAULT_ANTHROPIC_BASE_URL
         if not api_key:
             raise ValueError(
                 f"Fallback {provider}:{model_name} requires its provider-specific API key"
             )
-        price_prefix = "MINICLAW_PRIMARY" if provider == "primary" else "MINICLAW_DEEPSEEK"
+        price_prefix = {
+            "primary": "MINICLAW_PRIMARY",
+            "deepseek": "MINICLAW_DEEPSEEK",
+            "anthropic": "MINICLAW_ANTHROPIC",
+        }[provider]
         output.append(
             LLMFallbackSettings(
                 provider=provider,

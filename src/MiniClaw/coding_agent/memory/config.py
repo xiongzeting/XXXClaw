@@ -11,13 +11,23 @@ from MiniClaw.llm.types import ModelProfile
 # Production progressive-compaction profile derived from the pi-style design.
 # Smaller model windows keep the same proportions and trigger ordering automatically.
 REFERENCE_TARGET_TOKENS = 30_000
-REFERENCE_KEEP_RECENT_TOKENS = 20_000
-REFERENCE_SOFT_TRIGGER_TOKENS = 80_000
-REFERENCE_HARD_TRIGGER_TOKENS = 100_000
+REFERENCE_KEEP_RECENT_TOKENS = 10_000
+# These are single-request provider input watermarks.  The cumulative ledger
+# is retained only for diagnostics and cost reporting; it does not trigger
+# compaction.
+REFERENCE_HARD_TRIGGER_TOKENS = 40_000
 REFERENCE_RESERVE_TOKENS = 16_384
-REFERENCE_SEMANTIC_TOKENS = 4_500
+REFERENCE_SEMANTIC_TOKENS = 5_000
+# Explicit user-facing spill threshold: 8 KiB of UTF-8 tool output.
+# The complete payload is still recoverable from the artifact file; only the
+# compact reference is kept in the model-visible transcript.
+REFERENCE_LARGE_TOOL_BYTES = 8 * 1024
 
-CompactionStrategy = Literal["layered-current", "legacy-summary-recent"]
+# ``strategy`` is retained in the serialized configuration for old benchmark
+# files, but runtime compaction is intentionally one progressive policy.  The
+# old names are migration labels, not separate production algorithms.
+CompactionStrategy = Literal["layered-current", "legacy-summary-recent", "progressive"]
+ACTIVE_COMPACTION_POLICY = "progressive"
 
 
 @dataclass(slots=True, frozen=True)
@@ -25,14 +35,16 @@ class MemoryConfig:
     enabled: bool
     reserve_tokens: int
     keep_recent_tokens: int
-    soft_trigger_tokens: int
     hard_trigger_tokens: int
     target_tokens: int
+    # Kept for loading older session configurations.  WorkingContext now
+    # always uses the progressive pipeline; this flag no longer selects a
+    # second runtime algorithm.
     progressive_enabled: bool
     artifact_threshold_bytes: int
     artifact_preview_chars: int
     deterministic_semantic_tokens: int
-    strategy: CompactionStrategy = "layered-current"
+    strategy: CompactionStrategy = "progressive"
 
 
 def _integer(env: Mapping[str, str], name: str, fallback: int, errors: list[str]) -> int:
@@ -74,22 +86,14 @@ def load_memory_config(
         min(REFERENCE_RESERVE_TOKENS, max(1, profile.context_window // 10)),
     )
     reserve = _integer(env, "MINICLAW_COMPACTION_RESERVE_TOKENS", default_reserve, errors)
-    available = max(1, profile.context_window - reserve)
-    default_hard = min(REFERENCE_HARD_TRIGGER_TOKENS, available)
+    # Hard pressure is measured against the current provider request. The
+    # cumulative ledger remains available for diagnostics and cost reporting.
+    default_hard = REFERENCE_HARD_TRIGGER_TOKENS
     hard = _integer(env, "MINICLAW_COMPACTION_HARD_TRIGGER_TOKENS", default_hard, errors)
     default_target = min(
         REFERENCE_TARGET_TOKENS,
         max(1, int(default_hard * 0.3)),
     )
-    default_soft = min(
-        REFERENCE_SOFT_TRIGGER_TOKENS,
-        max(
-            default_target + 1,
-            default_target + (default_hard - default_target) // 2,
-            int(default_hard * 0.8),
-        ),
-    )
-    soft = _integer(env, "MINICLAW_COMPACTION_SOFT_TRIGGER_TOKENS", default_soft, errors)
     target = _integer(
         env,
         "MINICLAW_COMPACTION_TARGET_TOKENS",
@@ -102,10 +106,24 @@ def load_memory_config(
         min(REFERENCE_KEEP_RECENT_TOKENS, max(1, int(target * (2 / 3)))),
         errors,
     )
-    artifact_threshold = _integer(
-        env, "MINICLAW_CONTEXT_ARTIFACT_THRESHOLD_BYTES", 16 * 1024, errors
+    requested_artifact_threshold = _integer(
+        env,
+        "MINICLAW_CONTEXT_ARTIFACT_THRESHOLD_BYTES",
+        REFERENCE_LARGE_TOOL_BYTES,
+        errors,
     )
-    artifact_preview = _integer(env, "MINICLAW_CONTEXT_ARTIFACT_PREVIEW_CHARS", 4_000, errors)
+    # The immediate-spill guarantee is a production invariant.  An
+    # environment override may raise the threshold, but may not lower it
+    # below the 1K-token boundary.
+    artifact_threshold = max(requested_artifact_threshold, REFERENCE_LARGE_TOOL_BYTES)
+    artifact_preview = _integer(
+        env,
+        "MINICLAW_CONTEXT_ARTIFACT_PREVIEW_CHARS",
+        # Keep the live reference short. The complete payload remains on disk;
+        # the model receives only a compact orientation summary.
+        256,
+        errors,
+    )
     semantic_budget = _integer(
         env,
         "MINICLAW_CONTEXT_DETERMINISTIC_SEMANTIC_TOKENS",
@@ -114,22 +132,19 @@ def load_memory_config(
     )
     enabled = _boolean(env, "MINICLAW_COMPACTION_ENABLED", True, errors)
     progressive = _boolean(env, "MINICLAW_PROGRESSIVE_COMPACTION_ENABLED", True, errors)
-    strategy = env.get("MINICLAW_COMPACTION_STRATEGY", "layered-current").strip().lower()
-    if strategy not in {"layered-current", "legacy-summary-recent"}:
+    strategy = env.get("MINICLAW_COMPACTION_STRATEGY", "progressive").strip().lower()
+    if strategy not in {"layered-current", "legacy-summary-recent", "progressive"}:
         errors.append(
-            "MINICLAW_COMPACTION_STRATEGY must be layered-current or legacy-summary-recent"
+            "MINICLAW_COMPACTION_STRATEGY must be progressive "
+            "(legacy labels are accepted only for historical replay)"
         )
 
     if reserve < profile.max_output_tokens:
         errors.append("MINICLAW_COMPACTION_RESERVE_TOKENS must cover the model max output tokens")
     if reserve >= profile.context_window:
         errors.append("MINICLAW_COMPACTION_RESERVE_TOKENS must be below the context window")
-    if hard > profile.context_window - reserve:
-        errors.append("MINICLAW_COMPACTION_HARD_TRIGGER_TOKENS must leave the reserve available")
-    if soft >= hard:
-        errors.append("MINICLAW_COMPACTION_SOFT_TRIGGER_TOKENS must be below the hard trigger")
-    if target >= soft:
-        errors.append("MINICLAW_COMPACTION_TARGET_TOKENS must be below the soft trigger")
+    if target >= hard:
+        errors.append("MINICLAW_COMPACTION_TARGET_TOKENS must be below the hard trigger")
     if keep >= target:
         errors.append("MINICLAW_COMPACTION_KEEP_RECENT_TOKENS must be below the target")
     if artifact_threshold < 1_024:
@@ -145,7 +160,6 @@ def load_memory_config(
         enabled=enabled,
         reserve_tokens=reserve,
         keep_recent_tokens=keep,
-        soft_trigger_tokens=soft,
         hard_trigger_tokens=hard,
         target_tokens=target,
         progressive_enabled=progressive,

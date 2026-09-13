@@ -92,7 +92,8 @@ def apply_edits_to_normalized_content(content: str, edits: list[Edit], path: str
         if occurrences > 1:
             target = "the text" if len(edits) == 1 else f"edits[{index}]"
             raise ValueError(
-                f"Found {occurrences} occurrences of {target} in {path}. Each oldText must be unique; provide more context."
+                f"Found {occurrences} occurrences of {target} in {path}. Each oldText must be unique; "
+                "provide surrounding function or line context and retry."
             )
         matches.append((match_index, match_length, index, edit.new_text))
 

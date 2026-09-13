@@ -13,6 +13,7 @@ from .workspace import WorkspaceGuard
 
 
 DEFAULT_LIMIT = 100
+MODEL_OUTPUT_MAX_BYTES = DEFAULT_MAX_BYTES
 
 
 @dataclass(slots=True)
@@ -20,10 +21,7 @@ class GrepTool:
     boundary: WorkspaceGuard
 
     name = "grep"
-    description = (
-        "Search workspace file contents with ripgrep. Supports regex/literal patterns, glob filters, "
-        "case folding and context. Respects .gitignore and includes hidden files."
-    )
+    description = "用 ripgrep 搜索工作区文件内容，支持正则、glob、大小写和上下文；结果按 limit 限制，超出时应缩小范围或分段搜索。"
     input_schema = {
         "type": "object",
         "properties": {
@@ -33,7 +31,7 @@ class GrepTool:
             "ignoreCase": {"type": "boolean"},
             "literal": {"type": "boolean"},
             "context": {"type": "integer", "minimum": 0},
-            "limit": {"type": "integer", "minimum": 1},
+            "limit": {"type": "integer", "minimum": 1, "maximum": 10000},
         },
         "required": ["pattern"],
         "additionalProperties": False,
@@ -165,7 +163,11 @@ class GrepTool:
                 separator = ":" if current == line_number else "-"
                 output_lines.append(f"{shown_path}{separator}{current}{separator} {rendered}")
 
-        truncation = truncate_head("\n".join(output_lines), max_lines=2**63 - 1)
+        truncation = truncate_head(
+            "\n".join(output_lines),
+            max_lines=2**63 - 1,
+            max_bytes=MODEL_OUTPUT_MAX_BYTES,
+        )
         output = truncation.content
         notices: list[str] = []
         details: dict[str, Any] = {
@@ -177,7 +179,7 @@ class GrepTool:
             notices.append(f"{limit} matches limit reached. Use limit={limit * 2} for more, or refine pattern")
             details["matchLimitReached"] = limit
         if truncation.truncated:
-            notices.append(f"{format_size(DEFAULT_MAX_BYTES)} limit reached")
+            notices.append(f"{format_size(MODEL_OUTPUT_MAX_BYTES)} limit reached")
             details["truncation"] = truncation.to_details()
         if lines_truncated:
             notices.append(f"Some lines truncated to {GREP_MAX_LINE_LENGTH} chars. Use read to see full lines")

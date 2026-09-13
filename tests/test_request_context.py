@@ -6,7 +6,7 @@ from dataclasses import asdict
 from pathlib import Path
 from unittest.mock import AsyncMock
 
-from MiniClaw.agent.context import ContextJournal, decode_update, is_context_update
+from MiniClaw.agent.context import ContextJournal, PhaseState, decode_update, is_context_update
 from MiniClaw.agent.loop import AgentLoop
 from MiniClaw.coding_agent.tools.executor import ToolExecutor
 from MiniClaw.coding_agent.tools.factory import create_coding_tools
@@ -18,6 +18,41 @@ from tests import test_task_recovery as helpers
 
 
 class JournalTests(unittest.TestCase):
+    def test_high_risk_phase_state_is_small_and_actionable(self):
+        state = PhaseState()
+        state.begin(
+            "迁移任务：只修改 package/transform.py；必须保持旧 transform 接口兼容；"
+            "错误码和回滚规则必须验证。"
+        )
+        self.assertTrue(state.high_risk)
+        self.assertLessEqual(sum(map(len, state.confirmed_constraints)), 900)
+        self.assertEqual(state.completed_changes, [])
+        state.observe_tool("edit", {"path": "package/transform.py"}, "", is_error=False)
+        self.assertEqual(state.completed_changes, ["package/transform.py"])
+        self.assertTrue(state.unverified_boundaries)
+        self.assertIn("verification", state.next_action)
+        state.observe_tool("bash", {"command": "python verify.py"}, "SMOKE_OK", is_error=False)
+        self.assertEqual(state.unverified_boundaries, [])
+
+    def test_phase_state_is_emitted_as_four_independent_delta_keys(self):
+        state = PhaseState()
+        state.begin("迁移 schema，保持旧接口兼容并验证回滚")
+        journal = ContextJournal()
+        history = journal.update([], {
+            f"task.phase.{key}": value
+            for key, value in state.as_dict().items()
+        })
+        state.observe_tool("edit", {"path": "package/transform.py"}, "", is_error=False)
+        delta = journal.update(history, {
+            f"task.phase.{key}": value
+            for key, value in state.as_dict().items()
+        })
+        payload = decode_update(delta[0])
+        self.assertEqual(set(payload["set"]), {"task.phase.completed_changes",
+                                                "task.phase.unverified_boundaries",
+                                                "task.phase.next_action"})
+        self.assertNotIn("task.phase.confirmed_constraints", payload["set"])
+
     def test_deltas_reorder_update_remove_and_rebase_are_explicit(self):
         journal=ContextJournal(max_updates=3)
         history=[ChatMessage(role='user',content='V1 withdrawn. Only deliver V2.')]
@@ -91,8 +126,7 @@ class RequestTests(unittest.IsolatedAsyncioTestCase):
                     async for event in super().stream(request):yield event
             model=Client([AssistantReply(tool_calls=[ToolInvocation('a','write',{'path':'a','content':'A'}),
                                                     ToolInvocation('b','write',{'path':'b','content':'B'})]),AssistantReply(content='done')])
-            executor=ToolExecutor()
-            for tool in create_coding_tools(d):executor.register(tool)
+            executor=ToolExecutor(tools=create_coding_tools(d))
             loop=AgentLoop(model,ModelProfile('fake'),executor,system_prompt='fixed',context_updates_provider=lambda:dict(state))
             events=[e async for e in loop.run('write both files')]
             first,second=model.requests

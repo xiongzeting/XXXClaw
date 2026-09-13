@@ -1,4 +1,4 @@
-from .base import Tool, ToolResult
+from .base import Tool, ToolContext, ToolError, ToolResult, ToolSpec
 from .bash import BashOperations, BashTool, LocalBashOperations
 from .edit import EditTool
 from MiniClaw.cancellation import ToolCancelledError
@@ -7,7 +7,8 @@ from .executor import ToolExecutor
 from .factory import create_coding_tools
 from .search import SearchTool
 from .grep import GrepTool
-from .manager import ToolManager, ToolRolePolicy
+from .find import FindTool
+from .list import ListTool
 from .read import ReadTool
 from .workspace import WorkspaceGuard
 from .write import WriteTool
@@ -18,12 +19,15 @@ __all__ = [
     "EditTool",
     "SearchTool",
     "GrepTool",
+    "FindTool",
+    "ListTool",
     "LocalBashOperations",
     "ReadTool",
     "Tool",
     "ToolExecutor",
-    "ToolManager",
-    "ToolRolePolicy",
+    "ToolContext",
+    "ToolError",
+    "ToolSpec",
     "ToolCancelledError",
     "ToolResult",
     "WorkspaceGuard",

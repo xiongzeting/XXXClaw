@@ -71,6 +71,9 @@ async def terminate_process_tree(process: asyncio.subprocess.Process) -> None:
 
 
 class HostCommandExecutor:
+    def __init__(self, settings: RuntimeSettings | None = None) -> None:
+        self.settings = settings
+
     async def run(
         self,
         command: str,
@@ -92,30 +95,53 @@ class HostCommandExecutor:
             stderr=asyncio.subprocess.PIPE,
             **kwargs,
         )
-        try:
-            stdout, stderr = await _await_runtime_operation(
-                process.communicate(),
-                cancellation_token,
-                timeout=timeout,
-                stage="host_process",
-            )
-        except asyncio.TimeoutError:
-            await _cleanup(terminate_process_tree(process))
-            raise TimeoutError(f"Command timed out after {timeout:g} seconds")
-        except ToolCancelledError as exc:
-            await _cleanup(terminate_process_tree(process))
-            exc.details.update({"runtime": "host", "process_id": process.pid})
-            raise
-        except asyncio.CancelledError:
-            await _cleanup(terminate_process_tree(process))
-            raise
-        return CommandExecution(
-            output=stdout + stderr,
-            exit_code=process.returncode or 0,
-            details={"runtime": "host", "streams_separated": True},
-            stdout=stdout,
-            stderr=stderr,
+        limit = (
+            self.settings.max_capture_bytes
+            if self.settings is not None
+            else 10 * 1024 * 1024
         )
+        stdout_reader = asyncio.create_task(_capture_tail(process.stdout, limit))
+        stderr_reader = asyncio.create_task(_capture_tail(process.stderr, limit))
+        try:
+            try:
+                await _await_runtime_operation(
+                    process.wait(),
+                    cancellation_token,
+                    timeout=timeout,
+                    stage="host_process",
+                )
+            except asyncio.TimeoutError:
+                await _cleanup(terminate_process_tree(process))
+                raise TimeoutError(_timeout_text(timeout))
+            except ToolCancelledError as exc:
+                await _cleanup(terminate_process_tree(process))
+                exc.details.update({"runtime": "host", "process_id": process.pid})
+                raise
+            except asyncio.CancelledError:
+                await _cleanup(terminate_process_tree(process))
+                raise
+            except BaseException:
+                await _cleanup(terminate_process_tree(process))
+                raise
+            stdout, stdout_truncated = await stdout_reader
+            stderr, stderr_truncated = await stderr_reader
+            return CommandExecution(
+                output=stdout + stderr,
+                exit_code=process.returncode or 0,
+                details={
+                    "runtime": "host",
+                    "streams_separated": True,
+                    "capture_truncated": stdout_truncated or stderr_truncated,
+                },
+                stdout=stdout,
+                stderr=stderr,
+            )
+        finally:
+            for reader in (stdout_reader, stderr_reader):
+                if not reader.done():
+                    reader.cancel()
+                with contextlib.suppress(BaseException):
+                    await reader
 
 
 class DockerCommandExecutor:
@@ -156,9 +182,22 @@ class DockerCommandExecutor:
             creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0,
             start_new_session=os.name != "nt",
         )
-        stdout_reader = asyncio.create_task(self._capture_tail(process.stdout))
-        stderr_reader = asyncio.create_task(self._capture_tail(process.stderr))
+        stdout_reader = asyncio.create_task(
+            self._capture_tail(process.stdout, self.settings.max_capture_bytes)
+        )
+        stderr_reader = asyncio.create_task(
+            self._capture_tail(process.stderr, self.settings.max_capture_bytes)
+        )
         timed_out = False
+        container_removed = False
+
+        async def remove_container_once() -> None:
+            nonlocal container_removed
+            if container_removed:
+                return
+            container_removed = True
+            await self._remove_container(container_name)
+
         try:
             try:
                 await _await_runtime_operation(
@@ -169,10 +208,10 @@ class DockerCommandExecutor:
                 )
             except asyncio.TimeoutError:
                 timed_out = True
-                await _cleanup(self._remove_container(container_name))
+                await _cleanup(remove_container_once())
                 await _cleanup(terminate_process_tree(process))
             except ToolCancelledError as exc:
-                await _cleanup(self._remove_container(container_name))
+                await _cleanup(remove_container_once())
                 await _cleanup(terminate_process_tree(process))
                 exc.details.update(
                     {
@@ -183,13 +222,17 @@ class DockerCommandExecutor:
                 )
                 raise
             except asyncio.CancelledError:
-                await _cleanup(self._remove_container(container_name))
+                await _cleanup(remove_container_once())
+                await _cleanup(terminate_process_tree(process))
+                raise
+            except BaseException:
+                await _cleanup(remove_container_once())
                 await _cleanup(terminate_process_tree(process))
                 raise
             stdout, stdout_truncated = await stdout_reader
             stderr, stderr_truncated = await stderr_reader
             if timed_out:
-                raise TimeoutError(f"Command timed out after {timeout:g} seconds")
+                raise TimeoutError(_timeout_text(timeout))
             return CommandExecution(
                 output=stdout + stderr,
                 exit_code=process.returncode or 0,
@@ -210,7 +253,7 @@ class DockerCommandExecutor:
                     reader.cancel()
                 with contextlib.suppress(BaseException):
                     await reader
-            await _cleanup(self._remove_container(container_name))
+            await _cleanup(remove_container_once())
 
     def build_run_args(self, container_name: str, command: str) -> list[str]:
         workspace = str(self.workspace.root)
@@ -263,17 +306,12 @@ class DockerCommandExecutor:
     async def _capture_tail(
         self,
         stream: asyncio.StreamReader | None,
+        limit: int | None = None,
     ) -> tuple[bytes, bool]:
-        if stream is None:
-            return b"", False
-        captured = bytearray()
-        truncated = False
-        while chunk := await stream.read(64 * 1024):
-            captured.extend(chunk)
-            if len(captured) > self.settings.max_capture_bytes:
-                truncated = True
-                del captured[: len(captured) - self.settings.max_capture_bytes]
-        return bytes(captured), truncated
+        return await _capture_tail(
+            stream,
+            self.settings.max_capture_bytes if limit is None else limit,
+        )
 
     async def _remove_container(self, container_name: str) -> None:
         cleanup: asyncio.subprocess.Process | None = None
@@ -310,6 +348,32 @@ class DockerCommandExecutor:
             source = empty_directory if protected.is_dir() else empty_file
             mounts.append((source, self.workspace.to_execution_path(protected)))
         return mounts
+
+
+async def _capture_tail(
+    stream: asyncio.StreamReader | None,
+    max_bytes: int,
+) -> tuple[bytes, bool]:
+    """Read a pipe concurrently and retain only its tail."""
+
+    if stream is None:
+        return b"", False
+    captured = bytearray()
+    truncated = False
+    while chunk := await stream.read(64 * 1024):
+        captured.extend(chunk)
+        if len(captured) > max_bytes:
+            truncated = True
+            del captured[: len(captured) - max_bytes]
+    return bytes(captured), truncated
+
+
+def _timeout_text(timeout: float | None) -> str:
+    return (
+        f"Command timed out after {timeout:g} seconds"
+        if timeout is not None
+        else "Command timed out"
+    )
 
 
 async def _await_runtime_operation(

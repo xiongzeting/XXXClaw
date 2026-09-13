@@ -1,8 +1,9 @@
 'use strict';
 const $ = id => document.getElementById(id);
 const chat = $('chat'), input = $('input'), send = $('send');
+const editCancel = $('editCancel');
 const welcome = chat.innerHTML;
-let busy = false, following = true, activeRun = null;
+let busy = false, following = true, activeRun = null, editingLatest = null;
 const statusLine = document.createElement('div');
 statusLine.className = 'run-status'; statusLine.setAttribute('role', 'status');
 $('form').prepend(statusLine);
@@ -21,6 +22,12 @@ function follow(){if(following){chat.scrollTop = chat.scrollHeight;latest.hidden
 chat.addEventListener('scroll', () => {following = chat.scrollHeight-chat.scrollTop-chat.clientHeight < 70;latest.hidden = following});
 latest.onclick = () => {following = true;follow()};
 function setStatus(text, error=false){statusLine.textContent=text;statusLine.dataset.error=String(error)}
+function showCompaction(kind, details={}){
+  const labels={started:'上下文正在压缩…',completed:'上下文压缩完成',failed:'上下文压缩失败',aborted:'上下文压缩已取消',deferred:'上下文压缩已延后'};
+  const el=textNode('div',labels[kind]||'上下文压缩状态更新','context-event '+kind);
+  if(kind==='completed'&&details.tokens_saved)el.textContent+=` · 约节省 ${Number(details.tokens_saved).toLocaleString()} tokens`;
+  chat.append(el);follow();
+}
 function statusLabel(status){return {success:'已完成',paused:'任务已暂停',cancelled:'任务已取消',error:'任务失败'}[status]||'任务状态未知'}
 function terminalStatusText(run){
   if(run.error)return `请求失败：${run.error}`;
@@ -30,7 +37,7 @@ function terminalStatusText(run){
   }
   return statusLabel(run.status||(run.stopRequested?'cancelled':'error'));
 }
-function setBusy(value){busy=value;send.disabled=value;stop.hidden=!value;stop.disabled=false;$('newBtn').disabled=value;renderList()}
+function setBusy(value){busy=value;send.disabled=value;stop.hidden=!value;stop.disabled=false;$('newBtn').disabled=value;renderList();if(typeof refreshLatestEditControl==='function')refreshLatestEditControl()}
 function textNode(tag, text, className){const el=document.createElement(tag);el.textContent=text;if(className)el.className=className;return el}
 function addMessage(kind, text, phase=''){
   const el=document.createElement('div');el.className='message '+kind+(phase?' '+phase:'');
@@ -60,19 +67,57 @@ try{const saved=JSON.parse(localStorage.getItem('miniclaw_conversations')||'[]')
 let current=localStorage.getItem('miniclaw_current')||crypto.randomUUID();
 if(!conversations.some(c=>c.id===current))conversations.unshift({id:current,title:'新对话',messages:[],createdAt:Date.now()});
 function currentConv(){return conversations.find(c=>c.id===current)}
-function save(){try{localStorage.setItem('miniclaw_conversations',JSON.stringify(conversations));localStorage.setItem('miniclaw_current',current)}catch{setStatus('本地存储空间不足，本次记录暂未保存。',true)}renderList()}
+function estimateTokens(value){
+  const text=typeof value==='string'?value:JSON.stringify(value??'');let cjk=0,other=0;
+  for(const ch of text){if(/[\u3400-\u9fff\u3040-\u30ff\uac00-\ud7af]/.test(ch))cjk++;else other++}
+  return Math.ceil(cjk/1.5+other/4);
+}
+function conversationTokens(conv){return (conv?.messages||[]).reduce((sum,m)=>sum+estimateTokens(m.text||m.result||'')+estimateTokens(m.arguments||''),0)}
+function formatTokens(n){return n>=1000000?`${(n/1000000).toFixed(2)}M`:n>=1000?`${(n/1000).toFixed(1)}k`:String(n)}
+function updateTokenMeter(){const c=currentConv();const n=c?.tokenEstimate||conversationTokens(c);const suffix=c?.tokenEstimate?'（压缩后上下文）':'';const meter=$('tokenMeter');if(meter)meter.textContent=`当前对话约 ${formatTokens(n)} tokens${suffix}`}
+function save(){try{localStorage.setItem('miniclaw_conversations',JSON.stringify(conversations));localStorage.setItem('miniclaw_current',current)}catch{setStatus('本地存储空间不足，本次记录暂未保存。',true)}renderList();updateTokenMeter()}
 function renderList(){
   const box=$('conversationList');box.replaceChildren();
   for(const c of conversations){
+    const item=document.createElement('div');item.className='session-row'+(c.pinned?' pinned':'');
     const b=document.createElement('button');b.type='button';b.className='session'+(c.id===current?' active':'');b.setAttribute('aria-current',c.id===current?'true':'false');b.disabled=busy;
     b.title=c.title||'新对话';b.append(textNode('span',b.title,'session-title'));
     const date=c.createdAt?new Date(c.createdAt).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):c.id.slice(0,6);
     b.append(textNode('span',`${c.id===current?'当前对话 · ':''}${date} · ${c.messages.filter(m=>m.kind==='user').length} 条提问`,'session-meta'));
-    b.onclick=()=>loadConv(c.id);box.append(b);
+    b.onclick=()=>loadConv(c.id);item.append(b);
+    const actions=document.createElement('div');actions.className='session-actions';
+    const pin=document.createElement('button');pin.type='button';pin.className='session-action';pin.title=c.pinned?'取消置顶':'置顶';pin.textContent=c.pinned?'★':'☆';pin.onclick=e=>{e.stopPropagation();c.pinned=!c.pinned;conversations.sort((a,z)=>(z.pinned?1:0)-(a.pinned?1:0));save()};
+    const del=document.createElement('button');del.type='button';del.className='session-action danger';del.title='删除对话';del.textContent='×';del.onclick=e=>{e.stopPropagation();void deleteConversation(c.id)};
+    actions.append(pin,del);item.append(actions);box.append(item);
   }
   document.querySelector('.topbar .title').textContent=currentConv()?.title||'新对话';
 }
-function displayConv(id){current=id;following=true;resume.hidden=true;chat.replaceChildren();const c=currentConv();if(!c.messages.length)chat.innerHTML=welcome;for(const m of c.messages){if(m.kind==='tool')renderTool(m);else addMessage(m.kind,m.text,m.phase)}setStatus('');save();follow()}
+async function deleteConversation(id){
+  if(busy)return;
+  const target=conversations.find(c=>c.id===id);if(!target)return;
+  if(!window.confirm(`确定删除“${target.title||'新对话'}”吗？此操作不可恢复。`))return;
+  setBusy(true);
+  try{
+    let replacement=null;
+    if(id===current){const r=await fetch('/api/new',{method:'POST'});const x=await r.json();if(!r.ok)throw Error(x.error||'无法创建替代会话');replacement={id:x.session_id,serverId:x.session_id,title:'新对话',messages:[],createdAt:Date.now()};}
+    const r=await fetch('/api/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:target.serverId||target.id})});const x=await r.json();if(!r.ok)throw Error(x.error||'删除失败');
+    conversations=conversations.filter(c=>c.id!==id);if(replacement){conversations.unshift(replacement);current=replacement.id;displayConv(current)}else save();
+  }catch(e){setStatus(e.message,true)}finally{setBusy(false)}
+}
+function setEditing(value){editingLatest=value;editCancel.hidden=!value;send.textContent=value?'✓':'↑';send.setAttribute('aria-label',value?'提交修改':'发送消息');input.placeholder=value?'修改这条消息后按 Enter 重新发送…':'给 MiniClaw 一个任务…（Enter 发送，Shift+Enter 换行）'}
+function editLatestMessage(){
+  if(busy)return;const conv=currentConv();if(!conv?.serverId)return setStatus('当前会话没有可编辑的服务端记录',true);
+  const index=[...conv.messages].map((m,i)=>({m,i})).reverse().find(x=>x.m.kind==='user')?.i;
+  if(index===undefined)return setStatus('没有可修改的用户消息',true);
+  setEditing({index});input.value=conv.messages[index].text||'';input.focus();input.setSelectionRange(input.value.length,input.value.length);setStatus('正在编辑最新一条消息');
+}
+async function submitEditedMessage(text){
+  const conv=currentConv(),edit=editingLatest;if(!conv?.serverId||!edit)return;
+  setBusy(true);
+  try{const r=await fetch('/api/edit-latest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text})});const x=await r.json();if(!r.ok)throw Error(x.error||'修改失败');conv.messages=conv.messages.slice(0,edit.index);conv.tokenEstimate=null;setEditing(null);setBusy(false);displayConv(conv.id);await sendMessage(text)}catch(e){setStatus(e.message,true);setBusy(false)}
+}
+function refreshLatestEditControl(){document.querySelectorAll('.edit-latest').forEach(x=>x.remove());const last=[...chat.querySelectorAll('.message.user')].at(-1);if(last&&!busy){const edit=textNode('button','修改最新消息','edit-latest');edit.onclick=()=>void editLatestMessage();last.querySelector('.message-content').append(edit)}}
+function displayConv(id){current=id;following=true;resume.hidden=true;chat.replaceChildren();const c=currentConv();if(!c.messages.length)chat.innerHTML=welcome;for(const e of c.contextEvents||[]){if(e.type==='completed')showCompaction('completed',e);else if(e.type==='started')showCompaction('started',e);else if(e.type==='failed')showCompaction('failed',e);else if(e.type==='aborted')showCompaction('aborted',e);else if(e.type==='deferred')showCompaction('deferred',e)}for(const m of c.messages){if(m.kind==='tool')renderTool(m);else addMessage(m.kind,m.text,m.phase)}refreshLatestEditControl();setStatus('');save();updateTokenMeter();follow()}
 async function selectSession(id){
   const r=await fetch('/api/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:id})});
   const result=await r.json();if(!r.ok)throw Error(result.error||'切换会话失败');return result;
@@ -82,7 +127,7 @@ async function loadConv(id){
   if(!target.serverId){displayConv(id);setStatus('这是旧版本的本地历史，无法确认对应模型会话。请新建对话后继续。',true);return}
   setBusy(true);try{await selectSession(target.serverId);displayConv(id);await info()}catch(e){setStatus(e.message,true)}finally{setBusy(false)}
 }
-function appendRecord(conv,row){conv.messages.push(row);save()}
+function appendRecord(conv,row){conv.messages.push(row);if(conv.tokenEstimate)conv.tokenEstimate+=estimateTokens(row.text||row.result||'')+estimateTokens(row.arguments||'');save()}
 function markProgress(run){if(run.bubble){run.bubble.closest('.message').classList.add('progress');collapseProgress(run.bubble);run.row.phase='progress';run.bubble=null;run.row=null}}
 function consume(run,kind,e){
   if(kind==='status'){if(!run.error)setStatus(e.text+(e.elapsed?` · 已等待 ${e.elapsed} 秒`:''));return}
@@ -98,6 +143,11 @@ function consume(run,kind,e){
     return;
   }
   if(kind!=='agent')return;
+  if(e.type==='compaction_started'){showCompaction('started',e.details||{});setStatus('上下文正在压缩…');return}
+  if(e.type==='compaction_completed'){showCompaction('completed',e.details||{});setStatus('上下文压缩完成');return}
+  if(e.type==='compaction_failed'){showCompaction('failed',e.details||{});setStatus('上下文压缩失败',true);return}
+  if(e.type==='compaction_aborted'){showCompaction('aborted',e.details||{});setStatus('上下文压缩已取消',true);return}
+  if(e.type==='compaction_deferred'){showCompaction('deferred',e.details||{});setStatus('上下文压缩已延后');return}
   if(e.type==='text_delta'){
     if(!run.bubble){run.row={kind:'assistant',text:''};appendRecord(run.conv,run.row);run.bubble=addMessage('assistant','')}
     run.row.text+=e.text_delta||e.text||'';run.bubble.textContent=run.row.text;setStatus('正在生成回复');follow();
@@ -116,9 +166,10 @@ async function readEvents(body, onEvent){
 }
 async function sendMessage(text){
   text=text.trim();if(!text||busy)return;
+  if(editingLatest){await submitEditedMessage(text);return}
   if(!currentConv()?.serverId){setStatus('此历史记录没有对应的模型会话，请新建对话。',true);return}
   const conv=currentConv();document.querySelector('.welcome')?.remove();following=true;setBusy(true);
-  if(conv.title==='新对话')conv.title=text.slice(0,24);appendRecord(conv,{kind:'user',text});addMessage('user',text);input.value='';
+  if(conv.title==='新对话')conv.title=text.slice(0,24);appendRecord(conv,{kind:'user',text});addMessage('user',text);refreshLatestEditControl();input.value='';
   const run={conv,tools:new Map(),bubble:null,row:null,done:false,error:null,status:null,stopRequested:false};activeRun=run;resume.hidden=true;setStatus('正在连接模型…');
   try{
     const r=await fetch('/api/chat/stream',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,session_id:conv.serverId})});
@@ -154,6 +205,7 @@ async function resumeTask(){
 resume.onclick=()=>void resumeTask();
 stop.onclick=async()=>{const run=activeRun;if(!run)return;stop.disabled=true;try{const r=await fetch('/api/cancel',{method:'POST'});if(!r.ok)throw Error('停止请求失败');if(activeRun===run){run.stopRequested=true;setStatus('正在停止，等待当前任务结束…')}}catch(e){if(activeRun===run){setStatus(e.message,true);stop.disabled=false}}};
 $('form').addEventListener('submit',e=>{e.preventDefault();void sendMessage(input.value)});
+editCancel.onclick=()=>{setEditing(null);input.value='';input.focus();setStatus('')};
 input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();void sendMessage(input.value)}});
 chat.addEventListener('click',e=>{const b=e.target.closest('[data-prompt]');if(b)void sendMessage(b.dataset.prompt)});
 $('newBtn').onclick=async()=>{if(busy)return;setBusy(true);try{const r=await fetch('/api/new',{method:'POST'});const x=await r.json();if(!r.ok)throw Error(x.error||'新建对话失败，请稍后重试');current=x.session_id;conversations.unshift({id:current,serverId:current,title:'新对话',messages:[],createdAt:Date.now()});displayConv(current);input.focus()}catch(e){setStatus(e.message,true)}finally{setBusy(false)}};
@@ -162,15 +214,25 @@ async function initialize(){
   displayConv(current);setBusy(true);
   try{
     const r=await fetch('/api/info');if(!r.ok)throw Error('无法连接服务');const state=await r.json();let target=currentConv();
+    // The server can be switched externally (for example when importing an
+    // Eval trace). Prefer that active server session over a stale browser
+    // localStorage selection, while retaining the older local conversations.
+    const serverMatch=conversations.find(c=>c.serverId===state.session_id||c.id===state.session_id);
+    if(serverMatch){target=serverMatch;current=serverMatch.id}
+    else if(state.session_id!==target.serverId&&state.session_id!==target.id){
+      const response=await fetch('/api/history');if(!response.ok)throw Error('无法恢复会话历史');const history=await response.json();
+      target={id:state.session_id,serverId:state.session_id,title:history.messages.find(m=>m.kind==='user')?.text.slice(0,24)||'导入会话',messages:history.messages,contextEvents:history.context_events||[],tokenEstimate:history.token_estimate,createdAt:Date.now()};
+      conversations.unshift(target);current=target.id;
+    }
     if(target.serverId){await selectSession(target.serverId)}
     else if(target.id===state.session_id||target.messages.length===0){target.serverId=state.session_id}
     else if(/^[a-f0-9]{32}$/.test(target.id)){await selectSession(target.id);target.serverId=target.id}
     else{
       target=conversations.find(c=>c.serverId===state.session_id||c.id===state.session_id);
-      if(!target){const response=await fetch('/api/history');if(!response.ok)throw Error('无法恢复会话历史');const history=await response.json();target={id:state.session_id,serverId:state.session_id,title:history.messages.find(m=>m.kind==='user')?.text.slice(0,24)||'新对话',messages:history.messages,createdAt:Date.now()};conversations.unshift(target)}
+      if(!target){const response=await fetch('/api/history');if(!response.ok)throw Error('无法恢复会话历史');const history=await response.json();target={id:state.session_id,serverId:state.session_id,title:history.messages.find(m=>m.kind==='user')?.text.slice(0,24)||'新对话',messages:history.messages,contextEvents:history.context_events||[],tokenEstimate:history.token_estimate,createdAt:Date.now()};conversations.unshift(target)}
       target.serverId=state.session_id;
     }
-    if(target.messages.length===0){const response=await fetch('/api/history');if(response.ok){const history=await response.json();if(history.session_id===target.serverId){target.messages=history.messages;target.title=history.messages.find(m=>m.kind==='user')?.text.slice(0,24)||target.title}}}
+    if(target.messages.length===0){const response=await fetch('/api/history');if(response.ok){const history=await response.json();if(history.session_id===target.serverId){target.messages=history.messages;target.contextEvents=history.context_events||[];target.tokenEstimate=history.token_estimate;target.title=history.messages.find(m=>m.kind==='user')?.text.slice(0,24)||target.title}}}
     displayConv(target.id);await info();
   }catch(e){setStatus(e.message,true)}finally{setBusy(false)}
 }

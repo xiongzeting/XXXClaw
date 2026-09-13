@@ -254,10 +254,10 @@ class OpenAICompatibleClient:
     connect_timeout_seconds: float = 10.0
     first_token_timeout_seconds: float = 60.0
     idle_timeout_seconds: float = 30.0
-    max_retries: int = 2
-    retry_base_seconds: float = 0.5
-    retry_max_seconds: float = 8.0
-    retry_jitter_ratio: float = 0.2
+    max_retries: int = 5
+    retry_base_seconds: float = 1.0
+    retry_max_seconds: float = 32.0
+    retry_jitter_ratio: float = 0.0
     fallback_routes: tuple[OpenAICompatibleRoute, ...] = ()
     include_usage: bool = True
     transport: httpx.AsyncBaseTransport | None = field(default=None, repr=False)

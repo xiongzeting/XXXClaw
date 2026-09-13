@@ -17,7 +17,7 @@ from MiniClaw.evaluation.recovery import recovered_run_ids, with_network_recover
 from MiniClaw.evaluation.runner import _aggregate_metrics
 from MiniClaw.llm.openai_compatible import OpenAICompatibleClient
 from MiniClaw.llm.types import AssistantReply, ModelProfile, ToolInvocation
-from MiniClaw.trace.store import read_trace_records
+from MiniClaw.evaluation.trace.store import read_trace_records
 from tests.test_agent_loop import ScriptedModelClient
 from tests.test_llm_streaming import DelayedStream, request, sse, success_stream
 

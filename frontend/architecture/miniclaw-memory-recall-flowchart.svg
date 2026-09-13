@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2700" height="3450" viewBox="0 0 2700 3450" role="img" aria-labelledby="title desc">
+  <title id="title">MiniClaw Memory Recall Flowchart</title>
+  <desc id="desc">按照 Tool Runtime 和 Memory Compaction 的 Mermaid flowchart TD 构图，展示 MiniClaw 记忆召回从入口、查询准备、缓存判断，到 Semantic、Episodic、Archive 三路召回，再到过滤、融合、重排、去重、缓存、渲染和 user-role evidence 注入的完整流程。Skill 独立旁路，错误进入 Error Bus。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#06121d"/><stop offset=".5" stop-color="#0a1a27"/><stop offset="1" stop-color="#071019"/></linearGradient>
+    <linearGradient id="hero" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#43d9d0" stop-opacity=".22"/><stop offset=".5" stop-color="#6fa8ff" stop-opacity=".13"/><stop offset="1" stop-color="#b996ff" stop-opacity=".12"/></linearGradient>
+    <pattern id="grid" width="34" height="34" patternUnits="userSpaceOnUse"><path d="M34 0H0V34" fill="none" stroke="#294154" stroke-opacity=".18"/></pattern>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000" flood-opacity=".34"/></filter>
+    <marker id="aCyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#43d9d0"/></marker>
+    <marker id="aBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#6fa8ff"/></marker>
+    <marker id="aPurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#b996ff"/></marker>
+    <marker id="aOrange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#ffb86b"/></marker>
+    <marker id="aGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#65d28b"/></marker>
+    <marker id="aRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#ff738d"/></marker>
+    <style>
+      text{font-family:Inter,"Segoe UI","Microsoft YaHei",sans-serif;fill:#eaf4f8}.title{font-size:44px;font-weight:700}.subtitle{font-size:18px;fill:#9db2bf}.section{fill:#0d1c29;stroke:#355268;stroke-width:2;rx:22;filter:url(#shadow)}.hero{fill:url(#hero);stroke:#355268;stroke-width:2;rx:22}.node{fill:#102331;stroke:#38566c;stroke-width:1.8;rx:15}.entry{fill:#0d2d30;stroke:#43bdb5}.core{fill:#102840;stroke:#6fa8ff}.semantic{fill:#102c3a;stroke:#62c6ee}.episode{fill:#182d3a;stroke:#77c9ff}.archive{fill:#302419;stroke:#ffb86b}.filter{fill:#102d2a;stroke:#65d28b}.rerank{fill:#241d38;stroke:#b996ff}.error{fill:#321d27;stroke:#ff738d}.muted{fill:#0b1822;stroke:#294154}.result{fill:#17352d;stroke:#70d6a2}.node-title{font-size:21px;font-weight:700}.node-text{font-size:15px;fill:#c8d9e2}.code{font-family:"Cascadia Code",Consolas,monospace;font-size:14px;fill:#bcd0d9}.step{font-size:14px;font-weight:700;letter-spacing:1px}.section-title{font-size:25px;font-weight:700}.small{font-size:13px;fill:#8fa7b6}.label{font-size:14px;font-weight:700}.diamond-label{font-size:17px;font-weight:700;text-anchor:middle}.cyan-text{fill:#43d9d0}.blue-text{fill:#8bb6ff}.purple-text{fill:#c9b6ff}.orange-text{fill:#ffd09c}.green-text{fill:#8ae4a7}.red-text{fill:#ffafbd}.line-cyan{fill:none;stroke:#43d9d0;stroke-width:3.5;marker-end:url(#aCyan)}.line-blue{fill:none;stroke:#6fa8ff;stroke-width:3.5;marker-end:url(#aBlue)}.line-purple{fill:none;stroke:#b996ff;stroke-width:3.5;marker-end:url(#aPurple)}.line-orange{fill:none;stroke:#ffb86b;stroke-width:3.5;marker-end:url(#aOrange)}.line-green{fill:none;stroke:#65d28b;stroke-width:3.5;marker-end:url(#aGreen)}.line-red{fill:none;stroke:#ff738d;stroke-width:3.5;marker-end:url(#aRed)}.line-muted{fill:none;stroke:#6f8795;stroke-width:2.5;stroke-dasharray:8 8;marker-end:url(#aBlue)}.bus-row{font-size:14px;fill:#ffd1da}
+    </style>
+  </defs>
+
+  <rect width="2700" height="3450" fill="url(#bg)"/><rect width="2700" height="3450" fill="url(#grid)"/>
+  <rect x="60" y="42" width="2580" height="142" class="hero"/>
+  <text x="100" y="101" class="title">MiniClaw Memory Recall</text>
+  <text x="100" y="143" class="subtitle">入口 → 准备 → 缓存判断 → 三源召回 → 过滤 → 融合 → 重排 → 去重 → 渲染 → 一次注入</text>
+  <text x="2260" y="101" class="small">预算</text><text x="2260" y="132" class="code">auto≈4500 Token · explicit≈15000 Token</text>
+
+  <!-- A. Entry and preparation -->
+  <rect x="60" y="220" width="2080" height="700" class="section"/>
+  <text x="100" y="270" class="section-title">A. 入口与查询准备</text>
+  <text x="100" y="298" class="small">不同入口只负责提供查询，全部进入同一个 MemoryManager.retrieve 主线。</text>
+
+  <rect x="100" y="360" width="300" height="105" class="node entry"/><text x="130" y="398" class="step cyan-text">01 · 初始入口</text><text x="130" y="432" class="node-title">prompt_context</text><text x="130" y="455" class="node-text">run start</text>
+  <rect x="100" y="515" width="300" height="105" class="node entry"/><text x="130" y="553" class="step cyan-text">01b · 主动入口</text><text x="130" y="587" class="node-title">memory.search</text><text x="130" y="610" class="node-text">模型主动查询</text>
+  <rect x="470" y="360" width="300" height="105" class="node entry"/><text x="500" y="398" class="step cyan-text">01c · 动态入口</text><text x="500" y="432" class="node-title">tool evidence</text><text x="500" y="455" class="node-text">错误 / 路径 / 符号</text>
+  <rect x="470" y="515" width="300" height="105" class="node entry"/><text x="500" y="553" class="step cyan-text">01d · 边界入口</text><text x="500" y="587" class="node-title">after compaction</text><text x="500" y="610" class="node-text">沿用 root query</text>
+
+  <rect x="850" y="420" width="300" height="150" class="node core"/><text x="880" y="458" class="step blue-text">02 · 状态同步</text><text x="880" y="500" class="node-title">QueryTracker</text><text x="880" y="532" class="node-text">scope / memory_version</text><text x="880" y="556" class="node-text">新任务只 reset 一次</text>
+  <rect x="1230" y="420" width="300" height="150" class="node core"/><text x="1260" y="458" class="step blue-text">03 · 查询准备</text><text x="1260" y="500" class="node-title">rewrite_query</text><text x="1260" y="532" class="node-text">折叠空白、多行</text><text x="1260" y="556" class="node-text">最多约2400字符</text>
+  <rect x="1610" y="420" width="300" height="150" class="node core"/><text x="1640" y="458" class="step blue-text">04 · 统一召回</text><text x="1640" y="500" class="node-title">MemoryManager.retrieve</text><text x="1640" y="532" class="node-text">automatic / explicit</text><text x="1640" y="556" class="node-text">同一候选协议</text>
+  <polygon points="2020,420 2100,500 2020,580 1940,500" class="node archive"/><text x="2020" y="494" class="diamond-label orange-text">检索缓存</text><text x="2020" y="518" class="diamond-label orange-text">命中?</text>
+  <path d="M400 412H780V495H850" class="line-cyan"/><path d="M400 568H780V495H850" class="line-cyan"/><path d="M770 412H800V495H850" class="line-cyan"/><path d="M770 568H800V495H850" class="line-cyan"/>
+  <path d="M1150 495H1230" class="line-blue"/><path d="M1530 495H1610" class="line-blue"/><path d="M1910 495H1940" class="line-blue"/>
+
+  <rect x="1700" y="650" width="400" height="90" class="node result"/><text x="1730" y="686" class="step green-text">命中 · 不访问后端</text><text x="1730" y="720" class="node-title">返回缓存候选副本</text>
+  <rect x="1450" y="770" width="600" height="90" class="node core"/><text x="1480" y="806" class="step blue-text">05 · 未命中</text><text x="1480" y="840" class="node-title">按 query intent 分配三源候选额度</text>
+  <path d="M2020 580V650" class="line-green"/><text x="2040" y="625" class="label green-text">yes</text>
+  <path d="M2020 580V620H1500V770" class="line-blue"/><text x="2040" y="610" class="label blue-text">no</text>
+
+  <!-- B. Three recall lanes -->
+  <rect x="60" y="960" width="2080" height="860" class="section"/>
+  <text x="100" y="1008" class="section-title">B. 三类记忆独立召回</text>
+  <text x="100" y="1036" class="small">每个源先完成自己的混合召回和源内排序，之后才进入共享候选池；Skill 不在此处出现。</text>
+
+  <rect x="100" y="1080" width="550" height="520" class="node semantic"/>
+  <text x="135" y="1120" class="step blue-text">SOURCE 1 · 事实记忆</text><text x="135" y="1155" class="node-title">SemanticMemoryStore</text>
+  <rect x="135" y="1180" width="480" height="90" class="node"/><text x="165" y="1217" class="node-title">exact symbols</text><text x="165" y="1247" class="node-text">路径 / 错误码 / 标识符</text>
+  <rect x="135" y="1300" width="480" height="90" class="node"/><text x="165" y="1337" class="node-title">BM25 + vector / ANN</text><text x="165" y="1367" class="node-text">词法优先，语义相似兜底</text>
+  <rect x="135" y="1420" width="480" height="90" class="node"/><text x="165" y="1457" class="node-title">source RRF</text><text x="165" y="1487" class="node-text">exact / lexical / vector 融合</text>
+  <path d="M375 1270V1300" class="line-blue"/><path d="M375 1390V1420" class="line-blue"/>
+
+  <rect x="800" y="1080" width="550" height="520" class="node episode"/>
+  <text x="835" y="1120" class="step blue-text">SOURCE 2 · 情景记忆</text><text x="835" y="1155" class="node-title">EpisodicMemoryStore</text>
+  <rect x="835" y="1180" width="480" height="90" class="node"/><text x="865" y="1217" class="node-title">BM25 + vector / ANN</text><text x="865" y="1247" class="node-text">历史主题与相似任务召回</text>
+  <rect x="835" y="1300" width="480" height="90" class="node"/><text x="865" y="1337" class="node-title">source RRF</text><text x="865" y="1367" class="node-text">合并词法与语义排名</text>
+  <rect x="835" y="1420" width="480" height="90" class="node filter"/><text x="865" y="1457" class="node-title">automatic session gate</text><text x="865" y="1487" class="node-text">自动召回排除当前 session</text>
+  <path d="M1075 1270V1300" class="line-blue"/><path d="M1075 1390V1420" class="line-green"/>
+
+  <rect x="1450" y="1080" width="600" height="520" class="node archive"/>
+  <text x="1485" y="1120" class="step orange-text">SOURCE 3 · 归档历史</text><text x="1485" y="1155" class="node-title">ArchiveMemoryIndex</text>
+  <rect x="1485" y="1180" width="530" height="90" class="node"/><text x="1515" y="1217" class="node-title">child chunks</text><text x="1515" y="1247" class="node-text">exact + BM25 + vector 召回</text>
+  <rect x="1485" y="1300" width="530" height="90" class="node"/><text x="1515" y="1337" class="node-title">best anchor → parent</text><text x="1515" y="1367" class="node-text">命中子块后定位父级历史</text>
+  <rect x="1485" y="1420" width="530" height="90" class="node"/><text x="1515" y="1457" class="node-title">neighbor radius=1</text><text x="1515" y="1487" class="node-text">补相邻 chunk，再看旧 session</text>
+  <path d="M1750 1270V1300" class="line-orange"/><path d="M1750 1390V1420" class="line-orange"/>
+
+  <path d="M1750 860V920H375V1080" class="line-blue"/><path d="M1750 860V920H1075V1080" class="line-blue"/><path d="M1750 860V920H1750V1080" class="line-orange"/>
+  <text x="1460" y="908" class="label blue-text">source limits</text>
+  <rect x="250" y="1660" width="1650" height="90" class="node core"/><text x="285" y="1696" class="step blue-text">06 · 共享候选池</text><text x="285" y="1730" class="node-title">Semantic candidates + Episodic candidates + Archive candidates</text>
+  <path d="M375 1600V1660" class="line-blue"/><path d="M1075 1600V1660" class="line-blue"/><path d="M1750 1600V1660" class="line-orange"/>
+
+  <!-- C. Shared processing -->
+  <rect x="60" y="1860" width="2080" height="1420" class="section"/>
+  <text x="100" y="1908" class="section-title">C. 统一过滤、融合、重排与注入</text>
+  <text x="100" y="1936" class="small">候选只在统一过滤后参与跨源打分；最终按 Token 预算生成一份可注入证据。</text>
+
+  <rect x="100" y="2010" width="400" height="120" class="node filter"/><text x="130" y="2047" class="step green-text">07 · 可见性与时间</text><text x="130" y="2087" class="node-title">active / status / valid_until</text><text x="130" y="2117" class="node-text">删除、过期、未生效排除</text>
+  <rect x="550" y="2010" width="400" height="120" class="node filter"/><text x="580" y="2047" class="step green-text">08 · 作用域与可信度</text><text x="580" y="2087" class="node-title">workspace / user / channel</text><text x="580" y="2117" class="node-text">confidence 低于0.15排除</text>
+  <rect x="1000" y="2010" width="400" height="120" class="node filter"/><text x="1030" y="2047" class="step green-text">09 · 冲突与重复</text><text x="1030" y="2087" class="node-title">superseded / overlap</text><text x="1030" y="2117" class="node-text">不覆盖新版本，不重复注入</text>
+  <rect x="1450" y="2010" width="550" height="120" class="node rerank"/><text x="1480" y="2047" class="step purple-text">10 · 跨源初始融合</text><text x="1480" y="2087" class="node-title">weighted rank fusion</text><text x="1480" y="2117" class="node-text">Semantic 1.15 · Archive 1.0 · Episode 0.75</text>
+  <path d="M1075 1750V1840H300V2010" class="line-green"/><path d="M500 2070H550" class="line-green"/><path d="M950 2070H1000" class="line-green"/><path d="M1400 2070H1450" class="line-purple"/>
+
+  <rect x="100" y="2200" width="500" height="120" class="node rerank"/><text x="130" y="2237" class="step purple-text">11 · 确定性最终重排</text><text x="130" y="2277" class="node-title">deterministic_rerank_score</text><text x="130" y="2307" class="node-text">覆盖、短语、状态、置信度、时效</text>
+  <polygon points="750,2200 810,2260 750,2320 690,2260" class="node rerank"/><text x="750" y="2255" class="diamond-label purple-text">自动</text><text x="750" y="2278" class="diamond-label purple-text">召回?</text>
+  <rect x="900" y="2110" width="400" height="100" class="node result"/><text x="930" y="2147" class="step green-text">12a · automatic</text><text x="930" y="2182" class="node-title">确定性排序即可</text>
+  <rect x="900" y="2350" width="400" height="100" class="node rerank"/><text x="930" y="2387" class="step purple-text">12b · explicit</text><text x="930" y="2422" class="node-title">候选接近/冲突时调用 CE</text>
+  <rect x="1400" y="2200" width="600" height="120" class="node rerank"/><text x="1430" y="2237" class="step purple-text">13 · 最终分数</text><text x="1430" y="2277" class="node-title">deterministic + conditional CE</text><text x="1430" y="2307" class="node-text">自动模式关闭 Cross-Encoder 以节省等待</text>
+  <path d="M600 2260H690" class="line-purple"/><path d="M810 2260H850V2160H900" class="line-green"/><text x="820" y="2195" class="label green-text">yes</text><path d="M750 2320V2400H900" class="line-purple"/><text x="770" y="2385" class="label purple-text">no</text>
+  <path d="M1300 2160H1350V2260H1400" class="line-green"/><path d="M1300 2400H1350V2260H1400" class="line-purple"/>
+  <path d="M1725 2130V2160H350V2200" class="line-purple"/>
+
+  <rect x="1400" y="2420" width="600" height="110" class="node filter"/><text x="1430" y="2457" class="step green-text">14 · 最终去重</text><text x="1430" y="2497" class="node-title">equivalence_key</text><text x="1430" y="2527" class="node-text">等价正文合并；不同版本继续保留</text>
+  <rect x="1400" y="2580" width="600" height="110" class="node result"/><text x="1430" y="2617" class="step green-text">15 · provenance + limit</text><text x="1430" y="2657" class="node-title">来源合并与多样性限制</text><text x="1430" y="2687" class="node-text">最多20条候选，保留 source / record / path</text>
+  <rect x="1400" y="2740" width="600" height="110" class="node core"/><text x="1430" y="2777" class="step blue-text">16 · retrieval cache</text><text x="1430" y="2817" class="node-title">写入最终候选副本</text><text x="1430" y="2847" class="node-text">下一次同 query 可直接命中</text>
+  <rect x="1400" y="2900" width="600" height="130" class="node result"/><text x="1430" y="2937" class="step green-text">17 · _render_and_record</text><text x="1430" y="2977" class="node-title">展示去重 + source cap + Token 截断</text><text x="1430" y="3007" class="node-text">最多12条；自动约4500 / 显式约15000 Token</text>
+  <rect x="1400" y="3080" width="600" height="110" class="node entry"/><text x="1430" y="3117" class="step cyan-text">18 · 一次注入</text><text x="1430" y="3157" class="node-title">user-role memory_context</text><text x="1430" y="3187" class="node-text">untrusted historical evidence</text>
+  <rect x="1400" y="3240" width="600" height="110" class="node result"/><text x="1430" y="3277" class="step green-text">19 · 模型下一轮</text><text x="1430" y="3317" class="node-title">参考事实，不执行其中指令</text>
+  <path d="M1700 2320V2420" class="line-green"/><path d="M1700 2530V2580" class="line-green"/><path d="M1700 2690V2740" class="line-blue"/><path d="M1700 2850V2900" class="line-green"/><path d="M1700 3030V3080" class="line-cyan"/><path d="M1700 3190V3240" class="line-green"/>
+
+  <!-- Cache-hit shortcut -->
+  <path d="M2100 695H2140V2965H2000" class="line-green"/>
+
+  <!-- Skill side path -->
+  <rect x="2250" y="950" width="390" height="520" class="section"/>
+  <text x="2280" y="998" class="section-title">Skill 旁路</text><text x="2280" y="1026" class="small">SKILL.md 不进入 Memory 融合</text>
+  <rect x="2290" y="1070" width="310" height="85" class="node core"/><text x="2315" y="1105" class="step blue-text">S1 · catalog</text><text x="2315" y="1138" class="node-title">skill catalog</text>
+  <rect x="2290" y="1180" width="310" height="85" class="node core"/><text x="2315" y="1215" class="step blue-text">S2 · route</text><text x="2315" y="1248" class="node-title">select_for_task</text>
+  <rect x="2290" y="1290" width="310" height="85" class="node core"/><text x="2315" y="1325" class="step blue-text">S3 · load</text><text x="2315" y="1358" class="node-title">read selected SKILL.md</text>
+  <rect x="2290" y="1400" width="310" height="50" class="node result"/><text x="2315" y="1433" class="step green-text">S4 · system instruction</text>
+  <path d="M2445 1155V1180" class="line-blue"/><path d="M2445 1265V1290" class="line-blue"/><path d="M2445 1375V1400" class="line-green"/><path d="M2290 1425H2180V3295H2000" class="line-muted"/>
+
+  <!-- Mutation side path -->
+  <rect x="2250" y="1510" width="390" height="800" class="section"/>
+  <text x="2280" y="1558" class="section-title">缓存失效旁路</text><text x="2280" y="1586" class="small">记忆修改后不复用旧候选</text>
+  <rect x="2290" y="1630" width="310" height="90" class="node archive"/><text x="2315" y="1666" class="step orange-text">W1 · MemoryTool</text><text x="2315" y="1700" class="node-title">remember / replace / forget</text>
+  <rect x="2290" y="1750" width="310" height="90" class="node filter"/><text x="2315" y="1786" class="step green-text">W2 · 更新视图</text><text x="2315" y="1820" class="node-title">Semantic + Evidence</text>
+  <rect x="2290" y="1870" width="310" height="90" class="node core"/><text x="2315" y="1906" class="step blue-text">W3 · 版本变化</text><text x="2315" y="1940" class="node-title">memory_version++</text>
+  <rect x="2290" y="1990" width="310" height="90" class="node result"/><text x="2315" y="2026" class="step green-text">W4 · 失效缓存</text><text x="2315" y="2060" class="node-title">retrieval cache clear</text>
+  <rect x="2290" y="2110" width="310" height="90" class="node muted"/><text x="2315" y="2146" class="step blue-text">W5 · 下一次查询</text><text x="2315" y="2180" class="node-title">从新版本重新召回</text>
+  <path d="M2445 1720V1750" class="line-orange"/><path d="M2445 1840V1870" class="line-green"/><path d="M2445 1960V1990" class="line-blue"/><path d="M2445 2080V2110" class="line-green"/>
+
+  <!-- Error Bus -->
+  <rect x="2250" y="220" width="390" height="680" class="section error"/>
+  <text x="2280" y="270" class="node-title red-text">Error Bus</text><text x="2280" y="300" class="small">错误保留原文并交给统一 ToolResult</text>
+  <rect x="2290" y="350" width="310" height="100" class="node muted"/><text x="2315" y="387" class="bus-row">empty / invalid query</text><text x="2315" y="420" class="bus-row">返回空候选，不伪造记忆</text>
+  <rect x="2290" y="480" width="310" height="100" class="node muted"/><text x="2315" y="517" class="bus-row">index / backend failure</text><text x="2315" y="550" class="bus-row">保留错误与调用上下文</text>
+  <rect x="2290" y="610" width="310" height="100" class="node error"/><text x="2315" y="647" class="step red-text">异常出口</text><text x="2315" y="680" class="node-title">ToolResult error + Trace</text>
+  <rect x="2290" y="740" width="310" height="100" class="node error"/><text x="2315" y="777" class="step red-text">恢复原则</text><text x="2315" y="810" class="bus-row">不猜测、不注入伪记忆</text>
+  <path d="M2445 450V480" class="line-red"/><path d="M2445 580V610" class="line-red"/><path d="M2445 710V740" class="line-red"/>
+  <path d="M1610 420V320H2210V660H2290" class="line-red"/><path d="M1900 1705H2210V660H2290" class="line-red"/>
+
+  <!-- Legend -->
+  <rect x="60" y="3390" width="2580" height="55" class="node muted"/>
+  <circle cx="105" cy="3417" r="8" fill="#43d9d0"/><text x="125" y="3422" class="small">入口/主线</text>
+  <circle cx="275" cy="3417" r="8" fill="#62c6ee"/><text x="295" y="3422" class="small">召回</text>
+  <circle cx="405" cy="3417" r="8" fill="#65d28b"/><text x="425" y="3422" class="small">过滤/结果</text>
+  <circle cx="575" cy="3417" r="8" fill="#b996ff"/><text x="595" y="3422" class="small">融合/重排</text>
+  <circle cx="755" cy="3417" r="8" fill="#ffb86b"/><text x="775" y="3422" class="small">判断/缓存</text>
+  <circle cx="945" cy="3417" r="8" fill="#ff738d"/><text x="965" y="3422" class="small">Error Bus</text>
+  <text x="1130" y="3422" class="small">核心原则：三路独立召回，统一过滤；一次最终重排；最后去重并按 Token 预算注入。</text>
+</svg>

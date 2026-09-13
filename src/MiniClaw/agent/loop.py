@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import asyncio
+import hashlib
+import json
+import time
 from collections.abc import AsyncIterator, Callable
-from types import SimpleNamespace
 
 from MiniClaw.llm.types import (
     AssistantReply,
@@ -32,7 +35,9 @@ class AgentLoop:
         profile: ModelProfile,
         tool_executor: AgentToolExecutor,
         system_prompt: str = "",
-        max_turns: int = 32,
+        token_budget: int = 1_000_000,
+        time_budget_seconds: float = 3_600.0,
+        no_progress_limit: int = 6,
         transform_context: ContextTransform | None = None,
         system_prompt_provider: SystemPromptProvider | None = None,
         context_messages_provider: ContextMessagesProvider | None = None,
@@ -47,7 +52,15 @@ class AgentLoop:
         self.profile = profile
         self.tool_executor = tool_executor
         self.system_prompt = system_prompt
-        self.max_turns = max_turns
+        if token_budget <= 0:
+            raise ValueError("token_budget must be positive")
+        if time_budget_seconds <= 0:
+            raise ValueError("time_budget_seconds must be positive")
+        if no_progress_limit <= 0:
+            raise ValueError("no_progress_limit must be positive")
+        self.token_budget = token_budget
+        self.time_budget_seconds = time_budget_seconds
+        self.no_progress_limit = no_progress_limit
         self.transform_context = transform_context
         self.system_prompt_provider = system_prompt_provider
         self.context_messages_provider = context_messages_provider
@@ -57,7 +70,10 @@ class AgentLoop:
         self.final_response_guard = final_response_guard
         self.request_tools_provider = request_tools_provider
         self.context_updates_provider = context_updates_provider
-        self.context_journal = ContextJournal()
+        # Context updates are deltas.  Rebase only on a real size boundary;
+        # frequent full resets resend retrieved evidence and were a major
+        # source of cumulative input tokens in long eval runs.
+        self.context_journal = ContextJournal(max_updates=128, extra_budget_bytes=64_000)
         self.prefix_diagnostics = PrefixDiagnostics()
         self.messages: list[ChatMessage] = []
         self._running = False
@@ -84,6 +100,10 @@ class AgentLoop:
         self._running = True
         cancellation_token = CancellationToken()
         self._cancellation_token = cancellation_token
+        started = time.monotonic()
+        used_tokens = 0
+        no_progress_streak = 0
+        last_progress_fingerprint: str | None = None
         try:
             yield AgentEvent(type="run_started")
             if prompt is not None:
@@ -92,7 +112,8 @@ class AgentLoop:
                 self.messages.append(user_message)
                 yield AgentEvent(type="message_added", message=user_message)
 
-            for turn_number in range(start_turn, self.max_turns + 1):
+            turn_number = start_turn
+            while True:
                 if cancellation_token.cancelled:
                     yield AgentEvent(
                         type="run_finished",
@@ -102,6 +123,25 @@ class AgentLoop:
                         },
                     )
                     return
+                elapsed = time.monotonic() - started
+                if elapsed >= self.time_budget_seconds:
+                    for event in self._budget_events("time", used_tokens, elapsed, no_progress_streak):
+                        yield event
+                    return
+                if used_tokens >= self.token_budget:
+                    for event in self._budget_events(
+                        "token", used_tokens, elapsed, no_progress_streak
+                    ):
+                        yield event
+                    return
+                # A request-scoped advertisement must never leak into the
+                # next request.  The executor will bind the freshly built
+                # definition set immediately below.
+                clear_request_tool_names = getattr(
+                    self.tool_executor, "set_request_tool_names", None
+                )
+                if callable(clear_request_tool_names):
+                    clear_request_tool_names(None)
                 yield AgentEvent(type="turn_started", details={"turn": turn_number})
                 reply: AssistantReply | None = None
                 recovering = prompt is None and turn_number == start_turn and self.pending_request is not None
@@ -114,17 +154,15 @@ class AgentLoop:
                         self.messages.append(update)
                         yield AgentEvent(type='message_added', message=update)
                 request_messages = [] if recovering else self._request_messages(system_prompt=system_prompt)
-                if not recovering and turn_number >= max(1, self.max_turns - 2):
-                    request_messages = [*request_messages, ChatMessage(role="system", content=(
-                        f"Execution budget: {self.max_turns - turn_number + 1} model calls remain; "
-                        "the hard limit will not increase. Finish the remaining work or explain the unfinished parts "
-                        "and the next action in your response. The session is saved automatically. "
-                        "Do not restart completed work or claim completion with unchecked requirements."
-                    ))]
+                request_tools = (
+                    self.request_tools_provider()
+                    if self.request_tools_provider
+                    else self.tool_executor.definitions()
+                )
                 request = ModelRequest(
                     profile=self.profile,
                     messages=request_messages,
-                    tools=(self.request_tools_provider() if self.request_tools_provider else self.tool_executor.definitions()),
+                    tools=request_tools,
                     metadata={"purpose": "agent", "buffer_network_retries": True,
                               **({"context_projection": self.context_diagnostics_provider()}
                                  if self.context_diagnostics_provider else {})},
@@ -133,20 +171,39 @@ class AgentLoop:
                 if recovering:
                     request = self.pending_request
                     request.cancellation_token = cancellation_token
+                set_request_tool_names = getattr(
+                    self.tool_executor, "set_request_tool_names", None
+                )
+                if callable(set_request_tool_names):
+                    set_request_tool_names(
+                        definition.get("name")
+                        for definition in (request.tools or [])
+                        if isinstance(definition, dict) and definition.get("name")
+                    )
                 request.metadata['request_prefix'] = self.prefix_diagnostics.observe(request)
                 request.metadata['context_updates'] = dict(self.context_journal.last_details)
                 self.pending_request = request
-                async for model_event in self.model_client.stream(request):
-                    if model_event.type == "text_delta":
-                        if self.final_guard is None and self.final_response_guard is None:
-                            yield AgentEvent(type="text_delta", text=model_event.text)
-                    elif model_event.type == "error":
-                        yield AgentEvent(type="error", text=model_event.error or "model error", is_error=True)
-                    elif model_event.type == "completed":
-                        reply = model_event.reply
+                remaining = max(0.001, self.time_budget_seconds - (time.monotonic() - started))
+                try:
+                    async with asyncio.timeout(remaining):
+                        async for model_event in self.model_client.stream(request):
+                            if model_event.type == "text_delta":
+                                if self.final_guard is None and self.final_response_guard is None:
+                                    yield AgentEvent(type="text_delta", text=model_event.text)
+                            elif model_event.type == "error":
+                                yield AgentEvent(type="error", text=model_event.error or "model error", is_error=True)
+                            elif model_event.type == "completed":
+                                reply = model_event.reply
+                except TimeoutError:
+                    for event in self._budget_events(
+                        "time", used_tokens, time.monotonic() - started, no_progress_streak
+                    ):
+                        yield event
+                    return
 
                 if reply is None:
                     raise RuntimeError("model stream ended without a completed reply")
+                used_tokens += reply.usage.input_tokens + reply.usage.output_tokens
                 if reply.stop_reason == "aborted" or cancellation_token.cancelled:
                     assistant_message = ChatMessage(role="assistant", content=reply.content)
                     if reply.content:
@@ -167,6 +224,20 @@ class AgentLoop:
                 if not blocker and not reply.tool_calls and self.final_response_guard:
                     blocker = self.final_response_guard(reply.content)
                 if blocker:
+                    fingerprint = self._fingerprint(reply, blocker)
+                    no_progress_streak = (
+                        no_progress_streak + 1
+                        if fingerprint == last_progress_fingerprint
+                        else 0
+                    )
+                    last_progress_fingerprint = fingerprint
+                    if no_progress_streak >= self.no_progress_limit:
+                        for event in self._budget_events(
+                            "no_progress", used_tokens, time.monotonic() - started,
+                            no_progress_streak,
+                        ):
+                            yield event
+                        return
                     feedback = ChatMessage(role="user", content="[COMPLETION_CHECK] " + blocker)
                     self.messages.append(feedback)
                     yield AgentEvent(type="message_added", message=feedback)
@@ -193,7 +264,8 @@ class AgentLoop:
                     )
                     return
 
-                for call_index, call in enumerate(reply.tool_calls):
+                call_index = 0
+                while call_index < len(reply.tool_calls):
                     if cancellation_token.cancelled:
                         for cancelled_event in self._cancelled_tool_events(
                             reply.tool_calls[call_index:],
@@ -206,13 +278,42 @@ class AgentLoop:
                             details={"stop_reason": "aborted", "reason": cancellation_token.reason},
                         )
                         return
-                    yield AgentEvent(type="tool_started", tool_call=call)
+                    # Only explicitly read-only calls are safe to overlap. The
+                    # executor remains the sole dispatch boundary; this merely
+                    # schedules independent calls and reassembles their results
+                    # in the model's original order.
+                    parallel_safe = getattr(self.tool_executor, "is_parallel_safe", None)
+                    if callable(parallel_safe) and parallel_safe(reply.tool_calls[call_index].name):
+                        end = call_index + 1
+                        while end < len(reply.tool_calls) and parallel_safe(reply.tool_calls[end].name):
+                            end += 1
+                    else:
+                        end = call_index + 1
+                    batch = reply.tool_calls[call_index:end]
+                    is_available = getattr(self.tool_executor, "is_available", None)
+                    for batch_call in batch:
+                        tool_is_available = bool(is_available(batch_call.name)) if callable(is_available) else True
+                        if tool_is_available:
+                            yield AgentEvent(type="tool_started", tool_call=batch_call)
+                    remaining = max(0.001, self.time_budget_seconds - (time.monotonic() - started))
                     try:
-                        if self.request_tools_provider is not None and call.name not in {d['name'] for d in request.tools}:
-                            result = SimpleNamespace(content='Tool unavailable in the current execution state. Deliver the verified result.',
-                                                     is_error=True, details={'status':'unavailable', 'not_started':True})
-                        else:
-                            result = await self.tool_executor.execute(call, cancellation_token)
+                        async with asyncio.timeout(remaining):
+                            results = await asyncio.gather(*(
+                                self.tool_executor.execute(batch_call, cancellation_token)
+                                for batch_call in batch
+                            ))
+                    except TimeoutError:
+                        cancellation_token.cancel("Agent time budget exhausted")
+                        for event in self._cancelled_tool_events(
+                            reply.tool_calls[call_index:], "Agent time budget exhausted"
+                        ):
+                            yield event
+                        for event in self._budget_events(
+                            "time", used_tokens, time.monotonic() - started,
+                            no_progress_streak,
+                        ):
+                            yield event
+                        return
                     except ToolCancelledError as exc:
                         for cancelled_event in self._cancelled_tool_events(
                             reply.tool_calls[call_index:],
@@ -229,37 +330,54 @@ class AgentLoop:
                             },
                         )
                         return
-                    tool_message = ChatMessage(
-                        role="tool",
-                        content=result.content,
-                        tool_call_id=call.call_id,
-                        name=call.name,
-                    )
-                    self.messages.append(tool_message)
-                    yield AgentEvent(
-                        type="tool_finished",
-                        message=tool_message,
-                        tool_call=call,
-                        tool_result=result.content,
-                        is_error=result.is_error,
-                        details=result.details,
-                    )
-                    yield AgentEvent(type="message_added", message=tool_message)
+                    for batch_call, result in zip(batch, results, strict=True):
+                        tool_message = ChatMessage(
+                            role="tool",
+                            content=result.content,
+                            tool_call_id=batch_call.call_id,
+                            name=batch_call.name,
+                        )
+                        self.messages.append(tool_message)
+                        yield AgentEvent(
+                            type="tool_finished",
+                            message=tool_message,
+                            tool_call=batch_call,
+                            tool_result=result.content,
+                            is_error=result.is_error,
+                            details=result.details,
+                        )
+                        yield AgentEvent(type="message_added", message=tool_message)
+                    call_index = end
 
                 yield AgentEvent(type="turn_finished", message=assistant_message, usage=reply.usage)
-
-            message = ChatMessage(role="assistant", content=(
-                f"已达到本轮 {self.max_turns} 步执行上限，任务暂停，尚未确认完成。"
-                + (self.pause_message_provider() if self.pause_message_provider else
-                   "已保留当前对话和工具结果；恢复时应从最后结果继续，核对剩余工作与验收项。")
-            ))
-            self.messages.append(message)
-            yield AgentEvent(type="message_added", message=message)
-            yield AgentEvent(type="text_delta", text=message.content)
-            yield AgentEvent(type="run_finished", message=message, details={
-                "stop_reason": "budget_exhausted", "status": "paused", "resumable": True,
-                "turn_limit": self.max_turns,
-            })
+                fingerprint = self._fingerprint(
+                    reply,
+                    [
+                        self.messages[-len(batch):][index].content
+                        for index in range(len(batch))
+                    ],
+                )
+                no_progress_streak = (
+                    no_progress_streak + 1
+                    if fingerprint == last_progress_fingerprint
+                    else 0
+                )
+                last_progress_fingerprint = fingerprint
+                if no_progress_streak >= self.no_progress_limit:
+                    for event in self._budget_events(
+                        "no_progress", used_tokens, time.monotonic() - started,
+                        no_progress_streak,
+                    ):
+                        yield event
+                    return
+                if used_tokens >= self.token_budget:
+                    for event in self._budget_events(
+                        "token", used_tokens, time.monotonic() - started,
+                        no_progress_streak,
+                    ):
+                        yield event
+                    return
+                turn_number += 1
         except Exception as exc:
             yield AgentEvent(type="error", text=str(exc), is_error=True)
             yield AgentEvent(
@@ -269,25 +387,94 @@ class AgentLoop:
             )
         finally:
             self._running = False
+            clear_request_tool_names = getattr(
+                self.tool_executor, "set_request_tool_names", None
+            )
+            if callable(clear_request_tool_names):
+                clear_request_tool_names(None)
             if self._cancellation_token is cancellation_token:
                 self._cancellation_token = None
 
+    @staticmethod
+    def _fingerprint(reply: AssistantReply, extra: object) -> str:
+        payload = {
+            "content": reply.content,
+            "tool_calls": [
+                {"name": call.name, "arguments": call.arguments}
+                for call in reply.tool_calls
+            ],
+            "extra": extra,
+        }
+        encoded = json.dumps(payload, ensure_ascii=False, sort_keys=True, default=str)
+        return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+
+    def _budget_events(
+        self, budget_type: str, used_tokens: int, elapsed: float, no_progress_streak: int
+    ) -> list[AgentEvent]:
+        message = ChatMessage(
+            role="assistant",
+            content=(
+                "执行预算已达到安全边界，任务暂停，尚未确认完成。"
+                + (self.pause_message_provider() if self.pause_message_provider else
+                   "已保留当前对话和工具结果；恢复时从最后结果继续核对。")
+            ),
+        )
+        self.messages.append(message)
+        details = {
+            "stop_reason": "budget_exhausted",
+            "budget_type": budget_type,
+            "status": "paused",
+            "resumable": True,
+            "token_usage": used_tokens,
+            "token_budget": self.token_budget,
+            "elapsed_seconds": round(elapsed, 3),
+            "time_budget_seconds": self.time_budget_seconds,
+            "no_progress_streak": no_progress_streak,
+            "no_progress_limit": self.no_progress_limit,
+        }
+        return [
+            AgentEvent(type="message_added", message=message),
+            AgentEvent(type="text_delta", text=message.content),
+            AgentEvent(type="run_finished", message=message, details=details),
+        ]
+
     def _request_messages(self, *, system_prompt: str | None = None) -> list[ChatMessage]:
-        messages = self.context_journal.project(self.messages)
-        if self.transform_context:
-            messages = self.transform_context(messages)
+        # The coding context transform owns the single request projection.
+        # Applying ContextJournal.project here as well only walked the same
+        # history twice and made the request path harder to explain.
+        messages = (
+            self.transform_context(self.messages)
+            if self.transform_context
+            else self.context_journal.project(self.messages)
+        )
         if system_prompt is None:
             system_prompt = self.system_prompt_provider() if self.system_prompt_provider else self.system_prompt
         context_messages = (
             self.context_messages_provider() if self.context_messages_provider else []
         )
+        # Retrieved memory is mutable reference data. Keep it immediately after
+        # the stable policy prefix and before the live turn input so updates do
+        # not invalidate the cached system prefix and cannot masquerade as
+        # system instructions. Other context providers retain their historical
+        # trailing placement for protocol compatibility.
+        leading_context = [
+            message
+            for message in context_messages
+            if message.name in {"memory_context", "semantic_memory"}
+        ]
+        trailing_context = [
+            message
+            for message in context_messages
+            if message.name not in {"memory_context", "semantic_memory"}
+        ]
         if system_prompt:
             return [
                 ChatMessage(role="system", content=system_prompt),
+                *leading_context,
                 *messages,
-                *context_messages,
+                *trailing_context,
             ]
-        return [*messages, *context_messages]
+        return [*leading_context, *messages, *trailing_context]
 
     def _cancelled_tool_events(
         self,

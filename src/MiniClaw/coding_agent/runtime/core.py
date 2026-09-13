@@ -29,24 +29,48 @@ class ToolRuntime:
     async def run(
         self,
         command: str,
-        cwd: Path,
+        cwd: str | Path,
         timeout: float | None,
         cancellation_token: CancellationToken | None = None,
     ) -> CommandExecution:
-        effective_timeout = (
-            self.settings.default_command_timeout_seconds if timeout is None else float(timeout)
+        if not isinstance(command, str) or not command.strip():
+            raise ValueError("command must be a non-empty string")
+        self.settings.validate()
+        effective_timeout = self.effective_timeout(timeout)
+        resolved_cwd = self.workspace.resolve(
+            cwd,
+            access="execute",
+            must_exist=True,
         )
-        if effective_timeout > self.settings.max_command_timeout_seconds:
+        if not resolved_cwd.is_dir():
+            raise NotADirectoryError(f"command cwd is not a directory: {cwd}")
+        if resolved_cwd != self.host_workspace:
+            raise PermissionError(
+                "commands must run from the Runtime workspace root"
+            )
+        if cancellation_token is not None:
+            cancellation_token.raise_if_tool_cancelled(stage="runtime_prepare")
+        return await self.command_executor.run(
+            command,
+            resolved_cwd,
+            effective_timeout,
+            cancellation_token,
+        )
+
+    def effective_timeout(self, timeout: float | None) -> float:
+        value = (
+            self.settings.default_command_timeout_seconds
+            if timeout is None
+            else float(timeout)
+        )
+        if value <= 0:
+            raise ValueError("command timeout must be a positive number")
+        if value > self.settings.max_command_timeout_seconds:
             raise ValueError(
                 "Command timeout exceeds "
                 f"{self.settings.max_command_timeout_seconds:g} seconds"
             )
-        return await self.command_executor.run(
-            command,
-            cwd,
-            effective_timeout,
-            cancellation_token,
-        )
+        return value
 
     def trace_metadata(self) -> dict[str, Any]:
         data: dict[str, Any] = {
@@ -84,6 +108,7 @@ def create_tool_runtime(
     *,
     validate_docker: bool = True,
 ) -> ToolRuntime:
+    settings.validate()
     source = Path(source_workspace).resolve(strict=True)
     session = Path(session_dir).resolve(strict=False)
     session.mkdir(parents=True, exist_ok=True)
@@ -105,7 +130,7 @@ def create_tool_runtime(
         if validate_docker:
             executor.validate()
     else:
-        executor = HostCommandExecutor()
+        executor = HostCommandExecutor(settings)
     return ToolRuntime(
         settings=settings,
         source_workspace=source,

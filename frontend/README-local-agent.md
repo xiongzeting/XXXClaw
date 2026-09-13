@@ -5,10 +5,10 @@
 在项目根目录运行：
 
 ```powershell
-python frontend/local_agent_server.py --workspace D:\MIniClaw --port 8765
+python frontend/local_agent_server.py --workspace D:\MIniClaw --port 8767
 ```
 
-然后打开 <http://127.0.0.1:8765>。
+然后打开 <http://127.0.0.1:8767>。
 
 常用参数：
 
@@ -21,7 +21,7 @@ python frontend/local_agent_server.py `
   --approval-policy ask
 ```
 
-默认读取项目根目录的 `.env`，浏览器前端使用原有 `primary` 路由及其模型配置（当前为 `gpt-5.6-luna`，凭据为 `MINICLAW_PRIMARY_API_KEY`）；CLI、Eval 和 benchmark 仍使用各自原来的 provider。可用 `--provider deepseek --model deepseek-chat` 显式切换 DeepSeek。前端默认使用 `host` Runtime，因此不要求预先安装 Docker 镜像；需要 Docker 隔离时再显式传 `--sandbox docker`。浏览器请求会串行复用一个 `CodingAssistant` 会话；刷新页面不会重建后端会话，重新启动服务可通过 `--session-id` 恢复现有会话。
+默认读取项目根目录的 `.env`，浏览器前端使用原有 `primary` 路由及其模型配置（当前为 `gpt-5.6-luna`，凭据为 `MINICLAW_PRIMARY_API_KEY`）；CLI、Eval 和 benchmark 仍使用各自原来的 provider。可用 `--provider deepseek --model deepseek-chat` 显式切换 DeepSeek。前端默认使用 `host` Runtime，因此不要求预先安装 Docker 镜像；需要 Docker 隔离时再显式传 `--sandbox docker`。浏览器请求会串行复用一个 `CodingAssistant` 会话；刷新页面不会重建后端会话，服务重启也会自动读取 `.aster/web/last-session-id` 恢复最近会话，除非用户点击“新建对话”。固定入口为 `http://127.0.0.1:8767`。
 
 Windows Conda 环境若出现 `libiomp5md.dll` 重复加载，启动脚本会在导入 MiniClaw 前设置本地演示所需的兼容变量；长期使用仍建议统一 NumPy、FAISS、PyTorch 的 OpenMP 运行库。
 
@@ -29,6 +29,6 @@ Windows Conda 环境若出现 `libiomp5md.dll` 重复加载，启动脚本会在
 
 提示词的行为规则集中在 `src/MiniClaw/coding_agent/assistant/prompts.py`，启动时按 host/Docker 和实际操作系统补充终端说明。Windows host 的 `bash` 工具仍通过 cmd 执行；复杂 PowerShell 工作先读取技能，写入 `.ps1`，再调用检测到的 PowerShell 7 路径。
 
-本工作区已从个人 Codex 技能目录复制 `powershell-safe-invocation/SKILL.md` 和 `reference.md` 到 `.aster/skills/powershell-safe-invocation/`。MiniClaw 在系统提示词中列出技能名称与描述，正文通过 `skill(action="read", name="powershell-safe-invocation")` 按需读取；这不是自动同步所有 Codex 指令。添加技能或修改 Python 提示词后需重启服务。
+本工作区已从个人 Codex 技能目录复制 `powershell-safe-invocation/SKILL.md` 和 `reference.md` 到 `.aster/skills/powershell-safe-invocation/`。MiniClaw 在任务开始时按任务语义发现、匹配并注入少量相关 skill；skill 不是模型工具，也不会走向量或 BM25 检索。添加技能或修改 Python 提示词后需重启服务。
 
 重启时可传 `--session-id <现有会话 UUID>` 恢复对应 `.aster/web/<UUID>/session.jsonl` 中的历史。`/api/info` 返回当前 `session_id`；新建对话仍生成新的 UUID。

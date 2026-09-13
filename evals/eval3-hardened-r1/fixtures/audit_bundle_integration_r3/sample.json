@@ -1,0 +1,23 @@
+{
+  "events": [
+    {
+      "tenant": "a",
+      "event_id": "e",
+      "revision": 1,
+      "user": "u",
+      "action": "read",
+      "time": "2026-09-01T01:00Z",
+      "amount": 5
+    }
+  ],
+  "policies": [
+    {
+      "tenant": "a",
+      "user": "*",
+      "action": "*",
+      "start": "2026-09-01T00:00Z",
+      "end": "2026-09-02T00:00Z",
+      "decision": "allow"
+    }
+  ]
+}

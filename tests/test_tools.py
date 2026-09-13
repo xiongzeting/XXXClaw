@@ -17,8 +17,6 @@ from MiniClaw.coding_agent.tools import (
     GrepTool,
     ReadTool,
     ToolExecutor,
-    ToolManager,
-    ToolRolePolicy,
     ToolResult,
     WorkspaceGuard,
     WriteTool,
@@ -27,17 +25,57 @@ from MiniClaw.coding_agent.tools.factory import create_coding_tools
 
 
 class ToolTests(unittest.IsolatedAsyncioTestCase):
+    async def test_executor_records_lifecycle_and_structured_validation_error(self) -> None:
+        class Echo:
+            name = "echo"
+            description = "echo"
+            input_schema = {"type": "object", "properties": {"value": {"type": "string"}}, "required": ["value"], "additionalProperties": False}
+
+            async def execute(self, arguments, cancellation_token=None):
+                return ToolResult(arguments["value"])
+
+        executor = ToolExecutor(tools=[Echo()])
+        result = await executor.execute(ToolInvocation("bad", "echo", {}))
+        self.assertTrue(result.is_error)
+        self.assertEqual(result.details["error"]["code"], "INVALID_ARGUMENT")
+        self.assertEqual(result.details["lifecycle"], "rejected")
+        self.assertTrue(result.details["not_started"])
+        self.assertEqual(executor.call_history[-1]["call_id"], "bad")
+
+    async def test_executor_retries_only_idempotent_transient_failures(self) -> None:
+        class Flaky:
+            name = "read"
+            description = "read"
+            input_schema = {"type": "object", "properties": {}}
+            idempotent = True
+
+            def __init__(self):
+                self.calls = 0
+
+            async def execute(self, arguments, cancellation_token=None):
+                self.calls += 1
+                if self.calls == 1:
+                    raise OSError("connection reset by peer")
+                return ToolResult("ok")
+
+        tool = Flaky()
+        executor = ToolExecutor(tools=[tool], max_retries=1)
+        result = await executor.execute(ToolInvocation("retry", "read", {}))
+        self.assertEqual(result.content, "ok")
+        self.assertEqual(result.details["retry_count"], 1)
+        self.assertEqual(result.details["lifecycle"], "succeeded")
+
     async def test_workspace_rejects_parent_escape(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             boundary = WorkspaceGuard(directory)
             with self.assertRaises(PermissionError):
                 boundary.resolve("../outside.txt")
 
-    async def test_factory_registers_default_tool_names_in_order(self) -> None:
+    async def test_factory_returns_default_tool_names_in_order(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             self.assertEqual(
                 [tool.name for tool in create_coding_tools(directory)],
-                ["read", "bash", "edit", "write", "grep", "search"],
+            ["read", "bash", "edit", "write", "grep", "search", "ls", "find"],
             )
 
     async def test_search_lists_files_without_exposing_protected_paths(self) -> None:
@@ -47,10 +85,9 @@ class ToolTests(unittest.IsolatedAsyncioTestCase):
             (root / "src" / "app.py").write_text("print('ok')", encoding="utf-8")
             (root / "top.py").write_text("", encoding="utf-8")
             (root / ".env").write_text("SECRET=value", encoding="utf-8")
-            manager = ToolManager()
-            manager.register(SearchTool(WorkspaceGuard(root)))
-            self.assertEqual([tool["name"] for tool in manager.definitions()], ["search"])
-            result = await manager.execute(
+            executor = ToolExecutor(tools=[SearchTool(WorkspaceGuard(root))])
+            self.assertEqual([tool["name"] for tool in executor.definitions()], ["search"])
+            result = await executor.execute(
                 ToolInvocation("search-1", "search", {"pattern": "**/*"})
             )
             self.assertFalse(result.is_error)
@@ -58,24 +95,22 @@ class ToolTests(unittest.IsolatedAsyncioTestCase):
             self.assertIn("top.py", result.content)
             self.assertNotIn(".env", result.content)
 
-    async def test_search_manager_preserves_path_filter_and_limit(self) -> None:
+    async def test_search_executor_preserves_path_filter_and_limit(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "src").mkdir()
             for relative in ("src/a.py", "src/b.py", "src/notes.txt", "top.py"):
                 (root / relative).write_text("", encoding="utf-8")
-            manager = ToolManager()
-            for tool in create_coding_tools(directory):
-                manager.register(tool)
+            executor = ToolExecutor(tools=create_coding_tools(directory))
 
-            scoped = await manager.execute(
+            scoped = await executor.execute(
                 ToolInvocation("search-1", "search", {"pattern": "**/*.py", "path": "src"})
             )
             self.assertFalse(scoped.is_error)
             self.assertEqual(scoped.details["matchedPaths"], ["src/a.py", "src/b.py"])
             self.assertFalse(scoped.details["truncated"])
 
-            limited = await manager.execute(
+            limited = await executor.execute(
                 ToolInvocation(
                     "search-2", "search", {"pattern": "**/*.py", "path": "src", "limit": 1}
                 )
@@ -85,13 +120,13 @@ class ToolTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(limited.details["matches"], 1)
             self.assertTrue(limited.details["truncated"])
 
-            invalid = await manager.execute(
+            invalid = await executor.execute(
                 ToolInvocation("search-3", "search", {"pattern": "**/*.py", "limit": 0})
             )
             self.assertTrue(invalid.is_error)
             self.assertIn("arguments.limit must be at least 1", invalid.content)
 
-    async def test_tool_manager_supports_role_injection_and_policy(self) -> None:
+    async def test_executor_uses_one_fixed_tool_set(self) -> None:
         class NamedTool:
             description = "test"
             input_schema = {"type": "object", "properties": {}, "additionalProperties": False}
@@ -102,36 +137,20 @@ class ToolTests(unittest.IsolatedAsyncioTestCase):
             async def execute(self, arguments):
                 return ToolResult(content=self.name)
 
-        manager = ToolManager(
-            active_role="reviewer",
-            role_policies={"reviewer": ToolRolePolicy(deny=frozenset({"write"}))},
+        executor = ToolExecutor(
+            tools=[NamedTool("read"), NamedTool("write"), NamedTool("review_notes")]
         )
-        manager.register(NamedTool("read"))
-        manager.register(NamedTool("write"))
-        manager.inject("reviewer", [NamedTool("review_notes")])
-        manager.inject("operator", [NamedTool("deploy")])
-
-        self.assertEqual(manager.available_names(), ("read", "review_notes"))
-        denied = await manager.execute(ToolInvocation("1", "write", {}))
-        hidden = await manager.execute(ToolInvocation("2", "deploy", {}))
-        self.assertTrue(denied.is_error)
-        self.assertTrue(hidden.is_error)
-        manager.set_role("operator")
-        self.assertEqual(manager.available_names(), ("read", "write", "deploy"))
-
-    async def test_tool_manager_rejects_malformed_role_policy(self) -> None:
-        with self.assertRaisesRegex(TypeError, "iterable of tool names"):
-            ToolManager(role_policies={"reviewer": {"allow": "read"}})
-        with self.assertRaisesRegex(ValueError, "unknown tool role policy fields"):
-            ToolManager(role_policies={"reviewer": {"allows": ["read"]}})
-        with self.assertRaisesRegex(ValueError, "role must be non-empty"):
-            ToolManager(role_policies={" ": {"allow": ["read"]}})
+        self.assertEqual(executor.available_names(), ("read", "write", "review_notes"))
+        result = await executor.execute(ToolInvocation("1", "review_notes", {}))
+        self.assertFalse(result.is_error)
+        with self.assertRaisesRegex(ValueError, "duplicate tool name"):
+            ToolExecutor(tools=[NamedTool("read"), NamedTool("read")])
 
     async def test_write_creates_parents_and_read_supports_offset_limit(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            executor = ToolExecutor()
-            executor.register(WriteTool(WorkspaceGuard(directory)))
-            executor.register(ReadTool(WorkspaceGuard(directory)))
+            executor = ToolExecutor(
+                tools=[WriteTool(WorkspaceGuard(directory)), ReadTool(WorkspaceGuard(directory))]
+            )
             written = await executor.execute(
                 ToolInvocation("1", "write", {"path": "nested/a.txt", "content": "one\ntwo\nthree\nfour"})
             )
@@ -146,8 +165,7 @@ class ToolTests(unittest.IsolatedAsyncioTestCase):
     async def test_read_rejects_offset_beyond_end(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             Path(directory, "a.txt").write_text("one\ntwo", encoding="utf-8")
-            executor = ToolExecutor()
-            executor.register(ReadTool(WorkspaceGuard(directory)))
+            executor = ToolExecutor(tools=[ReadTool(WorkspaceGuard(directory))])
             result = await executor.execute(ToolInvocation("1", "read", {"path": "a.txt", "offset": 3}))
             self.assertTrue(result.is_error)
             self.assertIn("beyond end of file", result.content)
@@ -196,12 +214,22 @@ class ToolTests(unittest.IsolatedAsyncioTestCase):
             with self.subTest(message=message), tempfile.TemporaryDirectory() as directory:
                 path = Path(directory, "a.txt")
                 path.write_text(original, encoding="utf-8")
-                executor = ToolExecutor()
-                executor.register(EditTool(WorkspaceGuard(directory)))
+                executor = ToolExecutor(tools=[EditTool(WorkspaceGuard(directory))])
                 result = await executor.execute(ToolInvocation("1", "edit", {"path": "a.txt", "edits": edits}))
                 self.assertTrue(result.is_error)
                 self.assertIn(message, result.content)
                 self.assertEqual(path.read_text(encoding="utf-8"), original)
+
+    async def test_edit_duplicate_error_suggests_scoped_context(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory, "a.txt")
+            path.write_text("x x", encoding="utf-8")
+            executor = ToolExecutor(tools=[EditTool(WorkspaceGuard(directory))])
+            result = await executor.execute(
+                ToolInvocation("1", "edit", {"path": "a.txt", "edits": [{"oldText": "x", "newText": "y"}]})
+            )
+            self.assertTrue(result.is_error)
+            self.assertIn("surrounding function or line context", result.content)
 
     async def test_edit_preserves_crlf_and_utf8_bom(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -216,8 +244,7 @@ class ToolTests(unittest.IsolatedAsyncioTestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory, "a.txt")
             path.write_text("old", encoding="utf-8")
-            executor = ToolExecutor()
-            executor.register(EditTool(WorkspaceGuard(directory)))
+            executor = ToolExecutor(tools=[EditTool(WorkspaceGuard(directory))])
             result = await executor.execute(
                 ToolInvocation("1", "edit", {"path": "a.txt", "oldText": "old", "newText": "new"})
             )
@@ -287,8 +314,7 @@ class ToolTests(unittest.IsolatedAsyncioTestCase):
                     {"command": f'{executable} -c "import time; time.sleep(2)"', "timeout": 0.1}
                 )
 
-            executor = ToolExecutor()
-            executor.register(tool)
+            executor = ToolExecutor(tools=[tool])
             timed_out = await executor.execute(
                 ToolInvocation(
                     "1",
@@ -327,8 +353,7 @@ class ToolTests(unittest.IsolatedAsyncioTestCase):
     async def test_recursive_schema_validation_rejects_bad_edit(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             Path(directory, "a.txt").write_text("x", encoding="utf-8")
-            executor = ToolExecutor()
-            executor.register(EditTool(WorkspaceGuard(directory)))
+            executor = ToolExecutor(tools=[EditTool(WorkspaceGuard(directory))])
             result = await executor.execute(
                 ToolInvocation("1", "edit", {"path": "a.txt", "edits": [{"oldText": "x"}]})
             )

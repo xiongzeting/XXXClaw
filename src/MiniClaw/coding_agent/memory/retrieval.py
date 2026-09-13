@@ -109,14 +109,59 @@ class MemoryDocument:
     status: str = ""
     confidence: float = 1.0
     source_kind: str = ""
+    authority: str = "inferred"
+    source_type: str = "conversation"
+    revision: int = 1
+    valid_from: str = ""
+    valid_until: str = ""
+    verified_by: str = ""
+    canonical_key: str = ""
+
+    @property
+    def authority_rank(self) -> int:
+        return {"user_confirmed": 4, "tool_verified": 3, "verified": 3,
+                "historical_inference": 2, "inferred": 1, "model_guess": 0}.get(
+                    self.authority.casefold(), 1
+                )
 
     @property
     def conflict_key(self) -> str:
+        if self.canonical_key.strip():
+            return self.canonical_key.strip().casefold()
         if not self.subject.strip() or not self.relation.strip() or self.version is None:
             return ""
         subject = " ".join(self.subject.casefold().split())
         relation = " ".join(self.relation.casefold().split())
         return f"{subject}\x1f{relation}"
+
+
+_INACTIVE_MEMORY_STATUSES = frozenset(
+    {"deleted", "forgotten", "deprecated", "superseded", "revoked", "expired", "reference_only"}
+)
+
+
+def _parse_memory_time(value: str) -> datetime | None:
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo is not None else parsed.replace(tzinfo=timezone.utc)
+
+
+def _document_is_current(document: MemoryDocument, now: datetime) -> bool:
+    """Apply visibility and validity before collapsing contradictory records."""
+
+    if document.status.casefold() in _INACTIVE_MEMORY_STATUSES:
+        return False
+    valid_from = _parse_memory_time(document.valid_from)
+    if valid_from is not None and valid_from > now:
+        return False
+    valid_until = _parse_memory_time(document.valid_until)
+    if valid_until is not None and valid_until <= now:
+        return False
+    return True
 
 
 @dataclass(slots=True, frozen=True)
@@ -149,6 +194,8 @@ def search_memory_documents(
     limit: int,
     *,
     use_cross_encoder: bool = True,
+    use_vector: bool = True,
+    use_exact: bool = True,
 ) -> list[RetrievalHit]:
     """Call a retriever without breaking older injected implementations.
 
@@ -161,19 +208,39 @@ def search_memory_documents(
     search = retriever.search
     try:
         parameters = inspect.signature(search).parameters.values()
-        supports_option = any(
+        supports_cross_encoder = any(
             parameter.name == "use_cross_encoder"
             or parameter.kind is inspect.Parameter.VAR_KEYWORD
             for parameter in parameters
         )
+        supports_vector = any(
+            parameter.name == "use_vector"
+            or parameter.kind is inspect.Parameter.VAR_KEYWORD
+            for parameter in parameters
+        )
+        supports_exact = any(
+            parameter.name == "use_exact"
+            or parameter.kind is inspect.Parameter.VAR_KEYWORD
+            for parameter in parameters
+        )
     except (TypeError, ValueError):
-        supports_option = False
-    if supports_option:
+        supports_cross_encoder = supports_vector = supports_exact = False
+    # An injected implementation may expose only one optional channel.  In
+    # particular, an exact-only adapter must still receive ``use_exact``;
+    # otherwise the compatibility shim silently falls back to its default.
+    if supports_cross_encoder or supports_vector or supports_exact:
+        options = {}
+        if supports_cross_encoder:
+            options["use_cross_encoder"] = use_cross_encoder
+        if supports_vector:
+            options["use_vector"] = use_vector
+        if supports_exact:
+            options["use_exact"] = use_exact
         return search(
             query,
             documents,
             limit,
-            use_cross_encoder=use_cross_encoder,
+            **options,
         )
     return search(query, documents, limit)
 
@@ -1421,6 +1488,8 @@ class HybridMemoryRetriever:
         limit: int = 5,
         *,
         use_cross_encoder: bool = True,
+        use_vector: bool = True,
+        use_exact: bool = True,
     ) -> list[RetrievalHit]:
         if not query.strip() or not documents:
             self.last_diagnostics = {
@@ -1435,8 +1504,8 @@ class HybridMemoryRetriever:
             return []
         documents, superseded = self._active_documents(documents)
         bm25_scores = self._bm25(query, documents)
-        vector_scores = self._vector(query, documents)
-        exact_scores = _exact_symbol_scores(query, documents)
+        vector_scores = self._vector(query, documents) if use_vector else [0.0] * len(documents)
+        exact_scores = _exact_symbol_scores(query, documents) if use_exact else [0.0] * len(documents)
         vector_diagnostics = {
             **self._vector_diagnostics(),
             "exact_symbols": list(exact_search_symbols(query)),
@@ -1489,11 +1558,18 @@ class HybridMemoryRetriever:
                     superseded_record_ids=superseded.get(document.record_id, ()),
                 )
             )
+        # Relevance is the primary ordering signal.  Authority and revision
+        # are governance tie-breakers only; putting them first lets an
+        # unrelated high-authority fact hide a genuinely relevant result.
         hits.sort(
             key=lambda hit: (
                 hit.score,
-                -(hit.bm25_rank or 10**9),
+                hit.exact_score,
                 hit.bm25_score,
+                hit.vector_score,
+                hit.document.authority_rank,
+                hit.document.revision,
+                -(hit.bm25_rank or 10**9),
             ),
             reverse=True,
         )
@@ -1528,7 +1604,16 @@ class HybridMemoryRetriever:
             "cross_encoder_candidates": 0,
             "cross_encoder_seconds": 0.0,
         }
-        if not use_cross_encoder or self.reranker is None:
+        close_scores = (max(deterministic) - min(deterministic)) <= 0.08 * max(max(deterministic), 1e-12)
+        has_conflict = len({document.conflict_key for document in documents if document.conflict_key}) < len(
+            [document for document in documents if document.conflict_key]
+        )
+        # Natural-language phrases are still allowed to reach the reranker; only
+        # high-specificity symbol matches can justify skipping it.
+        exact_anchor = bool(exact_search_symbols(query)) and any(
+            _has_exact_content_phrase(query, document.content) for document in documents[:1]
+        )
+        if not use_cross_encoder or self.reranker is None or (len(documents) > 8 and not close_scores and not has_conflict) or exact_anchor:
             self.last_diagnostics = diagnostics
             return [RerankResult(score, score, None) for score in deterministic]
 
@@ -1571,17 +1656,21 @@ class HybridMemoryRetriever:
     def _active_documents(
         documents: list[MemoryDocument],
     ) -> tuple[list[MemoryDocument], dict[str, tuple[str, ...]]]:
-        """Resolve versioned conflicts before relevance ranking.
+        """Filter current records, then resolve versioned conflicts.
 
         Retrieval score answers "is this relevant?"; it must not decide which
         contradictory version is active. Structured documents that share a
-        subject/relation conflict key are collapsed to the greatest version.
-        Unstructured documents keep their existing behavior.
+        subject/relation conflict key are collapsed to the greatest current
+        version. Expired or withdrawn records must not supersede a current
+        record before the visibility gate runs.
         """
 
         grouped: dict[str, list[tuple[int, MemoryDocument]]] = {}
         active_with_index: list[tuple[int, MemoryDocument]] = []
+        now = datetime.now(timezone.utc)
         for index, document in enumerate(documents):
+            if not _document_is_current(document, now):
+                continue
             key = document.conflict_key
             if not key:
                 active_with_index.append((index, document))
@@ -1592,7 +1681,12 @@ class HybridMemoryRetriever:
         for members in grouped.values():
             latest_index, latest = max(
                 members,
-                key=lambda item: (item[1].version if item[1].version is not None else -1, item[0]),
+                key=lambda item: (
+                    item[1].authority_rank,
+                    item[1].revision,
+                    item[1].version if item[1].version is not None else -1,
+                    item[0],
+                ),
             )
             active_with_index.append((latest_index, latest))
             older = tuple(
@@ -1600,6 +1694,8 @@ class HybridMemoryRetriever:
                 for _, document in sorted(
                     members,
                     key=lambda item: (
+                        item[1].authority_rank,
+                        item[1].revision,
                         item[1].version if item[1].version is not None else -1,
                         item[0],
                     ),

@@ -1,0 +1,4121 @@
+{
+  "sft": {
+    "status": "completed",
+    "started_at": "2026-08-09T16:06:37.573257+00:00",
+    "finished_at": "2026-08-09T16:50:25.720250+00:00",
+    "optimizer_steps": 339,
+    "peak_gpu_memory_gib": 89.64,
+    "total_time_minutes": 43.8,
+    "trainer_runtime_seconds": 2351.4373,
+    "wall_seconds": 2628.146993,
+    "devices": [
+      {
+        "index": 0,
+        "name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+        "total_memory_gib": 94.97,
+        "capability": [
+          12,
+          0
+        ]
+      }
+    ],
+    "recipe": {
+      "max_length": 30000,
+      "epochs": 3.0,
+      "per_device_train_batch_size": 1,
+      "per_device_eval_batch_size": 1,
+      "gradient_accumulation_steps": 8,
+      "learning_rate": 0.0001,
+      "warmup_ratio": 0.03,
+      "lora_r": 16,
+      "lora_alpha": 32,
+      "lora_dropout": 0.05,
+      "dtype": "bf16",
+      "gradient_checkpointing": false,
+      "torch_empty_cache_steps": 1,
+      "attention_implementation": "flash_attention_2",
+      "liger_kernel": true,
+      "qlora": false,
+      "max_steps": -1,
+      "seed": 42,
+      "target_modules": [
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj",
+        "gate_proj",
+        "up_proj",
+        "down_proj",
+        "in_proj_qkv",
+        "in_proj_z",
+        "in_proj_b",
+        "in_proj_a",
+        "out_proj"
+      ]
+    }
+  },
+  "grpo100": {
+    "rows": 98,
+    "actor_updates": 98,
+    "timing_s/step": {
+      "count": 98,
+      "missing_steps": [],
+      "max": 196.98109167441726,
+      "sum": 6384.382115386426
+    },
+    "timing_s/gen": {
+      "count": 98,
+      "missing_steps": [],
+      "max": 106.18144435994327,
+      "sum": 2766.621345307678
+    },
+    "timing_s/update_actor": {
+      "count": 98,
+      "missing_steps": [],
+      "max": 18.35506285354495,
+      "sum": 1006.2557729519904
+    },
+    "timing_s/update_weights": {
+      "count": 98,
+      "missing_steps": [],
+      "max": 10.625997396185994,
+      "sum": 802.6515935882926
+    },
+    "actor/perf/max_memory_allocated_gb": {
+      "count": 98,
+      "missing_steps": [],
+      "max": 90.08833456039429
+    },
+    "actor/perf/max_memory_reserved_gb": {
+      "count": 98,
+      "missing_steps": [],
+      "max": 91.712890625
+    },
+    "segments": {
+      "grpo-all-1to3-clean-20260813-r2.log": {
+        "rows": 15,
+        "actor_updates": 15,
+        "timing_s/step": {
+          "count": 15,
+          "missing_steps": [],
+          "max": 81.459083000198,
+          "sum": 775.440815506503
+        },
+        "timing_s/gen": {
+          "count": 15,
+          "missing_steps": [],
+          "max": 30.201870461925864,
+          "sum": 294.45900787226856
+        },
+        "timing_s/update_actor": {
+          "count": 15,
+          "missing_steps": [],
+          "max": 12.021086819469929,
+          "sum": 119.13797012530267
+        },
+        "timing_s/update_weights": {
+          "count": 15,
+          "missing_steps": [],
+          "max": 8.976618640124798,
+          "sum": 121.01933597587049
+        },
+        "actor/perf/max_memory_allocated_gb": {
+          "count": 15,
+          "missing_steps": [],
+          "max": 69.8760118484497
+        },
+        "actor/perf/max_memory_reserved_gb": {
+          "count": 15,
+          "missing_steps": [],
+          "max": 75.072265625
+        }
+      },
+      "grpo-resume-from-step15-workerfix-20260814.log": {
+        "rows": 10,
+        "actor_updates": 10,
+        "timing_s/step": {
+          "count": 10,
+          "missing_steps": [],
+          "max": 116.16436856426299,
+          "sum": 687.5091861803085
+        },
+        "timing_s/gen": {
+          "count": 10,
+          "missing_steps": [],
+          "max": 95.09270750917494,
+          "sum": 316.3679797016084
+        },
+        "timing_s/update_actor": {
+          "count": 10,
+          "missing_steps": [],
+          "max": 12.395375020802021,
+          "sum": 81.26638416387141
+        },
+        "timing_s/update_weights": {
+          "count": 10,
+          "missing_steps": [],
+          "max": 8.48379204235971,
+          "sum": 80.92835078574717
+        },
+        "actor/perf/max_memory_allocated_gb": {
+          "count": 10,
+          "missing_steps": [],
+          "max": 80.33321380615234
+        },
+        "actor/perf/max_memory_reserved_gb": {
+          "count": 10,
+          "missing_steps": [],
+          "max": 85.6953125
+        }
+      },
+      "grpo-resume-from-step25-emptygroupfix-20260814.log": {
+        "rows": 4,
+        "actor_updates": 4,
+        "timing_s/step": {
+          "count": 4,
+          "missing_steps": [],
+          "max": 86.53374208509922,
+          "sum": 216.91985968500376
+        },
+        "timing_s/gen": {
+          "count": 4,
+          "missing_steps": [],
+          "max": 29.176467526704073,
+          "sum": 87.11944838799536
+        },
+        "timing_s/update_actor": {
+          "count": 4,
+          "missing_steps": [],
+          "max": 11.752661446109414,
+          "sum": 28.582317424938083
+        },
+        "timing_s/update_weights": {
+          "count": 4,
+          "missing_steps": [],
+          "max": 9.945233896374702,
+          "sum": 35.88252903521061
+        },
+        "actor/perf/max_memory_allocated_gb": {
+          "count": 4,
+          "missing_steps": [],
+          "max": 65.04048109054565
+        },
+        "actor/perf/max_memory_reserved_gb": {
+          "count": 4,
+          "missing_steps": [],
+          "max": 70.677734375
+        }
+      },
+      "grpo-resume-from-step30-20260814.log": {
+        "rows": 19,
+        "actor_updates": 19,
+        "timing_s/step": {
+          "count": 19,
+          "missing_steps": [],
+          "max": 119.71022909134626,
+          "sum": 1065.9316109064966
+        },
+        "timing_s/gen": {
+          "count": 19,
+          "missing_steps": [],
+          "max": 106.18144435994327,
+          "sum": 488.020575735718
+        },
+        "timing_s/update_actor": {
+          "count": 19,
+          "missing_steps": [],
+          "max": 14.358606282621622,
+          "sum": 157.80685977451503
+        },
+        "timing_s/update_weights": {
+          "count": 19,
+          "missing_steps": [],
+          "max": 10.625997396185994,
+          "sum": 151.91347531229258
+        },
+        "actor/perf/max_memory_allocated_gb": {
+          "count": 19,
+          "missing_steps": [],
+          "max": 70.66055297851562
+        },
+        "actor/perf/max_memory_reserved_gb": {
+          "count": 19,
+          "missing_steps": [],
+          "max": 75.79296875
+        }
+      },
+      "training.log": {
+        "rows": 50,
+        "actor_updates": 50,
+        "timing_s/step": {
+          "count": 50,
+          "missing_steps": [],
+          "max": 196.98109167441726,
+          "sum": 3638.5806431081146
+        },
+        "timing_s/gen": {
+          "count": 50,
+          "missing_steps": [],
+          "max": 92.57123475894332,
+          "sum": 1580.6543336100876
+        },
+        "timing_s/update_actor": {
+          "count": 50,
+          "missing_steps": [],
+          "max": 18.35506285354495,
+          "sum": 619.4622414633632
+        },
+        "timing_s/update_weights": {
+          "count": 50,
+          "missing_steps": [],
+          "max": 9.35819541849196,
+          "sum": 412.90790247917175
+        },
+        "actor/perf/max_memory_allocated_gb": {
+          "count": 50,
+          "missing_steps": [],
+          "max": 90.08833456039429
+        },
+        "actor/perf/max_memory_reserved_gb": {
+          "count": 50,
+          "missing_steps": [],
+          "max": 91.712890625
+        }
+      }
+    }
+  },
+  "grpo230": {
+    "rows": 230,
+    "actor_updates": 172,
+    "timing_s/step": {
+      "count": 172,
+      "missing_steps": [
+        69,
+        74,
+        88,
+        91,
+        93,
+        95,
+        100,
+        103,
+        105,
+        106,
+        108,
+        110,
+        119,
+        123,
+        129,
+        130,
+        131,
+        135,
+        137,
+        138,
+        142,
+        144,
+        148,
+        149,
+        150,
+        151,
+        152,
+        159,
+        161,
+        163,
+        171,
+        172,
+        173,
+        174,
+        176,
+        183,
+        186,
+        189,
+        191,
+        192,
+        193,
+        195,
+        198,
+        199,
+        203,
+        207,
+        208,
+        209,
+        212,
+        213,
+        215,
+        216,
+        218,
+        220,
+        224,
+        227,
+        228,
+        229
+      ],
+      "max": 236.32795204780996,
+      "sum": 9979.66058363812
+    },
+    "timing_s/gen": {
+      "count": 172,
+      "missing_steps": [
+        69,
+        74,
+        88,
+        91,
+        93,
+        95,
+        100,
+        103,
+        105,
+        106,
+        108,
+        110,
+        119,
+        123,
+        129,
+        130,
+        131,
+        135,
+        137,
+        138,
+        142,
+        144,
+        148,
+        149,
+        150,
+        151,
+        152,
+        159,
+        161,
+        163,
+        171,
+        172,
+        173,
+        174,
+        176,
+        183,
+        186,
+        189,
+        191,
+        192,
+        193,
+        195,
+        198,
+        199,
+        203,
+        207,
+        208,
+        209,
+        212,
+        213,
+        215,
+        216,
+        218,
+        220,
+        224,
+        227,
+        228,
+        229
+      ],
+      "max": 116.49401555489749,
+      "sum": 4320.8739190814085
+    },
+    "timing_s/update_actor": {
+      "count": 172,
+      "missing_steps": [
+        69,
+        74,
+        88,
+        91,
+        93,
+        95,
+        100,
+        103,
+        105,
+        106,
+        108,
+        110,
+        119,
+        123,
+        129,
+        130,
+        131,
+        135,
+        137,
+        138,
+        142,
+        144,
+        148,
+        149,
+        150,
+        151,
+        152,
+        159,
+        161,
+        163,
+        171,
+        172,
+        173,
+        174,
+        176,
+        183,
+        186,
+        189,
+        191,
+        192,
+        193,
+        195,
+        198,
+        199,
+        203,
+        207,
+        208,
+        209,
+        212,
+        213,
+        215,
+        216,
+        218,
+        220,
+        224,
+        227,
+        228,
+        229
+      ],
+      "max": 17.51973662315868,
+      "sum": 1646.0064110388048
+    },
+    "timing_s/update_weights": {
+      "count": 172,
+      "missing_steps": [
+        69,
+        74,
+        88,
+        91,
+        93,
+        95,
+        100,
+        103,
+        105,
+        106,
+        108,
+        110,
+        119,
+        123,
+        129,
+        130,
+        131,
+        135,
+        137,
+        138,
+        142,
+        144,
+        148,
+        149,
+        150,
+        151,
+        152,
+        159,
+        161,
+        163,
+        171,
+        172,
+        173,
+        174,
+        176,
+        183,
+        186,
+        189,
+        191,
+        192,
+        193,
+        195,
+        198,
+        199,
+        203,
+        207,
+        208,
+        209,
+        212,
+        213,
+        215,
+        216,
+        218,
+        220,
+        224,
+        227,
+        228,
+        229
+      ],
+      "max": 9.94874848332256,
+      "sum": 1332.9372335483786
+    },
+    "actor/perf/max_memory_allocated_gb": {
+      "count": 172,
+      "missing_steps": [
+        69,
+        74,
+        88,
+        91,
+        93,
+        95,
+        100,
+        103,
+        105,
+        106,
+        108,
+        110,
+        119,
+        123,
+        129,
+        130,
+        131,
+        135,
+        137,
+        138,
+        142,
+        144,
+        148,
+        149,
+        150,
+        151,
+        152,
+        159,
+        161,
+        163,
+        171,
+        172,
+        173,
+        174,
+        176,
+        183,
+        186,
+        189,
+        191,
+        192,
+        193,
+        195,
+        198,
+        199,
+        203,
+        207,
+        208,
+        209,
+        212,
+        213,
+        215,
+        216,
+        218,
+        220,
+        224,
+        227,
+        228,
+        229
+      ],
+      "max": 87.35954236984253
+    },
+    "actor/perf/max_memory_reserved_gb": {
+      "count": 172,
+      "missing_steps": [
+        69,
+        74,
+        88,
+        91,
+        93,
+        95,
+        100,
+        103,
+        105,
+        106,
+        108,
+        110,
+        119,
+        123,
+        129,
+        130,
+        131,
+        135,
+        137,
+        138,
+        142,
+        144,
+        148,
+        149,
+        150,
+        151,
+        152,
+        159,
+        161,
+        163,
+        171,
+        172,
+        173,
+        174,
+        176,
+        183,
+        186,
+        189,
+        191,
+        192,
+        193,
+        195,
+        198,
+        199,
+        203,
+        207,
+        208,
+        209,
+        212,
+        213,
+        215,
+        216,
+        218,
+        220,
+        224,
+        227,
+        228,
+        229
+      ],
+      "max": 90.625
+    },
+    "segments": {
+      "grpo-step1-to90-training.log": {
+        "rows": 90,
+        "actor_updates": 87,
+        "timing_s/step": {
+          "count": 87,
+          "missing_steps": [
+            69,
+            74,
+            88
+          ],
+          "max": 222.83467754302546,
+          "sum": 4779.237154858187
+        },
+        "timing_s/gen": {
+          "count": 87,
+          "missing_steps": [
+            69,
+            74,
+            88
+          ],
+          "max": 112.97040911507793,
+          "sum": 1962.8833691123873
+        },
+        "timing_s/update_actor": {
+          "count": 87,
+          "missing_steps": [
+            69,
+            74,
+            88
+          ],
+          "max": 17.51973662315868,
+          "sum": 949.8604472833686
+        },
+        "timing_s/update_weights": {
+          "count": 87,
+          "missing_steps": [
+            69,
+            74,
+            88
+          ],
+          "max": 8.230855096131563,
+          "sum": 646.5923966348637
+        },
+        "actor/perf/max_memory_allocated_gb": {
+          "count": 87,
+          "missing_steps": [
+            69,
+            74,
+            88
+          ],
+          "max": 87.35954236984253
+        },
+        "actor/perf/max_memory_reserved_gb": {
+          "count": 87,
+          "missing_steps": [
+            69,
+            74,
+            88
+          ],
+          "max": 90.625
+        }
+      },
+      "grpo-step90-to150-training.log": {
+        "rows": 60,
+        "actor_updates": 38,
+        "timing_s/step": {
+          "count": 38,
+          "missing_steps": [
+            91,
+            93,
+            95,
+            100,
+            103,
+            105,
+            106,
+            108,
+            110,
+            119,
+            123,
+            129,
+            130,
+            131,
+            135,
+            137,
+            138,
+            142,
+            144,
+            148,
+            149,
+            150
+          ],
+          "max": 145.64387821033597,
+          "sum": 1938.626836888492
+        },
+        "timing_s/gen": {
+          "count": 38,
+          "missing_steps": [
+            91,
+            93,
+            95,
+            100,
+            103,
+            105,
+            106,
+            108,
+            110,
+            119,
+            123,
+            129,
+            130,
+            131,
+            135,
+            137,
+            138,
+            142,
+            144,
+            148,
+            149,
+            150
+          ],
+          "max": 102.21085495315492,
+          "sum": 898.1713403258473
+        },
+        "timing_s/update_actor": {
+          "count": 38,
+          "missing_steps": [
+            91,
+            93,
+            95,
+            100,
+            103,
+            105,
+            106,
+            108,
+            110,
+            119,
+            123,
+            129,
+            130,
+            131,
+            135,
+            137,
+            138,
+            142,
+            144,
+            148,
+            149,
+            150
+          ],
+          "max": 16.902540693990886,
+          "sum": 321.25873020943254
+        },
+        "timing_s/update_weights": {
+          "count": 38,
+          "missing_steps": [
+            91,
+            93,
+            95,
+            100,
+            103,
+            105,
+            106,
+            108,
+            110,
+            119,
+            123,
+            129,
+            130,
+            131,
+            135,
+            137,
+            138,
+            142,
+            144,
+            148,
+            149,
+            150
+          ],
+          "max": 9.94874848332256,
+          "sum": 296.7769640572369
+        },
+        "actor/perf/max_memory_allocated_gb": {
+          "count": 38,
+          "missing_steps": [
+            91,
+            93,
+            95,
+            100,
+            103,
+            105,
+            106,
+            108,
+            110,
+            119,
+            123,
+            129,
+            130,
+            131,
+            135,
+            137,
+            138,
+            142,
+            144,
+            148,
+            149,
+            150
+          ],
+          "max": 86.07087659835815
+        },
+        "actor/perf/max_memory_reserved_gb": {
+          "count": 38,
+          "missing_steps": [
+            91,
+            93,
+            95,
+            100,
+            103,
+            105,
+            106,
+            108,
+            110,
+            119,
+            123,
+            129,
+            130,
+            131,
+            135,
+            137,
+            138,
+            142,
+            144,
+            148,
+            149,
+            150
+          ],
+          "max": 89.42578125
+        }
+      },
+      "grpo-step150-to230-supervisor.log": {
+        "rows": 80,
+        "actor_updates": 47,
+        "timing_s/step": {
+          "count": 47,
+          "missing_steps": [
+            151,
+            152,
+            159,
+            161,
+            163,
+            171,
+            172,
+            173,
+            174,
+            176,
+            183,
+            186,
+            189,
+            191,
+            192,
+            193,
+            195,
+            198,
+            199,
+            203,
+            207,
+            208,
+            209,
+            212,
+            213,
+            215,
+            216,
+            218,
+            220,
+            224,
+            227,
+            228,
+            229
+          ],
+          "max": 236.32795204780996,
+          "sum": 3261.7965918914415
+        },
+        "timing_s/gen": {
+          "count": 47,
+          "missing_steps": [
+            151,
+            152,
+            159,
+            161,
+            163,
+            171,
+            172,
+            173,
+            174,
+            176,
+            183,
+            186,
+            189,
+            191,
+            192,
+            193,
+            195,
+            198,
+            199,
+            203,
+            207,
+            208,
+            209,
+            212,
+            213,
+            215,
+            216,
+            218,
+            220,
+            224,
+            227,
+            228,
+            229
+          ],
+          "max": 116.49401555489749,
+          "sum": 1459.819209643174
+        },
+        "timing_s/update_actor": {
+          "count": 47,
+          "missing_steps": [
+            151,
+            152,
+            159,
+            161,
+            163,
+            171,
+            172,
+            173,
+            174,
+            176,
+            183,
+            186,
+            189,
+            191,
+            192,
+            193,
+            195,
+            198,
+            199,
+            203,
+            207,
+            208,
+            209,
+            212,
+            213,
+            215,
+            216,
+            218,
+            220,
+            224,
+            227,
+            228,
+            229
+          ],
+          "max": 16.199393663089722,
+          "sum": 374.8872335460037
+        },
+        "timing_s/update_weights": {
+          "count": 47,
+          "missing_steps": [
+            151,
+            152,
+            159,
+            161,
+            163,
+            171,
+            172,
+            173,
+            174,
+            176,
+            183,
+            186,
+            189,
+            191,
+            192,
+            193,
+            195,
+            198,
+            199,
+            203,
+            207,
+            208,
+            209,
+            212,
+            213,
+            215,
+            216,
+            218,
+            220,
+            224,
+            227,
+            228,
+            229
+          ],
+          "max": 9.724595869891346,
+          "sum": 389.567872856278
+        },
+        "actor/perf/max_memory_allocated_gb": {
+          "count": 47,
+          "missing_steps": [
+            151,
+            152,
+            159,
+            161,
+            163,
+            171,
+            172,
+            173,
+            174,
+            176,
+            183,
+            186,
+            189,
+            191,
+            192,
+            193,
+            195,
+            198,
+            199,
+            203,
+            207,
+            208,
+            209,
+            212,
+            213,
+            215,
+            216,
+            218,
+            220,
+            224,
+            227,
+            228,
+            229
+          ],
+          "max": 86.2470555305481
+        },
+        "actor/perf/max_memory_reserved_gb": {
+          "count": 47,
+          "missing_steps": [
+            151,
+            152,
+            159,
+            161,
+            163,
+            171,
+            172,
+            173,
+            174,
+            176,
+            183,
+            186,
+            189,
+            191,
+            192,
+            193,
+            195,
+            198,
+            199,
+            203,
+            207,
+            208,
+            209,
+            212,
+            213,
+            215,
+            216,
+            218,
+            220,
+            224,
+            227,
+            228,
+            229
+          ],
+          "max": 89.505859375
+        }
+      }
+    }
+  },
+  "raw_logs": {
+    "重点\\训练过程曲线\\GRPO-step230\\raw-remote-20260822\\grpo-step1-to90-training.log": {
+      "rows": 92,
+      "actor_updates": 89,
+      "timing_s/step": {
+        "count": 89,
+        "missing_steps": [
+          69,
+          74,
+          88
+        ],
+        "max": 222.83467754302546,
+        "sum": 4954.824868655298
+      },
+      "timing_s/gen": {
+        "count": 89,
+        "missing_steps": [
+          69,
+          74,
+          88
+        ],
+        "max": 112.97040911507793,
+        "sum": 1982.8379118291195
+      },
+      "timing_s/update_actor": {
+        "count": 89,
+        "missing_steps": [
+          69,
+          74,
+          88
+        ],
+        "max": 17.51973662315868,
+        "sum": 962.529411618365
+      },
+      "timing_s/update_weights": {
+        "count": 89,
+        "missing_steps": [
+          69,
+          74,
+          88
+        ],
+        "max": 8.230855096131563,
+        "sum": 661.4987732926384
+      },
+      "actor/perf/max_memory_allocated_gb": {
+        "count": 89,
+        "missing_steps": [
+          69,
+          74,
+          88
+        ],
+        "max": 87.35954236984253
+      },
+      "actor/perf/max_memory_reserved_gb": {
+        "count": 89,
+        "missing_steps": [
+          69,
+          74,
+          88
+        ],
+        "max": 90.625
+      },
+      "first_step": 1,
+      "last_step": 92,
+      "repeated_steps": {},
+      "step_records": [
+        {
+          "step": 1,
+          "line": 1321,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "92.00431342003867",
+          "actor/perf/max_memory_allocated_gb": "np.float64(68.0061526298523)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(73.5234375)"
+        },
+        {
+          "step": 2,
+          "line": 1331,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "48.80075589008629",
+          "actor/perf/max_memory_allocated_gb": "np.float64(68.0061526298523)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(73.5234375)"
+        },
+        {
+          "step": 3,
+          "line": 1340,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "35.56015071505681",
+          "actor/perf/max_memory_allocated_gb": "np.float64(73.54084396362305)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(78.25390625)"
+        },
+        {
+          "step": 4,
+          "line": 1353,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "67.22548695397563",
+          "actor/perf/max_memory_allocated_gb": "np.float64(73.54084396362305)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(78.25390625)"
+        },
+        {
+          "step": 5,
+          "line": 1368,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "75.3692657740321",
+          "actor/perf/max_memory_allocated_gb": "np.float64(73.54084396362305)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(78.25390625)"
+        },
+        {
+          "step": 6,
+          "line": 1374,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "33.84415755281225",
+          "actor/perf/max_memory_allocated_gb": "np.float64(73.54084396362305)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(78.25390625)"
+        },
+        {
+          "step": 7,
+          "line": 1383,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "40.27499015419744",
+          "actor/perf/max_memory_allocated_gb": "np.float64(73.54084396362305)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(78.25390625)"
+        },
+        {
+          "step": 8,
+          "line": 1391,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "46.43376877182163",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 9,
+          "line": 1401,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "33.4967851198744",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 10,
+          "line": 1417,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "66.26739553012885",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 11,
+          "line": 1431,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "66.15050236601382",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 12,
+          "line": 1440,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "43.34794662287459",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 13,
+          "line": 1454,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "74.25351698603481",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 14,
+          "line": 1462,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "37.406605343101546",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 15,
+          "line": 1478,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "69.56562532181852",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 16,
+          "line": 1486,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "50.21662156912498",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 17,
+          "line": 1495,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "40.56442314386368",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 18,
+          "line": 1510,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "52.275899642147124",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 19,
+          "line": 1520,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "42.17120068403892",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 20,
+          "line": 1539,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "156.6355834279675",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 21,
+          "line": 1552,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "53.11311693000607",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 22,
+          "line": 1568,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "62.735088207991794",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 23,
+          "line": 1577,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "58.263977525988594",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 24,
+          "line": 1582,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "29.850559425074607",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 25,
+          "line": 1605,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "92.79091125098057",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 26,
+          "line": 1614,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "45.500662793871015",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 27,
+          "line": 1622,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "43.16826983192004",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 28,
+          "line": 1635,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "58.308996982872486",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 29,
+          "line": 1650,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "52.095880219945684",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 30,
+          "line": 1670,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "66.6690019608941",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 31,
+          "line": 1685,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "77.45576870301738",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 32,
+          "line": 1695,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "93.19738402706571",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 33,
+          "line": 1706,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "43.27214074600488",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 34,
+          "line": 1715,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "42.17889558710158",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 35,
+          "line": 1737,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "100.5555526339449",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 36,
+          "line": 1747,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "38.70673358999193",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 37,
+          "line": 1756,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "42.16365119512193",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 38,
+          "line": 1764,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "38.97042973106727",
+          "actor/perf/max_memory_allocated_gb": "np.float64(78.04885149002075)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(83.041015625)"
+        },
+        {
+          "step": 39,
+          "line": 1774,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "37.01099352911115",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 40,
+          "line": 1791,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "62.7634828670416",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 41,
+          "line": 1799,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "41.40966177498922",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 42,
+          "line": 1809,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "45.00376597000286",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 43,
+          "line": 1823,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "64.51998291304335",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 44,
+          "line": 1834,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "44.76122414297424",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 45,
+          "line": 1848,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "59.931324084987864",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 46,
+          "line": 1854,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "34.76502129994333",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 47,
+          "line": 1862,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "38.797924728132784",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 48,
+          "line": 1873,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "61.37127122399397",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 49,
+          "line": 1883,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "42.662377995904535",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 50,
+          "line": 1897,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "63.4560638689436",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 51,
+          "line": 1907,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "39.753600551048294",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 52,
+          "line": 1916,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "44.50574701000005",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 53,
+          "line": 1926,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "38.919166828971356",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 54,
+          "line": 1931,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "38.038614958990365",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 55,
+          "line": 1949,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "127.67902268399484",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 56,
+          "line": 1958,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "46.882395340828225",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 57,
+          "line": 1969,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "44.409089307067916",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 58,
+          "line": 1976,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "43.55379728786647",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 59,
+          "line": 1983,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "27.819490058813244",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 60,
+          "line": 1998,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "94.42693572700955",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 61,
+          "line": 2001,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "27.682818373898044",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 62,
+          "line": 2011,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "27.970000389032066",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 63,
+          "line": 2016,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "36.487492403015494",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 64,
+          "line": 2029,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "47.39109793584794",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 65,
+          "line": 2043,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "72.22257600701414",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 66,
+          "line": 2048,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "31.787901340052485",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 67,
+          "line": 2057,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "34.79820967488922",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 68,
+          "line": 2068,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "43.18110650987364",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 69,
+          "line": 2079,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 70,
+          "line": 2095,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "62.79369025188498",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 71,
+          "line": 2100,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "31.566479783970863",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 72,
+          "line": 2117,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "222.83467754302546",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 73,
+          "line": 2123,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "29.1147271390073",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 74,
+          "line": 2139,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 75,
+          "line": 2153,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "48.56815287680365",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 76,
+          "line": 2163,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "45.583814325975254",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 77,
+          "line": 2168,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "37.9799530741293",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 78,
+          "line": 2176,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "24.835610662121326",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 79,
+          "line": 2184,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "35.15756047004834",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 80,
+          "line": 2200,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "53.03280440997332",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 81,
+          "line": 2212,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "52.59927636990324",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 82,
+          "line": 2220,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "37.632998497923836",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 83,
+          "line": 2234,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "54.989752935944125",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.29057312011719)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(87.681640625)"
+        },
+        {
+          "step": 84,
+          "line": 2242,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "43.01202791114338",
+          "actor/perf/max_memory_allocated_gb": "np.float64(87.35954236984253)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(90.625)"
+        },
+        {
+          "step": 85,
+          "line": 2260,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "63.13103207712993",
+          "actor/perf/max_memory_allocated_gb": "np.float64(87.35954236984253)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(90.625)"
+        },
+        {
+          "step": 86,
+          "line": 2269,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "36.99057285301387",
+          "actor/perf/max_memory_allocated_gb": "np.float64(87.35954236984253)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(90.625)"
+        },
+        {
+          "step": 87,
+          "line": 2280,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "58.472582465969026",
+          "actor/perf/max_memory_allocated_gb": "np.float64(87.35954236984253)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(90.625)"
+        },
+        {
+          "step": 88,
+          "line": 2286,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 89,
+          "line": 2293,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "99.37855015206151",
+          "actor/perf/max_memory_allocated_gb": "np.float64(87.35954236984253)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(90.625)"
+        },
+        {
+          "step": 90,
+          "line": 2308,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "66.73871793900616",
+          "actor/perf/max_memory_allocated_gb": "np.float64(87.35954236984253)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(90.625)"
+        },
+        {
+          "step": 91,
+          "line": 2315,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "125.25279869092628",
+          "actor/perf/max_memory_allocated_gb": "np.float64(87.35954236984253)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(90.625)"
+        },
+        {
+          "step": 92,
+          "line": 2325,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "50.33491510618478",
+          "actor/perf/max_memory_allocated_gb": "np.float64(87.35954236984253)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(90.625)"
+        }
+      ]
+    },
+    "重点\\训练过程曲线\\GRPO-step230\\raw-remote-20260822\\grpo-step90-to150-training.log": {
+      "rows": 60,
+      "actor_updates": 38,
+      "timing_s/step": {
+        "count": 38,
+        "missing_steps": [
+          91,
+          93,
+          95,
+          100,
+          103,
+          105,
+          106,
+          108,
+          110,
+          119,
+          123,
+          129,
+          130,
+          131,
+          135,
+          137,
+          138,
+          142,
+          144,
+          148,
+          149,
+          150
+        ],
+        "max": 145.64387821033597,
+        "sum": 1938.626836888492
+      },
+      "timing_s/gen": {
+        "count": 38,
+        "missing_steps": [
+          91,
+          93,
+          95,
+          100,
+          103,
+          105,
+          106,
+          108,
+          110,
+          119,
+          123,
+          129,
+          130,
+          131,
+          135,
+          137,
+          138,
+          142,
+          144,
+          148,
+          149,
+          150
+        ],
+        "max": 102.21085495315492,
+        "sum": 898.1713403258473
+      },
+      "timing_s/update_actor": {
+        "count": 38,
+        "missing_steps": [
+          91,
+          93,
+          95,
+          100,
+          103,
+          105,
+          106,
+          108,
+          110,
+          119,
+          123,
+          129,
+          130,
+          131,
+          135,
+          137,
+          138,
+          142,
+          144,
+          148,
+          149,
+          150
+        ],
+        "max": 16.902540693990886,
+        "sum": 321.25873020943254
+      },
+      "timing_s/update_weights": {
+        "count": 38,
+        "missing_steps": [
+          91,
+          93,
+          95,
+          100,
+          103,
+          105,
+          106,
+          108,
+          110,
+          119,
+          123,
+          129,
+          130,
+          131,
+          135,
+          137,
+          138,
+          142,
+          144,
+          148,
+          149,
+          150
+        ],
+        "max": 9.94874848332256,
+        "sum": 296.7769640572369
+      },
+      "actor/perf/max_memory_allocated_gb": {
+        "count": 38,
+        "missing_steps": [
+          91,
+          93,
+          95,
+          100,
+          103,
+          105,
+          106,
+          108,
+          110,
+          119,
+          123,
+          129,
+          130,
+          131,
+          135,
+          137,
+          138,
+          142,
+          144,
+          148,
+          149,
+          150
+        ],
+        "max": 86.07087659835815
+      },
+      "actor/perf/max_memory_reserved_gb": {
+        "count": 38,
+        "missing_steps": [
+          91,
+          93,
+          95,
+          100,
+          103,
+          105,
+          106,
+          108,
+          110,
+          119,
+          123,
+          129,
+          130,
+          131,
+          135,
+          137,
+          138,
+          142,
+          144,
+          148,
+          149,
+          150
+        ],
+        "max": 89.42578125
+      },
+      "first_step": 91,
+      "last_step": 150,
+      "repeated_steps": {},
+      "step_records": [
+        {
+          "step": 91,
+          "line": 1349,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 92,
+          "line": 1361,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "52.51173045486212",
+          "actor/perf/max_memory_allocated_gb": "np.float64(71.84130811691284)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(76.75)"
+        },
+        {
+          "step": 93,
+          "line": 1366,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 94,
+          "line": 1383,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "67.47577570658177",
+          "actor/perf/max_memory_allocated_gb": "np.float64(71.84130811691284)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(76.75)"
+        },
+        {
+          "step": 95,
+          "line": 1394,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 96,
+          "line": 1400,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "32.154785860329866",
+          "actor/perf/max_memory_allocated_gb": "np.float64(71.84130811691284)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(76.75)"
+        },
+        {
+          "step": 97,
+          "line": 1412,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "60.862245086580515",
+          "actor/perf/max_memory_allocated_gb": "np.float64(71.84130811691284)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(76.75)"
+        },
+        {
+          "step": 98,
+          "line": 1419,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "81.33169177360833",
+          "actor/perf/max_memory_allocated_gb": "np.float64(71.84130811691284)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(76.75)"
+        },
+        {
+          "step": 99,
+          "line": 1429,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "40.93999748490751",
+          "actor/perf/max_memory_allocated_gb": "np.float64(71.84130811691284)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(76.75)"
+        },
+        {
+          "step": 100,
+          "line": 1438,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 101,
+          "line": 1451,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "145.64387821033597",
+          "actor/perf/max_memory_allocated_gb": "np.float64(71.84130811691284)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(76.75)"
+        },
+        {
+          "step": 102,
+          "line": 1457,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "24.387159182690084",
+          "actor/perf/max_memory_allocated_gb": "np.float64(71.84130811691284)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(76.75)"
+        },
+        {
+          "step": 103,
+          "line": 1463,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 104,
+          "line": 1473,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "42.09426777716726",
+          "actor/perf/max_memory_allocated_gb": "np.float64(71.84130811691284)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(76.75)"
+        },
+        {
+          "step": 105,
+          "line": 1483,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 106,
+          "line": 1490,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 107,
+          "line": 1503,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "37.8054081229493",
+          "actor/perf/max_memory_allocated_gb": "np.float64(71.84130811691284)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(76.75)"
+        },
+        {
+          "step": 108,
+          "line": 1510,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 109,
+          "line": 1516,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "22.073367507196963",
+          "actor/perf/max_memory_allocated_gb": "np.float64(71.84130811691284)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(76.75)"
+        },
+        {
+          "step": 110,
+          "line": 1525,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 111,
+          "line": 1541,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "120.31539455335587",
+          "actor/perf/max_memory_allocated_gb": "np.float64(71.84130811691284)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(76.75)"
+        },
+        {
+          "step": 112,
+          "line": 1549,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "20.97655808739364",
+          "actor/perf/max_memory_allocated_gb": "np.float64(71.84130811691284)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(76.75)"
+        },
+        {
+          "step": 113,
+          "line": 1557,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "42.1821163687855",
+          "actor/perf/max_memory_allocated_gb": "np.float64(71.84130811691284)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(76.75)"
+        },
+        {
+          "step": 114,
+          "line": 1563,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "32.251988641917706",
+          "actor/perf/max_memory_allocated_gb": "np.float64(71.84130811691284)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(76.75)"
+        },
+        {
+          "step": 115,
+          "line": 1580,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "66.55547395627946",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.25941610336304)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 116,
+          "line": 1590,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "55.654479924589396",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.25941610336304)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 117,
+          "line": 1605,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "56.55536098778248",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.25941610336304)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 118,
+          "line": 1610,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "34.49265043437481",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.25941610336304)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 119,
+          "line": 1618,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 120,
+          "line": 1632,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "46.914809327572584",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.25941610336304)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 121,
+          "line": 1642,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "54.239124089479446",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.25941610336304)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 122,
+          "line": 1650,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "25.547876300290227",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.25941610336304)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 123,
+          "line": 1655,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 124,
+          "line": 1661,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "80.64207079354674",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.25941610336304)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 125,
+          "line": 1677,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "56.68899082951248",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.25941610336304)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 126,
+          "line": 1682,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "25.116340992040932",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.25941610336304)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 127,
+          "line": 1690,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "37.032343462109566",
+          "actor/perf/max_memory_allocated_gb": "np.float64(84.25941610336304)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 128,
+          "line": 1701,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "45.50177048705518",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.07087659835815)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 129,
+          "line": 1706,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 130,
+          "line": 1711,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 131,
+          "line": 1721,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 132,
+          "line": 1734,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "39.609196100384",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.07087659835815)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 133,
+          "line": 1744,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "45.666964299976826",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.07087659835815)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 134,
+          "line": 1753,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "41.40925648622215",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.07087659835815)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 135,
+          "line": 1761,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 136,
+          "line": 1774,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "40.93421956524253",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.07087659835815)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 137,
+          "line": 1782,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 138,
+          "line": 1785,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 139,
+          "line": 1794,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "37.924801661632955",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.07087659835815)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 140,
+          "line": 1815,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "70.33635473065078",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.07087659835815)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 141,
+          "line": 1823,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "38.76629173010588",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.07087659835815)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 142,
+          "line": 1829,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 143,
+          "line": 1835,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "100.21494616754353",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.07087659835815)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 144,
+          "line": 1841,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 145,
+          "line": 1854,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "44.945773540996015",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.07087659835815)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 146,
+          "line": 1861,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "37.47736929450184",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.07087659835815)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 147,
+          "line": 1866,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "33.39400690793991",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.07087659835815)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.42578125)"
+        },
+        {
+          "step": 148,
+          "line": 1876,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 149,
+          "line": 1884,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 150,
+          "line": 1900,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        }
+      ]
+    },
+    "重点\\训练过程曲线\\GRPO-step230\\raw-remote-20260822\\grpo-step150-to230-supervisor.log": {
+      "rows": 86,
+      "actor_updates": 49,
+      "timing_s/step": {
+        "count": 49,
+        "missing_steps": [
+          151,
+          152,
+          159,
+          161,
+          163,
+          171,
+          172,
+          173,
+          174,
+          176,
+          183,
+          186,
+          189,
+          191,
+          192,
+          193,
+          195,
+          191,
+          192,
+          193,
+          195,
+          198,
+          199,
+          203,
+          207,
+          208,
+          209,
+          212,
+          213,
+          215,
+          216,
+          218,
+          220,
+          224,
+          227,
+          228,
+          229
+        ],
+        "max": 236.32795204780996,
+        "sum": 3393.4612708683126
+      },
+      "timing_s/gen": {
+        "count": 49,
+        "missing_steps": [
+          151,
+          152,
+          159,
+          161,
+          163,
+          171,
+          172,
+          173,
+          174,
+          176,
+          183,
+          186,
+          189,
+          191,
+          192,
+          193,
+          195,
+          191,
+          192,
+          193,
+          195,
+          198,
+          199,
+          203,
+          207,
+          208,
+          209,
+          212,
+          213,
+          215,
+          216,
+          218,
+          220,
+          224,
+          227,
+          228,
+          229
+        ],
+        "max": 116.49401555489749,
+        "sum": 1558.3076719935052
+      },
+      "timing_s/update_actor": {
+        "count": 49,
+        "missing_steps": [
+          151,
+          152,
+          159,
+          161,
+          163,
+          171,
+          172,
+          173,
+          174,
+          176,
+          183,
+          186,
+          189,
+          191,
+          192,
+          193,
+          195,
+          191,
+          192,
+          193,
+          195,
+          198,
+          199,
+          203,
+          207,
+          208,
+          209,
+          212,
+          213,
+          215,
+          216,
+          218,
+          220,
+          224,
+          227,
+          228,
+          229
+        ],
+        "max": 16.199393663089722,
+        "sum": 384.0360782528296
+      },
+      "timing_s/update_weights": {
+        "count": 49,
+        "missing_steps": [
+          151,
+          152,
+          159,
+          161,
+          163,
+          171,
+          172,
+          173,
+          174,
+          176,
+          183,
+          186,
+          189,
+          191,
+          192,
+          193,
+          195,
+          191,
+          192,
+          193,
+          195,
+          198,
+          199,
+          203,
+          207,
+          208,
+          209,
+          212,
+          213,
+          215,
+          216,
+          218,
+          220,
+          224,
+          227,
+          228,
+          229
+        ],
+        "max": 9.724595869891346,
+        "sum": 405.95898385951295
+      },
+      "actor/perf/max_memory_allocated_gb": {
+        "count": 49,
+        "missing_steps": [
+          151,
+          152,
+          159,
+          161,
+          163,
+          171,
+          172,
+          173,
+          174,
+          176,
+          183,
+          186,
+          189,
+          191,
+          192,
+          193,
+          195,
+          191,
+          192,
+          193,
+          195,
+          198,
+          199,
+          203,
+          207,
+          208,
+          209,
+          212,
+          213,
+          215,
+          216,
+          218,
+          220,
+          224,
+          227,
+          228,
+          229
+        ],
+        "max": 86.2470555305481
+      },
+      "actor/perf/max_memory_reserved_gb": {
+        "count": 49,
+        "missing_steps": [
+          151,
+          152,
+          159,
+          161,
+          163,
+          171,
+          172,
+          173,
+          174,
+          176,
+          183,
+          186,
+          189,
+          191,
+          192,
+          193,
+          195,
+          191,
+          192,
+          193,
+          195,
+          198,
+          199,
+          203,
+          207,
+          208,
+          209,
+          212,
+          213,
+          215,
+          216,
+          218,
+          220,
+          224,
+          227,
+          228,
+          229
+        ],
+        "max": 89.505859375
+      },
+      "first_step": 151,
+      "last_step": 231,
+      "repeated_steps": {
+        "191": 2,
+        "192": 2,
+        "193": 2,
+        "194": 2,
+        "195": 2
+      },
+      "step_records": [
+        {
+          "step": 151,
+          "line": 1293,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 152,
+          "line": 1299,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 153,
+          "line": 1311,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "109.86030821222812",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 154,
+          "line": 1319,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "42.744519176892936",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 155,
+          "line": 1327,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "22.769624525215477",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 156,
+          "line": 1337,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "44.627038691192865",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 157,
+          "line": 1346,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "126.01758300093934",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 158,
+          "line": 1355,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "38.71417846297845",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 159,
+          "line": 1362,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 160,
+          "line": 1377,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "72.32082301611081",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 161,
+          "line": 1383,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 162,
+          "line": 1390,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "27.20650126505643",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 163,
+          "line": 1396,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 164,
+          "line": 1404,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "28.129210009239614",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 165,
+          "line": 1412,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "42.069693052675575",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 166,
+          "line": 1427,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "131.2648734031245",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 167,
+          "line": 1437,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "125.2892126981169",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 168,
+          "line": 1445,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "43.846187432762235",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 169,
+          "line": 1455,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "82.75901816599071",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 170,
+          "line": 1474,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "135.76778633194044",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 171,
+          "line": 1487,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 172,
+          "line": 1490,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 173,
+          "line": 1496,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 174,
+          "line": 1509,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 175,
+          "line": 1522,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "236.32795204780996",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 176,
+          "line": 1528,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 177,
+          "line": 1537,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "75.1510412869975",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 178,
+          "line": 1546,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "96.48774732975289",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 179,
+          "line": 1554,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "39.16127309994772",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 180,
+          "line": 1569,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "50.31904261233285",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 181,
+          "line": 1578,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "47.593208690173924",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 182,
+          "line": 1583,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "23.9204968996346",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 183,
+          "line": 1590,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 184,
+          "line": 1600,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "49.81090853270143",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 185,
+          "line": 1609,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "44.365658555645496",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 186,
+          "line": 1616,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 187,
+          "line": 1626,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "106.97513973526657",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 188,
+          "line": 1636,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "109.55333010479808",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 189,
+          "line": 1642,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 190,
+          "line": 1655,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "43.42431395687163",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 191,
+          "line": 1661,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 192,
+          "line": 1667,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 193,
+          "line": 1673,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 194,
+          "line": 1681,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "103.11394712282345",
+          "actor/perf/max_memory_allocated_gb": "np.float64(75.38345050811768)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.025390625)"
+        },
+        {
+          "step": 195,
+          "line": 1694,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 191,
+          "line": 3000,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 192,
+          "line": 3008,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 193,
+          "line": 3011,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 194,
+          "line": 3024,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "45.99920521490276",
+          "actor/perf/max_memory_allocated_gb": "np.float64(53.35051345825195)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(59.640625)"
+        },
+        {
+          "step": 195,
+          "line": 3039,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 196,
+          "line": 3052,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "157.9700085381046",
+          "actor/perf/max_memory_allocated_gb": "np.float64(79.04685306549072)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(84.5625)"
+        },
+        {
+          "step": 197,
+          "line": 3061,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "50.83437947090715",
+          "actor/perf/max_memory_allocated_gb": "np.float64(79.04685306549072)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(84.5625)"
+        },
+        {
+          "step": 198,
+          "line": 3067,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 199,
+          "line": 3077,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 200,
+          "line": 3085,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "40.07224651006982",
+          "actor/perf/max_memory_allocated_gb": "np.float64(79.04685306549072)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(84.5625)"
+        },
+        {
+          "step": 201,
+          "line": 3093,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "41.602695246227086",
+          "actor/perf/max_memory_allocated_gb": "np.float64(79.04685306549072)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(84.5625)"
+        },
+        {
+          "step": 202,
+          "line": 3103,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "38.33637089235708",
+          "actor/perf/max_memory_allocated_gb": "np.float64(79.04685306549072)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(84.5625)"
+        },
+        {
+          "step": 203,
+          "line": 3109,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 204,
+          "line": 3118,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "35.37011889507994",
+          "actor/perf/max_memory_allocated_gb": "np.float64(79.04685306549072)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(84.5625)"
+        },
+        {
+          "step": 205,
+          "line": 3125,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "118.56180075602606",
+          "actor/perf/max_memory_allocated_gb": "np.float64(79.04685306549072)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(84.5625)"
+        },
+        {
+          "step": 206,
+          "line": 3133,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "127.75465818494558",
+          "actor/perf/max_memory_allocated_gb": "np.float64(79.04685306549072)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(84.5625)"
+        },
+        {
+          "step": 207,
+          "line": 3139,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 208,
+          "line": 3145,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 209,
+          "line": 3152,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 210,
+          "line": 3169,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "119.93688227422535",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.2470555305481)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.505859375)"
+        },
+        {
+          "step": 211,
+          "line": 3179,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "42.869594945106655",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.2470555305481)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.505859375)"
+        },
+        {
+          "step": 212,
+          "line": 3186,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 213,
+          "line": 3191,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 214,
+          "line": 3200,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "106.53700845409185",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.2470555305481)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.505859375)"
+        },
+        {
+          "step": 215,
+          "line": 3214,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 216,
+          "line": 3220,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 217,
+          "line": 3226,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "31.23585312627256",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.2470555305481)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.505859375)"
+        },
+        {
+          "step": 218,
+          "line": 3232,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 219,
+          "line": 3239,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "30.61107687326148",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.2470555305481)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.505859375)"
+        },
+        {
+          "step": 220,
+          "line": 3256,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 221,
+          "line": 3267,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "36.981819498352706",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.2470555305481)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.505859375)"
+        },
+        {
+          "step": 222,
+          "line": 3277,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "39.07202121382579",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.2470555305481)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.505859375)"
+        },
+        {
+          "step": 223,
+          "line": 3286,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "63.4533448331058",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.2470555305481)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.505859375)"
+        },
+        {
+          "step": 224,
+          "line": 3302,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 225,
+          "line": 3308,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "45.058100786060095",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.2470555305481)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.505859375)"
+        },
+        {
+          "step": 226,
+          "line": 3323,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "41.65029010316357",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.2470555305481)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.505859375)"
+        },
+        {
+          "step": 227,
+          "line": 3329,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 228,
+          "line": 3335,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 229,
+          "line": 3349,
+          "sampling/skipped_actor_update": "1.0",
+          "timing_s/step": null,
+          "actor/perf/max_memory_allocated_gb": null,
+          "actor/perf/max_memory_reserved_gb": null
+        },
+        {
+          "step": 230,
+          "line": 3363,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "51.4124457789585",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.2470555305481)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.505859375)"
+        },
+        {
+          "step": 231,
+          "line": 3368,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "28.550731854047626",
+          "actor/perf/max_memory_allocated_gb": "np.float64(86.2470555305481)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(89.505859375)"
+        }
+      ]
+    },
+    "重点\\训练过程曲线\\GRPO-step100\\raw-remote-20260816\\outputs\\runs\\grpo\\grpo-step50-to100-sftv5-stop100-original-dynamic-20260816\\training.log": {
+      "rows": 34,
+      "actor_updates": 34,
+      "timing_s/step": {
+        "count": 34,
+        "missing_steps": [],
+        "max": 196.98109167441726,
+        "sum": 2458.8059876300395
+      },
+      "timing_s/gen": {
+        "count": 34,
+        "missing_steps": [],
+        "max": 90.36516927555203,
+        "sum": 1133.4395000971854
+      },
+      "timing_s/update_actor": {
+        "count": 34,
+        "missing_steps": [],
+        "max": 18.35506285354495,
+        "sum": 427.54533764719963
+      },
+      "timing_s/update_weights": {
+        "count": 34,
+        "missing_steps": [],
+        "max": 8.738661088049412,
+        "sum": 277.1177743971348
+      },
+      "actor/perf/max_memory_allocated_gb": {
+        "count": 34,
+        "missing_steps": [],
+        "max": 76.6274676322937
+      },
+      "actor/perf/max_memory_reserved_gb": {
+        "count": 34,
+        "missing_steps": [],
+        "max": 81.908203125
+      },
+      "first_step": 51,
+      "last_step": 84,
+      "repeated_steps": {},
+      "step_records": [
+        {
+          "step": 51,
+          "line": 1550,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "39.79481263458729",
+          "actor/perf/max_memory_allocated_gb": "np.float64(65.00829315185547)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(70.6953125)"
+        },
+        {
+          "step": 52,
+          "line": 1553,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "61.42512987181544",
+          "actor/perf/max_memory_allocated_gb": "np.float64(65.00829315185547)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(70.6953125)"
+        },
+        {
+          "step": 53,
+          "line": 1556,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "43.333933405578136",
+          "actor/perf/max_memory_allocated_gb": "np.float64(65.00829315185547)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(70.6953125)"
+        },
+        {
+          "step": 54,
+          "line": 1563,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "46.853796135634184",
+          "actor/perf/max_memory_allocated_gb": "np.float64(65.00829315185547)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(70.6953125)"
+        },
+        {
+          "step": 55,
+          "line": 1567,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "72.6522989012301",
+          "actor/perf/max_memory_allocated_gb": "np.float64(65.00829315185547)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(70.6953125)"
+        },
+        {
+          "step": 56,
+          "line": 1570,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "106.84891401976347",
+          "actor/perf/max_memory_allocated_gb": "np.float64(65.00829315185547)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(70.6953125)"
+        },
+        {
+          "step": 57,
+          "line": 1573,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "49.82614394463599",
+          "actor/perf/max_memory_allocated_gb": "np.float64(66.76434373855591)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(72.296875)"
+        },
+        {
+          "step": 58,
+          "line": 1576,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "73.04685198329389",
+          "actor/perf/max_memory_allocated_gb": "np.float64(72.09122037887573)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(77.201171875)"
+        },
+        {
+          "step": 59,
+          "line": 1583,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "67.72063563577831",
+          "actor/perf/max_memory_allocated_gb": "np.float64(72.09122037887573)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(77.201171875)"
+        },
+        {
+          "step": 60,
+          "line": 1587,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "68.07347426004708",
+          "actor/perf/max_memory_allocated_gb": "np.float64(72.09122037887573)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(77.201171875)"
+        },
+        {
+          "step": 61,
+          "line": 1590,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "52.050495294854045",
+          "actor/perf/max_memory_allocated_gb": "np.float64(72.09122037887573)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(77.201171875)"
+        },
+        {
+          "step": 62,
+          "line": 1593,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "196.98109167441726",
+          "actor/perf/max_memory_allocated_gb": "np.float64(72.09122037887573)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(77.201171875)"
+        },
+        {
+          "step": 63,
+          "line": 1596,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "85.67947486415505",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 64,
+          "line": 1603,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "111.69594870693982",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 65,
+          "line": 1607,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "94.33519648946822",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 66,
+          "line": 1610,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "91.2511608209461",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 67,
+          "line": 1613,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "48.30085563659668",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 68,
+          "line": 1616,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "99.09829031676054",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 69,
+          "line": 1623,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "76.67016020417213",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 70,
+          "line": 1627,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "59.470592794939876",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 71,
+          "line": 1630,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "48.28182087093592",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 72,
+          "line": 1633,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "50.4994992017746",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 73,
+          "line": 1636,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "60.45358429849148",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 74,
+          "line": 1643,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "61.224088471382856",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 75,
+          "line": 1647,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "117.29922689497471",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 76,
+          "line": 1650,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "63.0025600977242",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 77,
+          "line": 1653,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "76.14739249832928",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 78,
+          "line": 1656,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "50.78893126361072",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 79,
+          "line": 1663,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "36.846818620339036",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 80,
+          "line": 1667,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "52.789899500086904",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 81,
+          "line": 1670,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "44.59463491104543",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 82,
+          "line": 1673,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "93.41192847304046",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 83,
+          "line": 1676,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "104.42506873235106",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        },
+        {
+          "step": 84,
+          "line": 1681,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "53.9312762003392",
+          "actor/perf/max_memory_allocated_gb": "np.float64(76.6274676322937)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(81.908203125)"
+        }
+      ]
+    },
+    "重点\\训练过程曲线\\GRPO-step100\\raw-remote-20260816\\outputs\\runs\\grpo\\grpo-step80-to100-step85-single-group-20260816-r2\\training.log": {
+      "rows": 20,
+      "actor_updates": 20,
+      "timing_s/step": {
+        "count": 20,
+        "missing_steps": [],
+        "max": 133.66279983706772,
+        "sum": 1476.1375637948513
+      },
+      "timing_s/gen": {
+        "count": 20,
+        "missing_steps": [],
+        "max": 92.57123475894332,
+        "sum": 623.9697442352772
+      },
+      "timing_s/update_actor": {
+        "count": 20,
+        "missing_steps": [],
+        "max": 16.439670959487557,
+        "sum": 233.59119474887848
+      },
+      "timing_s/update_weights": {
+        "count": 20,
+        "missing_steps": [],
+        "max": 9.35819541849196,
+        "sum": 168.32958912290633
+      },
+      "actor/perf/max_memory_allocated_gb": {
+        "count": 20,
+        "missing_steps": [],
+        "max": 90.08833456039429
+      },
+      "actor/perf/max_memory_reserved_gb": {
+        "count": 20,
+        "missing_steps": [],
+        "max": 91.712890625
+      },
+      "first_step": 81,
+      "last_step": 100,
+      "repeated_steps": {},
+      "step_records": [
+        {
+          "step": 81,
+          "line": 1557,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "48.80049187503755",
+          "actor/perf/max_memory_allocated_gb": "np.float64(60.188660621643066)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(66.283203125)"
+        },
+        {
+          "step": 82,
+          "line": 1560,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "132.38662156276405",
+          "actor/perf/max_memory_allocated_gb": "np.float64(60.188660621643066)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(66.283203125)"
+        },
+        {
+          "step": 83,
+          "line": 1563,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "64.75400344096124",
+          "actor/perf/max_memory_allocated_gb": "np.float64(60.56851530075073)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(66.951171875)"
+        },
+        {
+          "step": 84,
+          "line": 1570,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "113.64724574238062",
+          "actor/perf/max_memory_allocated_gb": "np.float64(63.66218709945679)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(69.095703125)"
+        },
+        {
+          "step": 85,
+          "line": 1574,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "82.917341100052",
+          "actor/perf/max_memory_allocated_gb": "np.float64(67.99905824661255)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(73.587890625)"
+        },
+        {
+          "step": 86,
+          "line": 1577,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "75.26577221043408",
+          "actor/perf/max_memory_allocated_gb": "np.float64(90.08833456039429)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(91.712890625)"
+        },
+        {
+          "step": 87,
+          "line": 1580,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "133.66279983706772",
+          "actor/perf/max_memory_allocated_gb": "np.float64(90.08833456039429)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(91.712890625)"
+        },
+        {
+          "step": 88,
+          "line": 1583,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "113.0518364738673",
+          "actor/perf/max_memory_allocated_gb": "np.float64(90.08833456039429)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(91.712890625)"
+        },
+        {
+          "step": 89,
+          "line": 1590,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "81.41037819720805",
+          "actor/perf/max_memory_allocated_gb": "np.float64(90.08833456039429)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(91.712890625)"
+        },
+        {
+          "step": 90,
+          "line": 1594,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "59.29632868245244",
+          "actor/perf/max_memory_allocated_gb": "np.float64(90.08833456039429)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(91.712890625)"
+        },
+        {
+          "step": 91,
+          "line": 1597,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "98.75498779676855",
+          "actor/perf/max_memory_allocated_gb": "np.float64(90.08833456039429)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(91.712890625)"
+        },
+        {
+          "step": 92,
+          "line": 1600,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "63.26532384008169",
+          "actor/perf/max_memory_allocated_gb": "np.float64(90.08833456039429)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(91.712890625)"
+        },
+        {
+          "step": 93,
+          "line": 1603,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "39.973691368475556",
+          "actor/perf/max_memory_allocated_gb": "np.float64(90.08833456039429)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(91.712890625)"
+        },
+        {
+          "step": 94,
+          "line": 1610,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "69.7690649740398",
+          "actor/perf/max_memory_allocated_gb": "np.float64(90.08833456039429)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(91.712890625)"
+        },
+        {
+          "step": 95,
+          "line": 1614,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "68.5945615042001",
+          "actor/perf/max_memory_allocated_gb": "np.float64(90.08833456039429)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(91.712890625)"
+        },
+        {
+          "step": 96,
+          "line": 1617,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "32.35823209956288",
+          "actor/perf/max_memory_allocated_gb": "np.float64(90.08833456039429)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(91.712890625)"
+        },
+        {
+          "step": 97,
+          "line": 1620,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "50.77015873603523",
+          "actor/perf/max_memory_allocated_gb": "np.float64(90.08833456039429)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(91.712890625)"
+        },
+        {
+          "step": 98,
+          "line": 1623,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "46.40335037186742",
+          "actor/perf/max_memory_allocated_gb": "np.float64(90.08833456039429)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(91.712890625)"
+        },
+        {
+          "step": 99,
+          "line": 1630,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "45.12294886447489",
+          "actor/perf/max_memory_allocated_gb": "np.float64(90.08833456039429)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(91.712890625)"
+        },
+        {
+          "step": 100,
+          "line": 1654,
+          "sampling/skipped_actor_update": "0.0",
+          "timing_s/step": "55.93242511712015",
+          "actor/perf/max_memory_allocated_gb": "np.float64(90.08833456039429)",
+          "actor/perf/max_memory_reserved_gb": "np.float64(91.712890625)"
+        }
+      ]
+    }
+  },
+  "sources_sha256": {
+    "outputs\\runs\\sft\\fresh-sft-convergence-repair-v5-30k\\attempts\\20260809T160700Z-noswanlab-direct\\train_summary.json": "244c3e8098c993fba5083c09828ff4fd42388728dbad901ded8da0bf2381c3ac",
+    "重点\\训练过程曲线\\GRPO-step100\\grpo-step100-actor-updates.csv": "bc01d4d66e4b707ec558877b02222da0b70451f8ecb5e51810475e46928a58e2",
+    "重点\\训练过程曲线\\GRPO-step230\\grpo-step230-actor-updates.csv": "e0ccb71c7578e0c8aa6fa8d7e52157f57ba09ff3b0a01034e6cd8b5cd42cfab0",
+    "重点\\训练过程曲线\\GRPO-step230\\raw-remote-20260822\\grpo-step1-to90-training.log": "f20edfc6390c9df04b83fba7c423f190e079693e0b74b7481f756a51fcd84cef",
+    "重点\\训练过程曲线\\GRPO-step230\\raw-remote-20260822\\grpo-step90-to150-training.log": "52c0384857ada22b6fc0ef50691bbefd0052d900441eb8f2d829daf34147bde2",
+    "重点\\训练过程曲线\\GRPO-step230\\raw-remote-20260822\\grpo-step150-to230-supervisor.log": "b0f8083d3fc4377c6d1e692c41d432846f8f940461e47ab704e21bbe30e97b0a",
+    "重点\\训练过程曲线\\GRPO-step100\\raw-remote-20260816\\outputs\\runs\\grpo\\grpo-step50-to100-sftv5-stop100-original-dynamic-20260816\\training.log": "ba0a753558ce869f27bf46415d571a53b058572abc1ffb998ad0f865619d01bb",
+    "重点\\训练过程曲线\\GRPO-step100\\raw-remote-20260816\\outputs\\runs\\grpo\\grpo-step80-to100-step85-single-group-20260816-r2\\training.log": "b3bd7f4d9eaf4e5c47ee582553349bf0d1448875a2b8e0b8cb388e9866830908"
+  },
+  "scope": "Read-only historical source audit. Timing fields overlap; component times must not be added to timing_s/step. Missing timings are not zero. No billing record established."
+}

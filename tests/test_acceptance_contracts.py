@@ -14,7 +14,7 @@ from MiniClaw.coding_agent.tools.base import ToolResult
 from MiniClaw.llm.types import ToolInvocation
 from MiniClaw.evaluation.faults import probe_recovery
 from MiniClaw.llm.types import AssistantReply
-from MiniClaw.trace.store import read_trace_records
+from MiniClaw.evaluation.trace.store import read_trace_records
 from tests.test_agent_loop import ScriptedModelClient
 from tests import test_task_recovery as recovery_helpers
 

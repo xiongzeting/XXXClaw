@@ -1,0 +1,144 @@
+{
+  "grpo-step1-to90-training.log": {
+    "log": "grpo-step1-to90-training.log",
+    "sha256": "f20edfc6390c9df04b83fba7c423f190e079693e0b74b7481f756a51fcd84cef",
+    "sessions": [
+      {
+        "first": {
+          "line": 1230,
+          "step": 0,
+          "elapsed_s": 0
+        },
+        "last": {
+          "line": 2327,
+          "step": 92,
+          "elapsed_s": 5050
+        },
+        "selected": [
+          {
+            "line": 2305,
+            "step": 90,
+            "elapsed_s": 4874
+          },
+          {
+            "line": 2327,
+            "step": 92,
+            "elapsed_s": 5050
+          }
+        ]
+      }
+    ]
+  },
+  "grpo-step90-to150-training.log": {
+    "log": "grpo-step90-to150-training.log",
+    "sha256": "52c0384857ada22b6fc0ef50691bbefd0052d900441eb8f2d829daf34147bde2",
+    "sessions": [
+      {
+        "first": {
+          "line": 1244,
+          "step": 90,
+          "elapsed_s": 0
+        },
+        "last": {
+          "line": 1891,
+          "step": 150,
+          "elapsed_s": 2394
+        },
+        "selected": [
+          {
+            "line": 1244,
+            "step": 90,
+            "elapsed_s": 0
+          },
+          {
+            "line": 1359,
+            "step": 92,
+            "elapsed_s": 67
+          },
+          {
+            "line": 1890,
+            "step": 150,
+            "elapsed_s": 2394
+          },
+          {
+            "line": 1891,
+            "step": 150,
+            "elapsed_s": 2394
+          }
+        ]
+      }
+    ]
+  },
+  "grpo-step150-to230-supervisor.log": {
+    "log": "grpo-step150-to230-supervisor.log",
+    "sha256": "b0f8083d3fc4377c6d1e692c41d432846f8f940461e47ab704e21bbe30e97b0a",
+    "sessions": [
+      {
+        "first": {
+          "line": 1179,
+          "step": 150,
+          "elapsed_s": 0
+        },
+        "last": {
+          "line": 1689,
+          "step": 195,
+          "elapsed_s": 2462
+        },
+        "selected": [
+          {
+            "line": 1179,
+            "step": 150,
+            "elapsed_s": 0
+          },
+          {
+            "line": 1652,
+            "step": 190,
+            "elapsed_s": 2270
+          },
+          {
+            "line": 1689,
+            "step": 195,
+            "elapsed_s": 2462
+          }
+        ]
+      },
+      {
+        "first": {
+          "line": 2874,
+          "step": 190,
+          "elapsed_s": 0
+        },
+        "last": {
+          "line": 3370,
+          "step": 231,
+          "elapsed_s": 1837
+        },
+        "selected": [
+          {
+            "line": 2874,
+            "step": 190,
+            "elapsed_s": 0
+          },
+          {
+            "line": 3036,
+            "step": 195,
+            "elapsed_s": 140
+          },
+          {
+            "line": 3362,
+            "step": 230,
+            "elapsed_s": 1809
+          },
+          {
+            "line": 3370,
+            "step": 231,
+            "elapsed_s": 1837
+          }
+        ]
+      }
+    ]
+  },
+  "observed_loop_seconds_through_step230_including_replayed_work": 11715,
+  "observed_loop_seconds_through_last_logged_step231": 11743,
+  "scope": "Sum of distinct progress-bar sessions; excludes setup outside these timers, inter-run downtime, unrelated probes/evaluations and other experiments. Integer-second log resolution."
+}

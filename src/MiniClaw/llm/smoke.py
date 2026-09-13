@@ -46,7 +46,7 @@ async def run_smoke(provider: str | None = None, env_file: str | None = None) ->
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Test the configured MiniClaw LLM provider")
-    parser.add_argument("--provider", choices=["primary", "openai", "zxcoding", "deepseek"])
+    parser.add_argument("--provider", choices=["primary", "openai", "zxcoding", "deepseek", "anthropic"])
     parser.add_argument("--env-file")
     arguments = parser.parse_args()
     raise SystemExit(asyncio.run(run_smoke(arguments.provider, arguments.env_file)))

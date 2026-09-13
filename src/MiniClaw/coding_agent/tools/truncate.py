@@ -7,7 +7,10 @@ from typing import Literal
 
 
 DEFAULT_MAX_LINES = 2_000
-DEFAULT_MAX_BYTES = 50 * 1024
+# Keep enough room for a useful artifact read-back in one request. The
+# runtime capture ceiling remains separate and much larger; this is only the
+# model-visible tool-result bound.
+DEFAULT_MAX_BYTES = 128 * 1024
 GREP_MAX_LINE_LENGTH = 500
 
 

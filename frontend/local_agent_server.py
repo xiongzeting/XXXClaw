@@ -10,6 +10,7 @@ import threading
 import uuid
 import queue
 import time
+import shutil
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
@@ -58,7 +59,18 @@ class AgentSession:
         approval = load_approval_settings(workspace, self.environment, policy=approval_policy)
         self.settings, self.runtime, self.approval = settings, runtime, approval
         self.workspace = workspace.resolve()
-        self.session_id = uuid.UUID(session_id).hex if session_id else uuid.uuid4().hex
+        self._last_session_path = self.workspace / '.aster' / 'web' / 'last-session-id'
+        restored_id = session_id
+        if not restored_id and self._last_session_path.is_file():
+            try:
+                candidate = self._last_session_path.read_text(encoding='utf-8').strip()
+                if candidate and (self.workspace / '.aster' / 'web' / candidate / 'session.jsonl').is_file():
+                    restored_id = candidate
+            except OSError:
+                restored_id = None
+        self.session_id = uuid.UUID(restored_id).hex if restored_id else uuid.uuid4().hex
+        self._last_session_path.parent.mkdir(parents=True, exist_ok=True)
+        self._last_session_path.write_text(self.session_id + '\n', encoding='utf-8')
         self.assistant = CodingAssistant(
             model_client=create_model_client(settings),
             profile=model_profile_from_settings(settings),
@@ -102,6 +114,8 @@ class AgentSession:
             session_path.parent.mkdir(parents=True, exist_ok=True)
             session_path.touch(exist_ok=True)
         self.session_id = requested
+        self._last_session_path.parent.mkdir(parents=True, exist_ok=True)
+        self._last_session_path.write_text(self.session_id + '\n', encoding='utf-8')
         self.assistant = self._assistants[requested]
         if not hasattr(self, '_last_results'):
             self._last_results = {}
@@ -146,12 +160,32 @@ class AgentSession:
                                  'result': content})
         trace = path.with_name('trace.jsonl')
         statuses = {}
+        context_events = []
+        compacted_token_estimate = None
+        raw_token_estimate = None
         if trace.exists():
             for line in trace.read_text(encoding='utf-8').splitlines():
                 try:
                     row = json.loads(line)
+                    event_type = row.get('type')
+                    data = row.get('data') or {}
+                    if event_type in {
+                        'compaction.started', 'compaction.completed',
+                        'compaction.failed', 'compaction.aborted',
+                        'compaction.deferred',
+                    }:
+                        context_events.append({
+                            'type': event_type.removeprefix('compaction.'),
+                            'timestamp': row.get('timestamp'),
+                            'tokens_before': data.get('tokens_before'),
+                            'tokens_after': data.get('tokens_after') or data.get('estimated_tokens_after'),
+                            'tokens_saved': data.get('tokens_saved') or data.get('details', {}).get('estimated_history_tokens_saved'),
+                            'strategy': data.get('strategy'),
+                        })
+                        if event_type == 'compaction.completed':
+                            compacted_token_estimate = data.get('tokens_after') or data.get('details', {}).get('estimated_tokens_after')
+                            raw_token_estimate = data.get('tokens_before') or data.get('details', {}).get('estimated_history_tokens_before')
                     if row.get('type') == 'tool.call':
-                        data = row.get('data', {})
                         statuses[data.get('tool_call_id')] = data.get('status')
                 except json.JSONDecodeError:
                     continue
@@ -159,7 +193,62 @@ class AgentSession:
             if message['kind'] == 'tool':
                 message['state'] = {'success': 'done', 'error': 'error', 'cancelled': 'interrupted',
                                     'blocked': 'error'}.get(statuses.get(message['id']), 'unknown')
-        return {'session_id': self.session_id, 'messages': messages}
+        return {
+            'session_id': self.session_id,
+            'messages': messages,
+            'context_events': context_events,
+            'token_estimate': compacted_token_estimate,
+            'raw_token_estimate': raw_token_estimate,
+        }
+
+    def delete_session(self, session_id: str) -> dict:
+        """Delete one web session after the UI has obtained confirmation."""
+        requested = uuid.UUID(session_id).hex
+        if requested == self.session_id:
+            raise ValueError('不能删除当前正在使用的会话，请先切换到其他会话。')
+        target = (self.workspace / '.aster' / 'web' / requested).resolve()
+        root = (self.workspace / '.aster' / 'web').resolve()
+        if not target.is_relative_to(root) or not target.is_dir():
+            raise FileNotFoundError('会话不存在')
+        shutil.rmtree(target)
+        self._assistants.pop(requested, None)
+        self._last_results.pop(requested, None)
+        return {'deleted': requested}
+
+    def edit_latest_user(self, text: str) -> dict:
+        """Rewrite the latest user turn and discard its unfinished suffix."""
+        if not isinstance(text, str) or not text.strip():
+            raise ValueError('消息不能为空')
+        path = self.workspace / '.aster' / 'web' / self.session_id / 'session.jsonl'
+        rows = path.read_text(encoding='utf-8').splitlines() if path.exists() else []
+        messages = []
+        for raw in rows:
+            try:
+                payload = json.loads(raw)
+                message = payload.get('message')
+            except json.JSONDecodeError:
+                continue
+            if isinstance(message, dict) and message.get('role') == 'user' and message.get('content'):
+                messages.append(len(messages))
+        if not messages:
+            raise ValueError('没有可修改的用户消息')
+        # Keep all records through the latest user message, replacing only its
+        # content. Any assistant/tool suffix belongs to the superseded turn.
+        user_seen = 0
+        last_index = -1
+        for index, raw in enumerate(rows):
+            try:
+                message = json.loads(raw).get('message')
+            except json.JSONDecodeError:
+                continue
+            if isinstance(message, dict) and message.get('role') == 'user' and message.get('content'):
+                user_seen += 1
+                if user_seen == len(messages):
+                    last_index = index
+        payload = json.loads(rows[last_index])
+        payload['message']['content'] = text.strip()
+        path.write_text('\n'.join(rows[:last_index] + [json.dumps(payload, ensure_ascii=False)]) + '\n', encoding='utf-8')
+        return {'session_id': self.session_id, 'message': text.strip()}
 
     async def run(self, prompt: str) -> dict:
         events = []
@@ -347,6 +436,17 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(404, {'error': str(exc)})
             except (ValueError, TypeError) as exc:
                 return self._send(400, {'error': str(exc)})
+        if path in ('/api/delete', '/api/edit-latest'):
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+                body = json.loads(self.rfile.read(length) or b"{}")
+                if path == '/api/delete':
+                    return self._send(200, SESSION.delete_session(str(body.get('session_id') or '')))
+                return self._send(200, SESSION.edit_latest_user(str(body.get('message') or '')))
+            except FileNotFoundError as exc:
+                return self._send(404, {'error': str(exc)})
+            except (ValueError, TypeError) as exc:
+                return self._send(400, {'error': str(exc)})
         if path not in ("/api/chat", "/api/chat/stream", "/api/resume"):
             return self._send(404, {"error": "not found"})
         try:
@@ -419,7 +519,10 @@ def main():
     # running the server from an interactive console that can answer prompts.
     parser.add_argument("--approval-policy", choices=["allow", "ask", "deny"], default="allow")
     parser.add_argument("--host", default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=8766)
+    # Keep the browser entry point stable. The last web session id is stored
+    # under .aster/web/last-session-id, so restarting this process restores the
+    # same server-side conversation unless the user explicitly creates a new one.
+    parser.add_argument("--port", type=int, default=8767)
     args = parser.parse_args()
     global SESSION
     try:
